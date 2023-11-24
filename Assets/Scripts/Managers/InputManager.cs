@@ -38,13 +38,13 @@ public class InputManager : MonoBehaviour
 
     public static List<string> defaultInputCodes = new List<string>(){
         "Move Left", "Move Right", "Move Forwards", "Move Backwards", 
-        "Interact", "Inventory", "Character Info",
+        "Sprint", "Crouch", "Walk", "Interact", "Inventory", "Character Info", 
         "Item Slot 1", "Item Slot 2", "Item Slot 3", "Item Slot 4", "Item Slot 5"
     };
 
     public static List<KeyCode> defaultInputKeys = new List<KeyCode>(){
         KeyCode.A, KeyCode.D, KeyCode.W, KeyCode.S,
-        KeyCode.E, KeyCode.Tab, KeyCode.B,
+        KeyCode.LeftShift, KeyCode.LeftControl, KeyCode.LeftAlt, KeyCode.E, KeyCode.Tab, KeyCode.C,
         KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4, KeyCode.Alpha5
     };
 }
