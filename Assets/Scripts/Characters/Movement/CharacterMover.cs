@@ -7,10 +7,11 @@ public class CharacterMover : MonoBehaviour
     private CharacterController controller;
     private Transform groundCheck;
     private LayerMask groundMask;
+    private MovementType movementType;
 
     private bool isCrouching;
-    private bool isSprinting;
     private bool isWalking;
+    private bool isSprinting;
 
 
     private void Awake ()
@@ -28,13 +29,26 @@ public class CharacterMover : MonoBehaviour
     public void Crouch (){
         // TODO
     }
-
-    public void Sprint (){
-
+    
+    public void Walk (){
+        // TODO
     }
 
-    public void Walk (){
+    public void Run (){
+        // TODO
+    }
 
+    public void Sprint (){
+        // TODO
+    }
+
+    public void ChangeMovementType (MovementType movementType){
+        // TODO
+        this.movementType = movementType;
+    }
+
+    public MovementType Movement {
+        get { return movementType; }
     }
 
     public bool IsGrounded {
@@ -59,4 +73,8 @@ public class CharacterMover : MonoBehaviour
 
 public enum MoveDirection{
     Forwards, Backwards, Left, Right
+}
+
+public enum MovementType {
+    Walk, Run, Sprint
 }

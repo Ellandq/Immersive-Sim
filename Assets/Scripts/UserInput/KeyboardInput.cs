@@ -21,6 +21,7 @@ public class KeyboardInput : MonoBehaviour
         buttonAssignment = InputManager.defaultInputCodes.Zip(InputManager.defaultInputKeys, (k, v) => new { Key = k, Value = v })
             .ToDictionary(pair => pair.Key, pair => pair.Value);
 
+        UpdateButtonStateDictionary();
         UpdateEventDictionaries();
     }
 
@@ -29,7 +30,8 @@ public class KeyboardInput : MonoBehaviour
         foreach (KeyValuePair<string, KeyCode> button in buttonAssignment)
         {
             bool previousState = buttonStates[button.Value];
-            buttonStates[button.Value] = Input.GetKey(button.Key);
+
+            buttonStates[button.Value] = Input.GetKey(button.Value);
 
             if (buttonStates[button.Value] && !previousState)
             {
@@ -59,7 +61,7 @@ public class KeyboardInput : MonoBehaviour
         buttonStates = new Dictionary<KeyCode, bool>();
 
         foreach (KeyValuePair<string, KeyCode> button in buttonAssignment){
-            buttonStates.Add(button.Value, Input.GetKey(button.Key));
+            buttonStates.Add(button.Value, false);
         }
     }
 

@@ -7,23 +7,31 @@ public class PlayerMovement : CharacterMover
 {
     [Header ("Current Movement")]
     private Dictionary<MoveDirection, bool> moveStatus;
-    private Vector3 adjustedMovementVector;
-    private Vector3 movementVector;
+    [SerializeField] private Vector3 adjustedMovementVector;
+    [SerializeField] private Vector3 movementVector;
     private float currentSpeed;
     private float speedMultiplier;
     private bool ignoreNextSprintInput;
+    private bool ignoreNextWalkingInput;
 
     [Header ("Movement settings")]
-    [SerializeField] private const float WalkingSpeed = 4f;
-    [SerializeField] private const float RunningSpeed = 10f;
-    [SerializeField] private const float SprintingSpeed = 16f;
-    [SerializeField] private const float CrouchingSpeedMultiplier = .4f;
-    [SerializeField] private const float DefaultSpeedMultiplier = 1f;
+    private readonly List<float> MovementSpeed = new List<float>(){ 4f, 10f, 16f };
+    private const float CrouchingSpeedMultiplier = .4f;
+    private const float DefaultSpeedMultiplier = 1f;
 
 
-    private void Awake ()
+    private void Start ()
     {
-        currentSpeed = RunningSpeed;
+        moveStatus = new Dictionary<MoveDirection, bool>(4)
+        {
+            { MoveDirection.Forwards, false },
+            { MoveDirection.Backwards, false },
+            { MoveDirection.Left, false },
+            { MoveDirection.Right, false }
+        };
+
+        currentSpeed = MovementSpeed[(int)MovementType.Run];
+        speedMultiplier = DefaultSpeedMultiplier;
 
         KeyboardInput input = InputManager.GetKeyboardHandle();
 
@@ -42,11 +50,21 @@ public class PlayerMovement : CharacterMover
         // Right Movement
         input.onButtonDown["Move Right"] += ChangeRightMovementState;
         input.onButtonUp["Move Right"] += ChangeRightMovementState;
+
+        // Sprinting
+        input.onButtonDown["Sprint"] += ChangeSprintingState;
+        input.onButtonUp["Sprint"] += ChangeSprintingState;
+
+        // Walking
+        input.onButtonDown["Walk"] += ChangeWalkingState;
+        input.onButtonUp["Walk"] += ChangeWalkingState;
     }
     
     private void Update()
     {
+        adjustedMovementVector = movementVector.normalized * currentSpeed * speedMultiplier;
         
+        Move(adjustedMovementVector);
     }
 
     private void UpdateHorizontalMovement ()
@@ -58,7 +76,7 @@ public class PlayerMovement : CharacterMover
 
     private void ChangeForwardMovementState ()
     {
-        Vector3 directionalMovement = new Vector3(0f, 0f, 1f) * currentSpeed;
+        Vector3 directionalMovement = new Vector3(0f, 0f, 1f);
         if (moveStatus[MoveDirection.Forwards]) 
         {
             movementVector -= directionalMovement;
@@ -73,7 +91,7 @@ public class PlayerMovement : CharacterMover
 
     private void ChangeBackwardsMovementState ()
     {
-        Vector3 directionalMovement = new Vector3(0f, 0f, -1f) * currentSpeed;
+        Vector3 directionalMovement = new Vector3(0f, 0f, -1f);
         if (moveStatus[MoveDirection.Backwards]) 
         {
             movementVector -= directionalMovement;
@@ -88,7 +106,7 @@ public class PlayerMovement : CharacterMover
 
     private void ChangeLeftMovementState ()
     {
-        Vector3 directionalMovement = new Vector3(-1f, 0f, 0f) * currentSpeed;
+        Vector3 directionalMovement = new Vector3(-1f, 0f, 0f);
         if (moveStatus[MoveDirection.Left]) 
         {
             movementVector -= directionalMovement;
@@ -103,7 +121,7 @@ public class PlayerMovement : CharacterMover
 
     private void ChangeRightMovementState ()
     {
-        Vector3 directionalMovement = new Vector3(1f, 0f, 0f) * currentSpeed;
+        Vector3 directionalMovement = new Vector3(1f, 0f, 0f);
         if (moveStatus[MoveDirection.Right]) 
         {
             movementVector -= directionalMovement;
@@ -118,45 +136,81 @@ public class PlayerMovement : CharacterMover
 
     #endregion
 
-    private void ChangeCrouchStatus ()
+    #region Movement Type 
+
+    public void ChangeCrouchState ()
     {
         IsCrouching = !IsCrouching;
-        if (IsCrouching)
-        {
-            speedMultiplier = CrouchingSpeedMultiplier;
-        }
-        else
-        {
-            speedMultiplier = DefaultSpeedMultiplier;
-        }
+
+        speedMultiplier = IsCrouching ? CrouchingSpeedMultiplier : DefaultSpeedMultiplier;
+        
         Crouch();
     }
 
-    private void ChangeSprintStatus ()
+    public void ChangeWalkingState ()
     {
-        IsSprinting = !IsSprinting;
+        if (ignoreNextWalkingInput)
+        {
+            ignoreNextWalkingInput = false;
+            return;
+        }
+
         if (IsSprinting)
         {
-            currentSpeed = SprintingSpeed;
+            ignoreNextWalkingInput = true;
+            return;
         }
-        else
-        {
-            currentSpeed = RunningSpeed;
-        }
-        Sprint();
-    }
 
-    private void ChangeWalkStatus ()
-    {
         IsWalking = !IsWalking;
+
         if (IsWalking)
         {
-            currentSpeed = WalkingSpeed;
+            currentSpeed = MovementSpeed[(int)MovementType.Walk];
+            Walk();
         }
-        else
+        else 
         {
-            currentSpeed = RunningSpeed;
+            ChangeRuningState();
         }
-        Walk();
+    }
+
+    public void ChangeRuningState ()
+    {
+        currentSpeed = MovementSpeed[(int)MovementType.Run];
+        Run();
+    }
+
+    public void ChangeSprintingState ()
+    {
+        if (ignoreNextSprintInput)
+        {
+            ignoreNextSprintInput = false;
+            return;
+        }
+
+        if (IsCrouching)
+        {
+            ignoreNextSprintInput = true;
+            return;
+        }
+
+        IsSprinting = !IsSprinting;
+
+        if (IsSprinting)
+        {
+            currentSpeed = MovementSpeed[(int)MovementType.Sprint];
+            Sprint();
+        }
+        else 
+        {
+            ChangeRuningState();
+        }
+    }
+
+    #endregion
+
+    private void ApplyGravity ()
+    {
+
     }
 }
