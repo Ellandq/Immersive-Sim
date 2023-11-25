@@ -503,7 +503,6 @@ GameObject:
   - component: {fileID: 1407862069}
   - component: {fileID: 1407862068}
   - component: {fileID: 1407862067}
-  - component: {fileID: 1407862066}
   m_Layer: 0
   m_Name: InputManager
   m_TagString: Untagged
@@ -511,18 +510,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1407862066
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1407862065}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1cde4264a841e644d9235714831c650c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1407862067
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -547,8 +534,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e160a3acbee679345ae2f6b7d1bc7f2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  keyboardInputHandle: {fileID: 1407862067}
-  mouseInputHandle: {fileID: 1407862066}
+  inputHandle: {fileID: 1407862067}
+  mouseInputHandle: {fileID: 0}
 --- !u!4 &1407862069
 Transform:
   m_ObjectHideFlags: 0

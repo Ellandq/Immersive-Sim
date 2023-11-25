@@ -1,10 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class KeyboardInput : MonoBehaviour
+public class PlayerInput : MonoBehaviour
 {
     [Header ("Events")]
     public Dictionary<string, Action> onButtonDown;

@@ -7,7 +7,7 @@ public class InputManager : MonoBehaviour
     public static InputManager Instance;
 
     [Header ("Input Handles")]
-    [SerializeField] private KeyboardInput keyboardInputHandle;
+    [SerializeField] private PlayerInput inputHandle;
     [SerializeField] private MouseInput mouseInputHandle;
 
     public void Awake () 
@@ -20,20 +20,13 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    public static KeyboardInput GetKeyboardHandle (){
-        return Instance.GetKeyboardInputHandle();
+    public static PlayerInput GetInputHandle (){
+        return Instance.inputHandle;
     }
 
-    private KeyboardInput GetKeyboardInputHandle (){
-        return keyboardInputHandle;
-    }
 
     public static MouseInput GetMouseHandle (){
-        return Instance.GetMouseInputHandle();
-    }
-
-    private MouseInput GetMouseInputHandle (){
-        return mouseInputHandle;
+        return Instance.mouseInputHandle;
     }
 
     public static List<string> defaultInputCodes = new List<string>(){

@@ -36,7 +36,7 @@ public class PlayerMovement : CharacterMover
         currentSpeed = MovementSpeed[(int)MovementType.Run];
         speedMultiplier = DefaultSpeedMultiplier;
 
-        KeyboardInput input = InputManager.GetKeyboardHandle();
+        PlayerInput input = InputManager.GetInputHandle();
 
         // Forwards Movement
         input.onButtonDown["Move Forwards"] += ChangeForwardMovementState;

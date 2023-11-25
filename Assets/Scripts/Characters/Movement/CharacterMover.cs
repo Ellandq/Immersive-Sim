@@ -52,6 +52,8 @@ public class CharacterMover : MonoBehaviour
     public void Run ()
     {
         // TODO
+        if (isSprinting) isSprinting = false;
+        if (isWalking) isWalking = false;
     }
 
     public void Sprint ()
