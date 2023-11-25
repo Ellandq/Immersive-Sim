@@ -18,6 +18,7 @@ public class PlayerMovement : CharacterMover
     private readonly List<float> MovementSpeed = new List<float>(){ 4f, 10f, 16f };
     private const float CrouchingSpeedMultiplier = .4f;
     private const float DefaultSpeedMultiplier = 1f;
+    private const float JumpHeight = 1.2f;
 
 
     private void Start ()
@@ -58,11 +59,21 @@ public class PlayerMovement : CharacterMover
         // Walking
         input.onButtonDown["Walk"] += ChangeWalkingState;
         input.onButtonUp["Walk"] += ChangeWalkingState;
+
+        // Crouching
+        input.onButtonDown["Crouch"] += ChangeCrouchingState;
+        input.onButtonUp["Crouch"] += ChangeCrouchingState;
+
+        // Jumping
+        input.onButtonDown["Jump"] += Jump;
+        input.onButtonUp["Jump"] += Jump;
     }
     
     private void Update()
     {
         adjustedMovementVector = movementVector.normalized * currentSpeed * speedMultiplier;
+
+        ApplyGravity();
         
         Move(adjustedMovementVector);
     }
@@ -73,6 +84,11 @@ public class PlayerMovement : CharacterMover
     }
 
     #region Movement
+
+    private void Jump ()
+    {
+        adjustedMovementVector.y = Mathf.Sqrt(Physics.gravity.y * 2 * JumpHeight);
+    }
 
     private void ChangeForwardMovementState ()
     {
@@ -138,7 +154,7 @@ public class PlayerMovement : CharacterMover
 
     #region Movement Type 
 
-    public void ChangeCrouchState ()
+    public void ChangeCrouchingState ()
     {
         IsCrouching = !IsCrouching;
 
@@ -211,6 +227,13 @@ public class PlayerMovement : CharacterMover
 
     private void ApplyGravity ()
     {
-
+        if (IsGrounded)
+        {
+            adjustedMovementVector.y = -2f;
+        }
+        else
+        {
+            adjustedMovementVector.y = Physics.gravity.y * Time.deltaTime;
+        }
     }
 }

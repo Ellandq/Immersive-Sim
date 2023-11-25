@@ -605,8 +605,9 @@ GameObject:
   - component: {fileID: 1687258584}
   - component: {fileID: 1687258582}
   - component: {fileID: 1687258586}
+  - component: {fileID: 1687258583}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: FirstPersonCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -620,6 +621,23 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1687258581}
   m_Enabled: 1
+--- !u!114 &1687258583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687258581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4275617cf5687b346bbca9323e2c4994, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  firstPersonCamera: {fileID: 1687258584}
+  thirdPersonCamera: {fileID: 0}
+  cutsceneCamera: {fileID: 0}
+  playerBody: {fileID: 1722877631}
+  activeCamera: 0
 --- !u!20 &1687258584
 Camera:
   m_ObjectHideFlags: 0
@@ -775,6 +793,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2100c9c4e3730cc4a8597333fbffa0a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  adjustedMovementVector: {x: 0, y: 0, z: 0}
+  movementVector: {x: 0, y: 0, z: 0}
 --- !u!1 &2138677391
 GameObject:
   m_ObjectHideFlags: 0

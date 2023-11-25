@@ -9,6 +9,10 @@ public class CharacterMover : MonoBehaviour
     private LayerMask groundMask;
     private MovementType movementType;
 
+    private const float startingHorizontalScale = 1f;
+    private const float crouchingHorizontalScale = 0.4f;
+
+    private bool isMovementEnabled;
     private bool isCrouching;
     private bool isWalking;
     private bool isSprinting;
@@ -16,6 +20,7 @@ public class CharacterMover : MonoBehaviour
 
     private void Awake ()
     {
+        isMovementEnabled = true;
         controller = GetComponent<CharacterController>();
         groundCheck = transform.GetChild(0).GetComponent<Transform>();
         groundMask = (1 << LayerMask.NameToLayer("Ground")) | (1 << LayerMask.NameToLayer("Prop"));
@@ -23,11 +28,23 @@ public class CharacterMover : MonoBehaviour
 
     public void Move (Vector3 moveVector)
     {
+        if (!isMovementEnabled) return;
+        moveVector = Quaternion.Euler(0, transform.eulerAngles.y, 0) * moveVector;
         controller.Move(moveVector * Time.deltaTime);
     }
 
     public void Crouch (){
         // TODO
+        if (isCrouching)
+        {
+            Vector3 scale = new Vector3(0f, crouchingHorizontalScale, 0f);
+            transform.localScale = scale;
+        }
+        else
+        {
+            Vector3 scale = new Vector3(0f, startingHorizontalScale, 0f);
+            transform.localScale = scale;
+        }
     }
     
     public void Walk (){
@@ -49,6 +66,11 @@ public class CharacterMover : MonoBehaviour
 
     public MovementType Movement {
         get { return movementType; }
+    }
+
+    public bool IsMovementEnabled {
+        get { return isMovementEnabled; }
+        set { isMovementEnabled = value; }
     }
 
     public bool IsGrounded {
