@@ -9,8 +9,11 @@ public class CharacterMover : MonoBehaviour
     private LayerMask groundMask;
     private MovementType movementType;
 
-    private const float startingHorizontalScale = 1f;
-    private const float crouchingHorizontalScale = 0.4f;
+    private Coroutine coroutine;
+
+    private const float StartingHorizontalScale = 1f;
+    private const float CrouchingHorizontalScale = 0.6f;
+    private const float StateChangeSpeed = 12f;
 
     private bool isMovementEnabled;
     private bool isCrouching;
@@ -33,33 +36,31 @@ public class CharacterMover : MonoBehaviour
         controller.Move(moveVector * Time.deltaTime);
     }
 
-    public void Crouch (){
-        // TODO
-        if (isCrouching)
-        {
-            Vector3 scale = new Vector3(0f, crouchingHorizontalScale, 0f);
-            transform.localScale = scale;
+    public void Crouch ()
+    {
+        if (coroutine != null){
+            StopCoroutine(coroutine);
         }
-        else
-        {
-            Vector3 scale = new Vector3(0f, startingHorizontalScale, 0f);
-            transform.localScale = scale;
-        }
+        coroutine = StartCoroutine(ChangeCrouchingState());
     }
     
-    public void Walk (){
+    public void Walk ()
+    {
         // TODO
     }
 
-    public void Run (){
+    public void Run ()
+    {
         // TODO
     }
 
-    public void Sprint (){
+    public void Sprint ()
+    {
         // TODO
     }
 
-    public void ChangeMovementType (MovementType movementType){
+    public void ChangeMovementType (MovementType movementType)
+    {
         // TODO
         this.movementType = movementType;
     }
@@ -74,7 +75,7 @@ public class CharacterMover : MonoBehaviour
     }
 
     public bool IsGrounded {
-        get { return controller.isGrounded || Physics.CheckSphere(groundCheck.position, 1f, groundMask); }
+        get { return controller.isGrounded || Physics.CheckSphere(groundCheck.position, .4f, groundMask); }
     }
 
     public bool IsCrouching {
@@ -91,6 +92,53 @@ public class CharacterMover : MonoBehaviour
         get { return isWalking; }
         set { isWalking = value; }
     }
+
+    #region Coroutines
+
+    private IEnumerator ChangeCrouchingState () 
+    {
+        Vector3 currentScale = transform.localScale;
+        if (isCrouching)
+        {
+            while (CrouchingHorizontalScale != currentScale.y)
+            {
+
+                if (CrouchingHorizontalScale >= currentScale.y - .05f)
+                {
+                    currentScale.y = CrouchingHorizontalScale;
+                    transform.localScale = currentScale;
+                }
+                else
+                {
+                    currentScale.y = Mathf.Lerp(currentScale.y, CrouchingHorizontalScale, Time.deltaTime * StateChangeSpeed);
+                    transform.localScale = currentScale;
+                }
+
+                yield return null;
+            }
+        }
+        else 
+        {
+            while (StartingHorizontalScale != currentScale.y)
+            {
+                if (StartingHorizontalScale <= currentScale.y - .05f)
+                {
+                    currentScale.y = StartingHorizontalScale;
+                    transform.localScale = currentScale;
+                }
+                else
+                {
+                    currentScale.y = Mathf.Lerp(currentScale.y, StartingHorizontalScale, Time.deltaTime * StateChangeSpeed);
+                    transform.localScale = currentScale;
+                }
+
+                yield return null;
+            }
+        }
+        coroutine = null;
+    }
+
+    #endregion
 }
 
 public enum MoveDirection{

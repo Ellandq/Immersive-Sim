@@ -13,12 +13,14 @@ public class PlayerMovement : CharacterMover
     private float speedMultiplier;
     private bool ignoreNextSprintInput;
     private bool ignoreNextWalkingInput;
+    private bool ignoreNextJumpInput;
 
     [Header ("Movement settings")]
     private readonly List<float> MovementSpeed = new List<float>(){ 4f, 10f, 16f };
     private const float CrouchingSpeedMultiplier = .4f;
     private const float DefaultSpeedMultiplier = 1f;
-    private const float JumpHeight = 1.2f;
+    private const float JumpHeight = 1.8f;
+    private const float GravityMultiplier = 4f;
 
 
     private void Start ()
@@ -71,23 +73,40 @@ public class PlayerMovement : CharacterMover
     
     private void Update()
     {
-        adjustedMovementVector = movementVector.normalized * currentSpeed * speedMultiplier;
+        Vector3 horizontalMovement = movementVector.normalized * currentSpeed * speedMultiplier;
+        adjustedMovementVector.x = horizontalMovement.x;
+        adjustedMovementVector.z = horizontalMovement.z;
 
         ApplyGravity();
         
         Move(adjustedMovementVector);
     }
 
-    private void UpdateHorizontalMovement ()
-    {
-        
-    }
-
     #region Movement
 
     private void Jump ()
     {
-        adjustedMovementVector.y = Mathf.Sqrt(Physics.gravity.y * 2 * JumpHeight);
+        if (ignoreNextJumpInput){
+            ignoreNextJumpInput = false;
+            return;
+        }
+        ignoreNextJumpInput = true;
+        if (IsGrounded){
+            adjustedMovementVector.y = Mathf.Sqrt(Physics.gravity.y * GravityMultiplier * -2f * JumpHeight);
+        }
+        
+    }
+
+    private void ApplyGravity ()
+    {
+        if (IsGrounded && adjustedMovementVector.y < 0f)
+        {
+            adjustedMovementVector.y = -2f;
+        }
+        else
+        {
+            adjustedMovementVector.y += Physics.gravity.y * GravityMultiplier * Time.deltaTime;
+        }
     }
 
     private void ChangeForwardMovementState ()
@@ -159,6 +178,12 @@ public class PlayerMovement : CharacterMover
         IsCrouching = !IsCrouching;
 
         speedMultiplier = IsCrouching ? CrouchingSpeedMultiplier : DefaultSpeedMultiplier;
+
+        if (IsCrouching && IsSprinting)
+        {
+            ignoreNextSprintInput = true;
+            ChangeRunningState();
+        }
         
         Crouch();
     }
@@ -186,11 +211,11 @@ public class PlayerMovement : CharacterMover
         }
         else 
         {
-            ChangeRuningState();
+            ChangeRunningState();
         }
     }
 
-    public void ChangeRuningState ()
+    public void ChangeRunningState ()
     {
         currentSpeed = MovementSpeed[(int)MovementType.Run];
         Run();
@@ -219,21 +244,9 @@ public class PlayerMovement : CharacterMover
         }
         else 
         {
-            ChangeRuningState();
+            ChangeRunningState();
         }
     }
 
     #endregion
-
-    private void ApplyGravity ()
-    {
-        if (IsGrounded)
-        {
-            adjustedMovementVector.y = -2f;
-        }
-        else
-        {
-            adjustedMovementVector.y = Physics.gravity.y * Time.deltaTime;
-        }
-    }
 }
