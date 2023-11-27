@@ -6,11 +6,14 @@ public class CharacterMover : MonoBehaviour
 {
     private CharacterController controller;
     private Transform groundCheck;
+
+    [Header ("Object Information")]
     private LayerMask groundMask;
     private MovementType movementType;
 
     private Coroutine coroutine;
 
+    [Header ("")]
     private const float StartingHorizontalScale = 1f;
     private const float CrouchingHorizontalScale = 0.6f;
     private const float StateChangeSpeed = 12f;
@@ -107,7 +110,7 @@ public class CharacterMover : MonoBehaviour
 
                 if (CrouchingHorizontalScale >= currentScale.y - .05f)
                 {
-                    currentScale.y = CrouchingHorizontalScale;
+                    currentScale.y = Mathf.MoveTowards(currentScale.y, CrouchingHorizontalScale, Time.deltaTime * StateChangeSpeed);
                     transform.localScale = currentScale;
                 }
                 else
@@ -125,7 +128,7 @@ public class CharacterMover : MonoBehaviour
             {
                 if (StartingHorizontalScale <= currentScale.y - .05f)
                 {
-                    currentScale.y = StartingHorizontalScale;
+                    currentScale.y = Mathf.MoveTowards(currentScale.y, StartingHorizontalScale, Time.deltaTime * StateChangeSpeed);
                     transform.localScale = currentScale;
                 }
                 else

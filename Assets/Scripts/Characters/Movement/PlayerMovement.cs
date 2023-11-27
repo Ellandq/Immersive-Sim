@@ -7,8 +7,8 @@ public class PlayerMovement : CharacterMover
 {
     [Header ("Current Movement")]
     private Dictionary<MoveDirection, bool> moveStatus;
-    [SerializeField] private Vector3 adjustedMovementVector;
-    [SerializeField] private Vector3 movementVector;
+    private Vector3 adjustedMovementVector;
+    private Vector3 movementVector;
     private float currentSpeed;
     private float speedMultiplier;
     private bool ignoreNextSprintInput;
