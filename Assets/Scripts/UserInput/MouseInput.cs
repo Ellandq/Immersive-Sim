@@ -10,10 +10,19 @@ public class MouseInput : MonoBehaviour
     [Header ("Events")]
     public Dictionary<string, Action> onButtonDown;
     public Dictionary<string, Action> onButtonUp;
+    public Action<GameObject> onSelectedObjectChange;
 
     [Header ("Key Information")]
     private Dictionary<string, int> buttonAssignment;
     private Dictionary<int, bool> buttonStates;
+
+    [Header ("Raycast Settings")]
+    private Camera playerCamera;
+    [SerializeField] private float range;
+    [SerializeField] private LayerMask layerMask;
+
+    [Header ("Object Selection")]
+    [SerializeField] private GameObject selectedObject;
 
     private void Awake ()
     {
@@ -24,6 +33,11 @@ public class MouseInput : MonoBehaviour
 
         UpdateButtonStateDictionary();
         UpdateEventDictionaries();
+    }
+
+    private void Start ()
+    {
+        playerCamera = PlayerCamera.GetCurrentCamera();
     }
 
     private void Update ()
@@ -43,7 +57,36 @@ public class MouseInput : MonoBehaviour
                 onButtonUp[button.Key]?.Invoke();
             }
         }
+
+        CheckForObjects();
     } 
+
+    private void CheckForObjects ()
+    {
+        Ray ray = playerCamera.ScreenPointToRay(playerCamera.pixelRect.center);
+
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, range, layerMask))
+        {
+            GameObject obj = hit.collider.gameObject;
+
+            if (obj == selectedObject) return;
+            
+            selectedObject = obj;
+
+            onSelectedObjectChange?.Invoke(selectedObject);
+        }
+        else if (selectedObject != null)
+        {
+            selectedObject = null;
+        }
+    }
+
+    private void UpdateCamera (Camera camera)
+    {
+        playerCamera = camera;
+    }
 
     public void AssignButtons (string buttonName, int buttonKey)
     {
@@ -77,13 +120,7 @@ public class MouseInput : MonoBehaviour
         }
     }
 
-    public Action GetOnButtonDownEvent (string input){
-        return onButtonDown[input];
-    }
-
-    public Action GetOnButtonUpEvent (string input){
-        return onButtonUp[input];
-    }
+    public GameObject GetSelectedObject () { return selectedObject; }
 
     public bool GetButtonState (int key){
         return buttonStates[key];

@@ -75,14 +75,6 @@ public class PlayerInput : MonoBehaviour
         }
     }
 
-    public Action GetOnButtonDownEvent (string input){
-        return onButtonDown[input];
-    }
-
-    public Action GetOnButtonUpEvent (string input){
-        return onButtonUp[input];
-    }
-
     public bool GetButtonState (KeyCode key){
         return buttonStates[key];
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -5,7 +6,12 @@ using UnityEngine;
 
 public class PlayerCamera : MonoBehaviour
 {
+    public static PlayerCamera Instance;
+
+    public Action<Camera> onCameraChange;
+
     [Header ("Camera References")]
+    private Dictionary<ActiveCamera, Camera> cameras;
     [SerializeField] private Camera firstPersonCamera;
     [SerializeField] private Camera thirdPersonCamera;
     [SerializeField] private Camera cutsceneCamera;
@@ -15,15 +21,23 @@ public class PlayerCamera : MonoBehaviour
 
     [Header ("Camera Information")]
     [SerializeField] private ActiveCamera activeCamera;
-    private float firstPersonCameraSensitivity = 500f;
-    private float thirdPersonCameraSensitivity = 80f;
+    [SerializeField] private float firstPersonCameraSensitivity = 500f;
+    [SerializeField] private float thirdPersonCameraSensitivity = 80f;
     private float xRotation = 0f;
     private bool cameraMovementEnabled = false;
 
-    private void Start ()
+    private void Awake ()
     {
+        Instance = this;
         cameraMovementEnabled = true;
         Cursor.lockState = CursorLockMode.Locked;
+
+        cameras = new Dictionary<ActiveCamera, Camera>
+        {
+            { ActiveCamera.FirstPerson, firstPersonCamera },
+            { ActiveCamera.ThirdPerson, thirdPersonCamera },
+            { ActiveCamera.Cutscene, cutsceneCamera }   
+        };
     }
 
     private void Update ()
@@ -64,29 +78,15 @@ public class PlayerCamera : MonoBehaviour
     public void SwitchCamera (ActiveCamera activeCamera)
     {
         this.activeCamera = activeCamera;
-        switch (activeCamera)
+        foreach (ActiveCamera cam in Enum.GetValues(typeof(ActiveCamera)))
         {
-            case ActiveCamera.FirstPerson:
-                firstPersonCamera.enabled = true;
-                thirdPersonCamera.enabled = false;
-                cutsceneCamera.enabled = false;
-            break;
-
-            case ActiveCamera.ThirdPerson:
-                firstPersonCamera.enabled = false;
-                thirdPersonCamera.enabled = true;
-                cutsceneCamera.enabled = false;
-            break;
-
-            case ActiveCamera.Cutscene:
-                firstPersonCamera.enabled = false;
-                thirdPersonCamera.enabled = false;
-                cutsceneCamera.enabled = true;
-            break;
+            if (activeCamera == cam) cameras[cam].enabled = true;
+            else cameras[cam].enabled = false;
         }
+        onCameraChange?.Invoke(cameras[activeCamera]);
     }
 
-    
+    public static Camera GetCurrentCamera () { return Instance.cameras[Instance.activeCamera]; }
 }
 
 public enum ActiveCamera {

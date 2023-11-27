@@ -25,6 +25,11 @@ public class Inventory : MonoBehaviour
         items[item.GetItemType()].AddItem(item);
     }
 
+    public void AddItems (List<Item> items)
+    {
+        foreach (Item item in items) AddItem(item);
+    }
+
     public bool RemoveItem (Item item)
     {
         try {
