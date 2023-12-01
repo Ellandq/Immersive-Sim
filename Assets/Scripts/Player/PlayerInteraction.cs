@@ -23,7 +23,7 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (selectedObject == null) return;
 
-        ItemHolder itemHolder = selectedObject.GetComponent<ItemHolder>();
+        ItemHolder itemHolder = selectedObject.GetComponentInParent<ItemHolder>();
 
         if (itemHolder == null) return;
 
@@ -31,7 +31,7 @@ public class PlayerInteraction : MonoBehaviour
 
         inv.AddItems(itemHolder.GetItems());
 
-        Destroy(selectedObject);
+        Destroy(itemHolder.gameObject);
     }
 
     public void UpdateSelectedObject (GameObject obj) { selectedObject = obj; }

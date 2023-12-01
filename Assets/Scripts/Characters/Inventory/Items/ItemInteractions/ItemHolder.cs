@@ -1,6 +1,6 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 
 public class ItemHolder : MonoBehaviour
@@ -9,10 +9,12 @@ public class ItemHolder : MonoBehaviour
     [SerializeField] private List<ItemObject> itemObjects;
     [SerializeField] private List<int> itemCounts;
 
-    private void Start ()
+    [SerializeField] private int previousItemObjectsCount;
+
+    private void Start()
     {
         items = new List<Item>();
-        
+
         int index = 0;
         foreach (ItemObject obj in itemObjects)
         {
@@ -22,5 +24,35 @@ public class ItemHolder : MonoBehaviour
         }
     }
 
-    public List<Item> GetItems () { return items; }
+    public List<Item> GetItems() { return items; }
+
+    private void OnDestroy() { InputManager.GetMouseHandle().CheckForObjectRemoval(gameObject); }
+
+    #if UNITY_EDITOR
+        private void OnValidate()
+        {
+            try {
+                if (previousItemObjectsCount != itemObjects.Count)
+                {
+                    UpdateModel();
+
+                    previousItemObjectsCount = itemObjects.Count;
+                }
+            }catch (Exception e){}
+        }
+
+        private void UpdateModel()
+        {
+            if (itemObjects.Count == 1)
+            {
+                GameObject obj = Instantiate(itemObjects[0].Prefab, transform);
+
+                foreach (MeshCollider col in obj.GetComponentsInChildren<MeshCollider>())
+                {
+                    col.convex = true;
+                    col.gameObject.layer = LayerMask.NameToLayer("Prop");
+                }
+            }
+        }
+    #endif
 }

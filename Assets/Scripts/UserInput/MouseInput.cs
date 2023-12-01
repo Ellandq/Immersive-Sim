@@ -69,7 +69,7 @@ public class MouseInput : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, range, layerMask))
         {
-            GameObject obj = hit.collider.gameObject;
+            GameObject obj = hit.collider.gameObject.GetComponentInParent<ItemHolder>().gameObject;
 
             if (obj == selectedObject) return;
             
@@ -80,7 +80,16 @@ public class MouseInput : MonoBehaviour
         else if (selectedObject != null)
         {
             selectedObject = null;
+            onSelectedObjectChange?.Invoke(selectedObject);
         }
+    }
+
+    public void CheckForObjectRemoval (GameObject obj)
+    {
+        if (obj != selectedObject) return;
+        
+        selectedObject = null;
+        onSelectedObjectChange?.Invoke(selectedObject);
     }
 
     private void UpdateCamera (Camera camera)

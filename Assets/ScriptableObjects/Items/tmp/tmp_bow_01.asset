@@ -17,6 +17,7 @@ MonoBehaviour:
   collection: tmp
   itemType: 1
   itemDescription: 
+  goldValue: 0
   isStackable: 0
   itemIcon: {fileID: 0}
-  itemPrefab: {fileID: 0}
+  itemPrefab: {fileID: 919132149155446097, guid: 22f1403e9e36eeb4193207f4f947f7cc, type: 3}
