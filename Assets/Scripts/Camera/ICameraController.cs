@@ -4,5 +4,9 @@ using UnityEngine;
 
 public interface ICameraController
 {
+    bool Enabled { get; set; }
+
+    void Move();
     
+    Camera GetCamera();
 }

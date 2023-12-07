@@ -21,7 +21,7 @@ public class Reticle : MonoBehaviour
     private void Start ()
     {
         hoveringOutwards = true;
-        InputManager.GetMouseHandle().onSelectedObjectChange += ChangeHoveringState;
+        InputManager.GetMouseHandle().OnSelectedObjectChange += ChangeHoveringState;
     }
 
     public void ChangeHoveringState (GameObject obj)
@@ -77,7 +77,9 @@ public class Reticle : MonoBehaviour
 
             foreach (RectTransform rectT in reticleParts)
             {
-                rectT.localPosition = rectT.localPosition.normalized * startingDistance + t * rectT.localPosition.normalized;
+                var localPosition = rectT.localPosition;
+                localPosition = localPosition.normalized * startingDistance + t * localPosition.normalized;
+                rectT.localPosition = localPosition;
             }
 
             yield return null;
@@ -90,11 +92,13 @@ public class Reticle : MonoBehaviour
         {
             foreach (RectTransform rectT in reticleParts)
             {
-                Vector3 startingPos = rectT.localPosition.normalized * 50f;
+                var localPosition = rectT.localPosition;
+                Vector3 startingPos = localPosition.normalized * 50f;
 
                 float t = Mathf.SmoothStep(0f, 1f, Time.time * hoverSpeed * 10f);
 
-                rectT.localPosition = Vector3.Lerp(rectT.localPosition, startingPos, t * Time.deltaTime);
+                localPosition = Vector3.Lerp(localPosition, startingPos, t * Time.deltaTime);
+                rectT.localPosition = localPosition;
             }
 
             yield return null;

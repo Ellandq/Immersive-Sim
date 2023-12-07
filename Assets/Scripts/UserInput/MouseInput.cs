@@ -8,9 +8,9 @@ using UnityEngine;
 public class MouseInput : MonoBehaviour
 {
     [Header ("Events")]
-    public Dictionary<string, Action> onButtonDown;
-    public Dictionary<string, Action> onButtonUp;
-    public Action<GameObject> onSelectedObjectChange;
+    public Dictionary<string, Action> OnButtonDown;
+    public Dictionary<string, Action> OnButtonUp;
+    public Action<GameObject> OnSelectedObjectChange;
 
     [Header ("Key Information")]
     private Dictionary<string, int> buttonAssignment;
@@ -37,7 +37,7 @@ public class MouseInput : MonoBehaviour
 
     private void Start ()
     {
-        playerCamera = PlayerCamera.GetCurrentCamera();
+        playerCamera = CameraManager.GetCurrentCamera();
     }
 
     private void Update ()
@@ -50,11 +50,11 @@ public class MouseInput : MonoBehaviour
 
             if (buttonStates[button.Value] && !previousState)
             {
-                onButtonDown[button.Key]?.Invoke();
+                OnButtonDown[button.Key]?.Invoke();
             }
             else if (!buttonStates[button.Value] && previousState) 
             {
-                onButtonUp[button.Key]?.Invoke();
+                OnButtonUp[button.Key]?.Invoke();
             }
         }
 
@@ -75,12 +75,12 @@ public class MouseInput : MonoBehaviour
             
             selectedObject = obj;
 
-            onSelectedObjectChange?.Invoke(selectedObject);
+            OnSelectedObjectChange?.Invoke(selectedObject);
         }
         else if (selectedObject != null)
         {
             selectedObject = null;
-            onSelectedObjectChange?.Invoke(selectedObject);
+            OnSelectedObjectChange?.Invoke(selectedObject);
         }
     }
 
@@ -89,7 +89,7 @@ public class MouseInput : MonoBehaviour
         if (obj != selectedObject) return;
         
         selectedObject = null;
-        onSelectedObjectChange?.Invoke(selectedObject);
+        OnSelectedObjectChange?.Invoke(selectedObject);
     }
 
     private void UpdateCamera (Camera camera)
@@ -120,12 +120,12 @@ public class MouseInput : MonoBehaviour
 
     private void UpdateEventDictionaries () 
     {
-        onButtonDown = new Dictionary<string, Action>();
-        onButtonUp = new Dictionary<string, Action>();
+        OnButtonDown = new Dictionary<string, Action>();
+        OnButtonUp = new Dictionary<string, Action>();
 
-        foreach (string action in InputManager.defaultMouseInput){
-            onButtonDown.Add(action, () => {});
-            onButtonUp.Add(action, () => {});
+        foreach (var action in InputManager.defaultMouseInput){
+            OnButtonDown.Add(action, () => {});
+            OnButtonUp.Add(action, () => {});
         }
     }
 

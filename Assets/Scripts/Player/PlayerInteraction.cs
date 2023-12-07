@@ -16,7 +16,7 @@ public class PlayerInteraction : MonoBehaviour
 
         MouseInput mouseHandle = InputManager.GetMouseHandle();
 
-        mouseHandle.onSelectedObjectChange += UpdateSelectedObject;
+        mouseHandle.OnSelectedObjectChange += UpdateSelectedObject;
     }
 
     public void InteractWithObject ()
