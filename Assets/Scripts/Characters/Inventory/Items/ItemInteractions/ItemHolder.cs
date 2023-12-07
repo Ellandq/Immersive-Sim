@@ -38,7 +38,9 @@ public class ItemHolder : MonoBehaviour
 
                     previousItemObjectsCount = itemObjects.Count;
                 }
-            }catch (Exception e){}
+            }catch (Exception e){
+                Debug.Log(e.Message);
+            }
         }
 
         private void UpdateModel()

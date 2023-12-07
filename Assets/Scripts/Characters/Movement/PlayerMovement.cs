@@ -5,21 +5,23 @@ using UnityEngine;
 
 public class PlayerMovement : CharacterMover
 {
-    [Header ("Current Movement")]
+    [Header ("Movement Information")]
     private Dictionary<MoveDirection, bool> moveStatus;
     private Vector3 adjustedMovementVector;
     private Vector3 movementVector;
+    private Vector3 jumpingHorizontalMovementVector;
     private float currentSpeed;
     private float speedMultiplier;
     private bool ignoreNextSprintInput;
     private bool ignoreNextWalkingInput;
     private bool ignoreNextJumpInput;
 
-    [Header ("Movement settings")]
+    [Header ("Movement settings")] 
     private readonly List<float> MovementSpeed = new List<float>(){ 4f, 10f, 16f };
     private const float CrouchingSpeedMultiplier = .4f;
     private const float DefaultSpeedMultiplier = 1f;
     private const float JumpHeight = 1.8f;
+    private const float JumpMovementReduction = 0.5f;
     private const float GravityMultiplier = 4f;
 
 
@@ -73,9 +75,19 @@ public class PlayerMovement : CharacterMover
     
     private void Update()
     {
-        Vector3 horizontalMovement = movementVector.normalized * currentSpeed * speedMultiplier;
+        Vector3 horizontalMovement = movementVector.normalized * (currentSpeed * speedMultiplier);
+        
+        if (!IsGrounded)
+        {
+            Vector3 jumpingMovementMask = new Vector3(1f, 0f, 1f) - jumpingHorizontalMovementVector.normalized;
+            horizontalMovement *= JumpMovementReduction;
+            horizontalMovement.Scale(jumpingMovementMask);
+            horizontalMovement += jumpingHorizontalMovementVector;
+        }
+        
         adjustedMovementVector.x = horizontalMovement.x;
         adjustedMovementVector.z = horizontalMovement.z;
+        
 
         ApplyGravity();
         
@@ -91,10 +103,13 @@ public class PlayerMovement : CharacterMover
             return;
         }
         ignoreNextJumpInput = true;
-        if (IsGrounded){
+        if (IsGrounded)
+        {
+            jumpingHorizontalMovementVector = adjustedMovementVector;
+            jumpingHorizontalMovementVector.y = 0f;
             adjustedMovementVector.y = Mathf.Sqrt(Physics.gravity.y * GravityMultiplier * -2f * JumpHeight);
+            IsJumping = true;
         }
-        
     }
 
     private void ApplyGravity ()
@@ -102,6 +117,7 @@ public class PlayerMovement : CharacterMover
         if (IsGrounded && adjustedMovementVector.y < 0f)
         {
             adjustedMovementVector.y = -2f;
+            IsJumping = false;
         }
         else
         {

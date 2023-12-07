@@ -7,39 +7,39 @@ public class CharacterMover : MonoBehaviour
     private CharacterController controller;
     private Transform groundCheck;
 
-    [Header ("Object Information")]
+    [Header("Object Information")]
     private LayerMask groundMask;
-    private MovementType movementType;
+    public MovementType Movement { get; set; }
 
     private Coroutine coroutine;
 
-    [Header ("")]
+    [Header("Movement Settings")] 
+    private Quaternion currentMovementAngle;
+
+    [Header("Crouching Settings")]
     private const float StartingHorizontalScale = 1f;
     private const float CrouchingHorizontalScale = 0.6f;
     private const float StateChangeSpeed = 12f;
 
-    private bool isMovementEnabled;
-    private bool isCrouching;
-    private bool isWalking;
-    private bool isSprinting;
-
 
     private void Awake ()
     {
-        isMovementEnabled = true;
+        IsMovementEnabled = true;
         controller = GetComponent<CharacterController>();
         groundCheck = transform.GetChild(0).GetComponent<Transform>();
         groundMask = (1 << LayerMask.NameToLayer("Ground")) | (1 << LayerMask.NameToLayer("Prop"));
     }
 
-    public void Move (Vector3 moveVector)
+    protected void Move (Vector3 moveVector)
     {
-        if (!isMovementEnabled) return;
-        moveVector = Quaternion.Euler(0, transform.eulerAngles.y, 0) * moveVector;
+        if (!IsMovementEnabled) return;
+        if (IsGrounded) UpdateCurrentMovementAngle();
+        moveVector = currentMovementAngle * moveVector;
+            
         controller.Move(moveVector * Time.deltaTime);
     }
 
-    public void Crouch ()
+    protected void Crouch ()
     {
         if (coroutine != null){
             StopCoroutine(coroutine);
@@ -47,63 +47,46 @@ public class CharacterMover : MonoBehaviour
         coroutine = StartCoroutine(ChangeCrouchingState());
     }
     
-    public void Walk ()
+    protected void Walk ()
     {
         // TODO
     }
 
-    public void Run ()
+    protected void Run ()
     {
         // TODO
-        if (isSprinting) isSprinting = false;
-        if (isWalking) isWalking = false;
+        if (IsSprinting) IsSprinting = false;
+        if (IsWalking) IsWalking = false;
     }
 
-    public void Sprint ()
+    protected void Sprint ()
     {
         // TODO
     }
 
-    public void ChangeMovementType (MovementType movementType)
+    private void UpdateCurrentMovementAngle()
     {
-        // TODO
-        this.movementType = movementType;
+        currentMovementAngle = Quaternion.Euler(0, transform.eulerAngles.y, 0);
     }
 
-    public MovementType Movement {
-        get { return movementType; }
-    }
+    protected bool IsGrounded => controller.isGrounded || Physics.CheckSphere(groundCheck.position, .5f, groundMask);
+    
+    protected bool IsJumping { get; set; }
 
-    public bool IsMovementEnabled {
-        get { return isMovementEnabled; }
-        set { isMovementEnabled = value; }
-    }
+    protected bool IsCrouching { get; set; }
 
-    public bool IsGrounded {
-        get { return controller.isGrounded || Physics.CheckSphere(groundCheck.position, .4f, groundMask); }
-    }
+    protected bool IsSprinting { get; set; }
 
-    public bool IsCrouching {
-        get { return isCrouching; }
-        set { isCrouching = value; }
-    }
-
-    public bool IsSprinting {
-        get { return isSprinting; }
-        set { isSprinting = value; }
-    }
-
-    public bool IsWalking {
-        get { return isWalking; }
-        set { isWalking = value; }
-    }
+    protected bool IsWalking { get; set; }
+    
+    public bool IsMovementEnabled { get; set; }
 
     #region Coroutines
 
     private IEnumerator ChangeCrouchingState () 
     {
         Vector3 currentScale = transform.localScale;
-        if (isCrouching)
+        if (IsCrouching)
         {
             while (CrouchingHorizontalScale != currentScale.y)
             {

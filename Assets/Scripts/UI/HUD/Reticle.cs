@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 
 public class Reticle : MonoBehaviour
 {
@@ -49,7 +51,7 @@ public class Reticle : MonoBehaviour
         positionAdjustment = null;
     }
 
-    private bool IsMovingOutwards ()
+    private bool MovingOutwards ()
     {
         Vector3 startPos = reticleParts[0].localPosition.normalized * (startingDistance + allowedOffset);
         Vector3 endPos = reticleParts[0].localPosition.normalized * (startingDistance + hoverDistance - allowedOffset);
@@ -62,7 +64,7 @@ public class Reticle : MonoBehaviour
 
         while (true)
         {
-            hoveringOutwards = IsMovingOutwards();
+            hoveringOutwards = MovingOutwards();
 
             if (hoveringOutwards)
             {
@@ -90,7 +92,7 @@ public class Reticle : MonoBehaviour
             {
                 Vector3 startingPos = rectT.localPosition.normalized * 50f;
 
-                float t = Mathf.SmoothStep(0f, 1f, Time.time * hoverSpeed);
+                float t = Mathf.SmoothStep(0f, 1f, Time.time * hoverSpeed * 10f);
 
                 rectT.localPosition = Vector3.Lerp(rectT.localPosition, startingPos, t * Time.deltaTime);
             }

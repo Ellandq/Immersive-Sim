@@ -19,5 +19,5 @@ MonoBehaviour:
   itemDescription: 
   goldValue: 0
   isStackable: 0
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: 27527256d1b7e4c4288c8e85bea7f095, type: 3}
   itemPrefab: {fileID: 919132149155446097, guid: 22f1403e9e36eeb4193207f4f947f7cc, type: 3}
