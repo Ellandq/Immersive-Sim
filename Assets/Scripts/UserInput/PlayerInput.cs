@@ -6,8 +6,8 @@ using UnityEngine;
 public class PlayerInput : MonoBehaviour
 {
     [Header ("Events")]
-    public Dictionary<string, Action> onButtonDown;
-    public Dictionary<string, Action> onButtonUp;
+    public Dictionary<string, Action> OnButtonDown;
+    public Dictionary<string, Action> OnButtonUp;
 
     [Header ("Key Information")]
     private Dictionary<string, KeyCode> buttonAssignment;
@@ -16,7 +16,6 @@ public class PlayerInput : MonoBehaviour
     private void Awake ()
     {
         buttonStates = new Dictionary<KeyCode, bool>();
-        buttonAssignment = new Dictionary<string, KeyCode>();
         buttonAssignment = InputManager.defaultInputCodes.Zip(InputManager.defaultInputKeys, (k, v) => new { Key = k, Value = v })
             .ToDictionary(pair => pair.Key, pair => pair.Value);
 
@@ -34,11 +33,11 @@ public class PlayerInput : MonoBehaviour
 
             if (buttonStates[button.Value] && !previousState)
             {
-                onButtonDown[button.Key]?.Invoke();
+                OnButtonDown[button.Key]?.Invoke();
             }
             else if (!buttonStates[button.Value] && previousState) 
             {
-                onButtonUp[button.Key]?.Invoke();
+                OnButtonUp[button.Key]?.Invoke();
             }
         }
     } 
@@ -66,12 +65,12 @@ public class PlayerInput : MonoBehaviour
 
     private void UpdateEventDictionaries () 
     {
-        onButtonDown = new Dictionary<string, Action>();
-        onButtonUp = new Dictionary<string, Action>();
+        OnButtonDown = new Dictionary<string, Action>();
+        OnButtonUp = new Dictionary<string, Action>();
 
         foreach (string action in InputManager.defaultInputCodes){
-            onButtonDown.Add(action, () => {});
-            onButtonUp.Add(action, () => {});
+            OnButtonDown.Add(action, () => {});
+            OnButtonUp.Add(action, () => {});
         }
     }
 

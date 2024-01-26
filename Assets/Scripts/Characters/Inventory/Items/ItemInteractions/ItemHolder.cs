@@ -1,60 +1,95 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ItemHolder : MonoBehaviour
 {
+    [Header("Item Information")]
     private List<Item> items;
-    [SerializeField] private List<ItemObject> itemObjects;
-    [SerializeField] private List<int> itemCounts;
-
-    [SerializeField] private int previousItemObjectsCount;
+    [SerializeField] private List<ItemData> itemDatas;
+    
+    [Header("Container Information")]
+    [SerializeField] private ContainerType containerType;
+    [SerializeField] private bool isContainer;
 
     private void Start()
     {
         items = new List<Item>();
-
-        int index = 0;
-        foreach (ItemObject obj in itemObjects)
+        
+        foreach (var obj in itemDatas)
         {
-            if (itemCounts.Count < index) itemCounts.Add(1);
-            items.Add(new Item(obj, itemCounts[index]));
-            index++;
+            items.Add(new Item(obj.ItemObject, obj.ItemCount));
         }
     }
 
     public List<Item> GetItems() { return items; }
 
-    private void OnDestroy() { InputManager.GetMouseHandle().CheckForObjectRemoval(gameObject); }
-
-    #if UNITY_EDITOR
-        private void OnValidate()
+    private void OnDestroy()
+    {
+        try
         {
-            try {
-                if (previousItemObjectsCount != itemObjects.Count)
-                {
-                    UpdateModel();
-
-                    previousItemObjectsCount = itemObjects.Count;
-                }
-            }catch (Exception e){
-                Debug.Log(e.Message);
-            }
+            InputManager.GetMouseHandle().CheckForObjectRemoval(gameObject);
         }
-
-        private void UpdateModel()
+        catch (NullReferenceException e)
         {
-            if (itemObjects.Count == 1)
-            {
-                GameObject obj = Instantiate(itemObjects[0].Prefab, transform);
-
-                foreach (MeshCollider col in obj.GetComponentsInChildren<MeshCollider>())
-                {
-                    col.convex = true;
-                    col.gameObject.layer = LayerMask.NameToLayer("Prop");
-                }
-            }
+            Debug.LogError(e.Message);
         }
-    #endif
+        
+    }
+
+    [ContextMenu("Update Object")]
+    private void UpdateModel()
+    {
+        RemoveModel();
+
+        switch (itemDatas.Count)
+        {
+            case (0):
+                UpdateName("Item");
+                return;
+            
+            case (1):
+                Instantiate(itemDatas[0].ItemObject.Prefab, transform);
+                UpdateName(itemDatas[0].ItemObject.Name);
+                break;
+                
+            default:
+                Instantiate(ItemManager.GetContainer(containerType), transform);
+                UpdateName(containerType.ToString());
+                break;
+        }
+    }
+
+    [ContextMenu("Stack Items")]
+    private void StackItems()
+    {
+        foreach (var obj in itemDatas)
+        {
+            items.Add(new Item(obj.ItemObject, obj.ItemCount));
+        }
+    }
+    
+    [ContextMenu("Sort Items")]
+    private void SortItems()
+    {
+        foreach (var obj in itemDatas)
+        {
+            items.Add(new Item(obj.ItemObject, obj.ItemCount));
+        }
+    }
+    
+
+    private void RemoveModel()
+    {
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            DestroyImmediate(transform.GetChild(i).gameObject);
+        }
+    }
+
+    private void UpdateName(string name)
+    {
+        gameObject.name = name;
+    }
+    
 }

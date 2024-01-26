@@ -26,13 +26,14 @@ public class Reticle : MonoBehaviour
 
     public void ChangeHoveringState (GameObject obj)
     {
-        if (obj == null)
+        if (ReferenceEquals(obj, null))
         {
             if (hoverCoroutine != null)
             {
                 StopCoroutine(hoverCoroutine);
                 ResetPosition();
                 hoverCoroutine = null;
+                
             }
         }
         else if (hoverCoroutine == null)
@@ -58,7 +59,7 @@ public class Reticle : MonoBehaviour
         return hoveringOutwards ? reticleParts[0].localPosition.x <= endPos.x : reticleParts[0].localPosition.x <= startPos.x;
     }
 
-    public IEnumerator Hover()
+    private IEnumerator Hover()
     {
         float t = 0f;    
 
@@ -86,18 +87,18 @@ public class Reticle : MonoBehaviour
         }
     }
 
-    public IEnumerator ReturnPosition()
+    private IEnumerator ReturnPosition()
     {
-        while (reticleParts[0].localPosition != reticleParts[0].localPosition.normalized * 50f)
+        while (reticleParts[0].localPosition != reticleParts[0].localPosition.normalized * startingDistance)
         {
             foreach (RectTransform rectT in reticleParts)
             {
-                var localPosition = rectT.localPosition;
+                Vector3 localPosition = rectT.localPosition;
                 Vector3 startingPos = localPosition.normalized * 50f;
 
-                float t = Mathf.SmoothStep(0f, 1f, Time.time * hoverSpeed * 10f);
+                float t = Mathf.SmoothStep(0f, 1f, Time.time * hoverSpeed);
 
-                localPosition = Vector3.Lerp(localPosition, startingPos, t * Time.deltaTime);
+                localPosition = Vector3.Lerp(localPosition, startingPos, t * Time.deltaTime * 5f);
                 rectT.localPosition = localPosition;
             }
 
@@ -106,9 +107,4 @@ public class Reticle : MonoBehaviour
 
         EndPositionAdjustment();
     }
-
-
-
-
-
 }

@@ -10,11 +10,11 @@ public class PlayerInteraction : MonoBehaviour
 
     public void Start ()
     {
-        PlayerInput inputHandle = InputManager.GetInputHandle();
+        var inputHandle = InputManager.GetInputHandle();
 
-        inputHandle.onButtonDown["Interact"] += InteractWithObject;
+        inputHandle.OnButtonDown["Interact"] += InteractWithObject;
 
-        MouseInput mouseHandle = InputManager.GetMouseHandle();
+        var mouseHandle = InputManager.GetMouseHandle();
 
         mouseHandle.OnSelectedObjectChange += UpdateSelectedObject;
     }
@@ -34,5 +34,5 @@ public class PlayerInteraction : MonoBehaviour
         Destroy(itemHolder.gameObject);
     }
 
-    public void UpdateSelectedObject (GameObject obj) { selectedObject = obj; }
+    private void UpdateSelectedObject (GameObject obj) { selectedObject = obj; }
 }

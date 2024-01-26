@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {
-    [SerializeField] private Inventory inventory;
+    [Header("Inventory")] [SerializeField] 
+    private Inventory inventory;
+
+    [Header("Character Stats")] [SerializeField]
+    private CharacterStats characterStats;
 
     private void Awake ()
     {
@@ -12,4 +16,6 @@ public class Character : MonoBehaviour
     }
 
     public Inventory GetInventory (){ return inventory; }
+
+    public CharacterStats GetStatistics() { return characterStats; }
 }

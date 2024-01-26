@@ -3,19 +3,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class Inventory : MonoBehaviour
 {
+    [SerializeField] private long gold;
+    
+    [Header("Inventory")]
     private Dictionary<ItemType, ItemCollection> items;
-
-    private long gold;
-
+    [SerializeField] private List<ItemCollection> itemCollections;
+    
     private void Awake ()
     {
         items = new Dictionary<ItemType, ItemCollection>();
 
         foreach (ItemType type in Enum.GetValues(typeof(ItemType)))
         {
-            items[type] = new ItemCollection(type);
+            items[type] = itemCollections[(int)type];
+        }
+    }
+    
+    private void InitializeInventory ()
+    {
+        if (itemCollections.Count != 0) return; 
+        
+        itemCollections = new List<ItemCollection>();
+
+        foreach (ItemType type in Enum.GetValues(typeof(ItemType)))
+        {
+            itemCollections.Add(new ItemCollection(type));
         }
     }
 
@@ -40,4 +55,10 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    public Dictionary<ItemType, ItemCollection> GetItems() { return items; }
+
+    private void OnValidate()
+    {
+        InitializeInventory();
+    }
 }

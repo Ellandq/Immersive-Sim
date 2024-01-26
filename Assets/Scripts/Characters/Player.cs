@@ -4,5 +4,15 @@ using UnityEngine;
 
 public class Player : Character
 {
-    
-}
+    [Header("Movement Handle")] [SerializeField] 
+    private PlayerMovement movementHandle;
+
+    [Header("Interaction Handle")] [SerializeField]
+    private PlayerInteraction interactionHandle;
+
+
+
+
+
+
+}   

@@ -1,12 +1,14 @@
+using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class ItemCollection 
 {
-    private ItemType collectionType;
-    private List<Item> items;
+    [SerializeField] private ItemType collectionType;
+    [SerializeField] private List<Item> items;
 
     public ItemCollection (ItemType collectionType)
     {
@@ -47,6 +49,10 @@ public class ItemCollection
             // TODO
         }
     }
+
+    public List<Item> GetItems() { return items; }
+
+    public ItemType GetCollectionType() { return collectionType; }
 
     public int GetSameItemIndex (Item item) { return items.FindIndex(it => it == item); }
 

@@ -17,7 +17,7 @@ public class PlayerMovement : CharacterMover
     private bool ignoreNextJumpInput;
 
     [Header ("Movement settings")] 
-    private readonly List<float> MovementSpeed = new List<float>(){ 4f, 10f, 16f };
+    private readonly List<float> movementSpeed = new List<float>(){ 4f, 10f, 16f };
     private const float CrouchingSpeedMultiplier = .4f;
     private const float DefaultSpeedMultiplier = 1f;
     private const float JumpHeight = 1.8f;
@@ -35,42 +35,42 @@ public class PlayerMovement : CharacterMover
             { MoveDirection.Right, false }
         };
 
-        currentSpeed = MovementSpeed[(int)MovementType.Run];
+        currentSpeed = movementSpeed[(int)MovementType.Run];
         speedMultiplier = DefaultSpeedMultiplier;
 
         PlayerInput input = InputManager.GetInputHandle();
 
         // Forwards Movement
-        input.onButtonDown["Move Forwards"] += ChangeForwardMovementState;
-        input.onButtonUp["Move Forwards"] += ChangeForwardMovementState;
+        input.OnButtonDown["Move Forwards"] += ChangeForwardMovementState;
+        input.OnButtonUp["Move Forwards"] += ChangeForwardMovementState;
 
         // Backwards Movement
-        input.onButtonDown["Move Backwards"] += ChangeBackwardsMovementState;
-        input.onButtonUp["Move Backwards"] += ChangeBackwardsMovementState;
+        input.OnButtonDown["Move Backwards"] += ChangeBackwardsMovementState;
+        input.OnButtonUp["Move Backwards"] += ChangeBackwardsMovementState;
 
         // Left Movement
-        input.onButtonDown["Move Left"] += ChangeLeftMovementState;
-        input.onButtonUp["Move Left"] += ChangeLeftMovementState;
+        input.OnButtonDown["Move Left"] += ChangeLeftMovementState;
+        input.OnButtonUp["Move Left"] += ChangeLeftMovementState;
 
         // Right Movement
-        input.onButtonDown["Move Right"] += ChangeRightMovementState;
-        input.onButtonUp["Move Right"] += ChangeRightMovementState;
+        input.OnButtonDown["Move Right"] += ChangeRightMovementState;
+        input.OnButtonUp["Move Right"] += ChangeRightMovementState;
 
         // Sprinting
-        input.onButtonDown["Sprint"] += ChangeSprintingState;
-        input.onButtonUp["Sprint"] += ChangeSprintingState;
+        input.OnButtonDown["Sprint"] += ChangeSprintingState;
+        input.OnButtonUp["Sprint"] += ChangeSprintingState;
 
         // Walking
-        input.onButtonDown["Walk"] += ChangeWalkingState;
-        input.onButtonUp["Walk"] += ChangeWalkingState;
+        input.OnButtonDown["Walk"] += ChangeWalkingState;
+        input.OnButtonUp["Walk"] += ChangeWalkingState;
 
         // Crouching
-        input.onButtonDown["Crouch"] += ChangeCrouchingState;
-        input.onButtonUp["Crouch"] += ChangeCrouchingState;
+        input.OnButtonDown["Crouch"] += ChangeCrouchingState;
+        input.OnButtonUp["Crouch"] += ChangeCrouchingState;
 
         // Jumping
-        input.onButtonDown["Jump"] += Jump;
-        input.onButtonUp["Jump"] += Jump;
+        input.OnButtonDown["Jump"] += Jump;
+        input.OnButtonUp["Jump"] += Jump;
     }
     
     private void Update()
@@ -79,7 +79,7 @@ public class PlayerMovement : CharacterMover
         
         if (!IsGrounded)
         {
-            Vector3 jumpingMovementMask = new Vector3(1f, 0f, 1f) - jumpingHorizontalMovementVector.normalized;
+            Vector3 jumpingMovementMask = new Vector3(Mathf.Sign(jumpingHorizontalMovementVector.x), 0f, Mathf.Sign(jumpingHorizontalMovementVector.z)) - jumpingHorizontalMovementVector.normalized;
             horizontalMovement *= JumpMovementReduction;
             horizontalMovement.Scale(jumpingMovementMask);
             horizontalMovement += jumpingHorizontalMovementVector;
@@ -96,173 +96,173 @@ public class PlayerMovement : CharacterMover
 
     #region Movement
 
-    private void Jump ()
-    {
-        if (ignoreNextJumpInput){
-            ignoreNextJumpInput = false;
-            return;
-        }
-        ignoreNextJumpInput = true;
-        if (IsGrounded)
+        private void Jump ()
         {
-            jumpingHorizontalMovementVector = adjustedMovementVector;
-            jumpingHorizontalMovementVector.y = 0f;
-            adjustedMovementVector.y = Mathf.Sqrt(Physics.gravity.y * GravityMultiplier * -2f * JumpHeight);
-            IsJumping = true;
-        }
-    }
-
-    private void ApplyGravity ()
-    {
-        if (IsGrounded && adjustedMovementVector.y < 0f)
-        {
-            adjustedMovementVector.y = -2f;
-            IsJumping = false;
-        }
-        else
-        {
-            adjustedMovementVector.y += Physics.gravity.y * GravityMultiplier * Time.deltaTime;
-        }
-    }
-
-    private void ChangeForwardMovementState ()
-    {
-        Vector3 directionalMovement = new Vector3(0f, 0f, 1f);
-        if (moveStatus[MoveDirection.Forwards]) 
-        {
-            movementVector -= directionalMovement;
-        } 
-        else 
-        {
-            movementVector += directionalMovement;
+            if (ignoreNextJumpInput){
+                ignoreNextJumpInput = false;
+                return;
+            }
+            ignoreNextJumpInput = true;
+            if (IsGrounded)
+            {
+                jumpingHorizontalMovementVector = adjustedMovementVector;
+                jumpingHorizontalMovementVector.y = 0f;
+                adjustedMovementVector.y = Mathf.Sqrt(Physics.gravity.y * GravityMultiplier * -2f * JumpHeight);
+                IsJumping = true;
+            }
         }
 
-        moveStatus[MoveDirection.Forwards] = !moveStatus[MoveDirection.Forwards];
-    }
-
-    private void ChangeBackwardsMovementState ()
-    {
-        Vector3 directionalMovement = new Vector3(0f, 0f, -1f);
-        if (moveStatus[MoveDirection.Backwards]) 
+        private void ApplyGravity ()
         {
-            movementVector -= directionalMovement;
-        } 
-        else 
-        {
-            movementVector += directionalMovement;
+            if (IsGrounded && adjustedMovementVector.y < 0f)
+            {
+                adjustedMovementVector.y = -2f;
+                IsJumping = false;
+            }
+            else
+            {
+                adjustedMovementVector.y += Physics.gravity.y * GravityMultiplier * Time.deltaTime;
+            }
         }
 
-        moveStatus[MoveDirection.Backwards] = !moveStatus[MoveDirection.Backwards];
-    }
+        private void ChangeForwardMovementState ()
+        {
+            Vector3 directionalMovement = new Vector3(0f, 0f, 1f);
+            if (moveStatus[MoveDirection.Forwards]) 
+            {
+                movementVector -= directionalMovement;
+            } 
+            else 
+            {
+                movementVector += directionalMovement;
+            }
 
-    private void ChangeLeftMovementState ()
-    {
-        Vector3 directionalMovement = new Vector3(-1f, 0f, 0f);
-        if (moveStatus[MoveDirection.Left]) 
-        {
-            movementVector -= directionalMovement;
-        } 
-        else 
-        {
-            movementVector += directionalMovement;
+            moveStatus[MoveDirection.Forwards] = !moveStatus[MoveDirection.Forwards];
         }
 
-        moveStatus[MoveDirection.Left] = !moveStatus[MoveDirection.Left];
-    }
+        private void ChangeBackwardsMovementState ()
+        {
+            Vector3 directionalMovement = new Vector3(0f, 0f, -1f);
+            if (moveStatus[MoveDirection.Backwards]) 
+            {
+                movementVector -= directionalMovement;
+            } 
+            else 
+            {
+                movementVector += directionalMovement;
+            }
 
-    private void ChangeRightMovementState ()
-    {
-        Vector3 directionalMovement = new Vector3(1f, 0f, 0f);
-        if (moveStatus[MoveDirection.Right]) 
-        {
-            movementVector -= directionalMovement;
-        } 
-        else 
-        {
-            movementVector += directionalMovement;
+            moveStatus[MoveDirection.Backwards] = !moveStatus[MoveDirection.Backwards];
         }
 
-        moveStatus[MoveDirection.Right] = !moveStatus[MoveDirection.Right];
-    }
+        private void ChangeLeftMovementState ()
+        {
+            Vector3 directionalMovement = new Vector3(-1f, 0f, 0f);
+            if (moveStatus[MoveDirection.Left]) 
+            {
+                movementVector -= directionalMovement;
+            } 
+            else 
+            {
+                movementVector += directionalMovement;
+            }
+
+            moveStatus[MoveDirection.Left] = !moveStatus[MoveDirection.Left];
+        }
+
+        private void ChangeRightMovementState ()
+        {
+            Vector3 directionalMovement = new Vector3(1f, 0f, 0f);
+            if (moveStatus[MoveDirection.Right]) 
+            {
+                movementVector -= directionalMovement;
+            } 
+            else 
+            {
+                movementVector += directionalMovement;
+            }
+
+            moveStatus[MoveDirection.Right] = !moveStatus[MoveDirection.Right];
+        }
 
     #endregion
 
     #region Movement Type 
 
-    public void ChangeCrouchingState ()
-    {
-        IsCrouching = !IsCrouching;
-
-        speedMultiplier = IsCrouching ? CrouchingSpeedMultiplier : DefaultSpeedMultiplier;
-
-        if (IsCrouching && IsSprinting)
+        private void ChangeCrouchingState ()
         {
-            ignoreNextSprintInput = true;
-            ChangeRunningState();
-        }
-        
-        Crouch();
-    }
+            IsCrouching = !IsCrouching;
 
-    public void ChangeWalkingState ()
-    {
-        if (ignoreNextWalkingInput)
-        {
-            ignoreNextWalkingInput = false;
-            return;
+            speedMultiplier = IsCrouching ? CrouchingSpeedMultiplier : DefaultSpeedMultiplier;
+
+            if (IsCrouching && IsSprinting)
+            {
+                ignoreNextSprintInput = true;
+                ChangeRunningState();
+            }
+            
+            Crouch();
         }
 
-        if (IsSprinting)
+        private void ChangeWalkingState ()
         {
-            ignoreNextWalkingInput = true;
-            return;
+            if (ignoreNextWalkingInput)
+            {
+                ignoreNextWalkingInput = false;
+                return;
+            }
+
+            if (IsSprinting)
+            {
+                ignoreNextWalkingInput = true;
+                return;
+            }
+
+            IsWalking = !IsWalking;
+
+            if (IsWalking)
+            {
+                currentSpeed = movementSpeed[(int)MovementType.Walk];
+                Walk();
+            }
+            else 
+            {
+                ChangeRunningState();
+            }
         }
 
-        IsWalking = !IsWalking;
-
-        if (IsWalking)
+        private void ChangeRunningState ()
         {
-            currentSpeed = MovementSpeed[(int)MovementType.Walk];
-            Walk();
-        }
-        else 
-        {
-            ChangeRunningState();
-        }
-    }
-
-    public void ChangeRunningState ()
-    {
-        currentSpeed = MovementSpeed[(int)MovementType.Run];
-        Run();
-    }
-
-    public void ChangeSprintingState ()
-    {
-        if (ignoreNextSprintInput)
-        {
-            ignoreNextSprintInput = false;
-            return;
+            currentSpeed = movementSpeed[(int)MovementType.Run];
+            Run();
         }
 
-        if (IsCrouching)
+        private void ChangeSprintingState ()
         {
-            ignoreNextSprintInput = true;
-            return;
-        }
+            if (ignoreNextSprintInput)
+            {
+                ignoreNextSprintInput = false;
+                return;
+            }
 
-        IsSprinting = !IsSprinting;
+            if (IsCrouching)
+            {
+                ignoreNextSprintInput = true;
+                return;
+            }
 
-        if (IsSprinting)
-        {
-            currentSpeed = MovementSpeed[(int)MovementType.Sprint];
-            Sprint();
+            IsSprinting = !IsSprinting;
+
+            if (IsSprinting)
+            {
+                currentSpeed = movementSpeed[(int)MovementType.Sprint];
+                Sprint();
+            }
+            else 
+            {
+                ChangeRunningState();
+            }
         }
-        else 
-        {
-            ChangeRunningState();
-        }
-    }
 
     #endregion
 }
