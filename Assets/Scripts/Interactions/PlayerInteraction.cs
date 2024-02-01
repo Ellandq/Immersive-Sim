@@ -11,12 +11,10 @@ public class PlayerInteraction : MonoBehaviour
     public void Start ()
     {
         var inputHandle = InputManager.GetInputHandle();
-
-        inputHandle.OnButtonDown["Interact"] += InteractWithObject;
+        inputHandle.AddListenerOnButtonDown(InteractWithObject, "Interact");
 
         var mouseHandle = InputManager.GetMouseHandle();
-
-        mouseHandle.OnSelectedObjectChange += UpdateSelectedObject;
+        mouseHandle.AddListenerOnObjectChange(UpdateSelectedObject);
     }
 
     private void InteractWithObject ()
@@ -26,13 +24,14 @@ public class PlayerInteraction : MonoBehaviour
         selectedObject.Interact(player);
     }
 
-    private void UpdateSelectedObject(GameObject obj)
+    private void UpdateSelectedObject(EntityInteraction obj)
     {
         if (ReferenceEquals(obj, null))
         {
             selectedObject = null;
             return;
         }
-        selectedObject = obj.GetComponent<EntityInteraction>();
+
+        selectedObject = obj;
     }
 }

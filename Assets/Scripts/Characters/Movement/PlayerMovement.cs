@@ -41,36 +41,37 @@ public class PlayerMovement : CharacterMover
         PlayerInput input = InputManager.GetInputHandle();
 
         // Forwards Movement
-        input.OnButtonDown["Move Forwards"] += ChangeForwardMovementState;
-        input.OnButtonUp["Move Forwards"] += ChangeForwardMovementState;
+        input.AddListenerOnButtonDown(ChangeForwardMovementState, "Move Forwards");
+        input.AddListenerOnButtonUp(ChangeForwardMovementState, "Move Forwards");
 
         // Backwards Movement
-        input.OnButtonDown["Move Backwards"] += ChangeBackwardsMovementState;
-        input.OnButtonUp["Move Backwards"] += ChangeBackwardsMovementState;
+        input.AddListenerOnButtonDown(ChangeBackwardsMovementState, "Move Backwards");
+        input.AddListenerOnButtonUp(ChangeBackwardsMovementState, "Move Backwards");
 
         // Left Movement
-        input.OnButtonDown["Move Left"] += ChangeLeftMovementState;
-        input.OnButtonUp["Move Left"] += ChangeLeftMovementState;
+        input.AddListenerOnButtonDown(ChangeLeftMovementState, "Move Left");
+        input.AddListenerOnButtonUp(ChangeLeftMovementState, "Move Left");
 
         // Right Movement
-        input.OnButtonDown["Move Right"] += ChangeRightMovementState;
-        input.OnButtonUp["Move Right"] += ChangeRightMovementState;
+        input.AddListenerOnButtonDown(ChangeRightMovementState, "Move Right");
+        input.AddListenerOnButtonUp(ChangeRightMovementState, "Move Right");
 
         // Sprinting
-        input.OnButtonDown["Sprint"] += ChangeSprintingState;
-        input.OnButtonUp["Sprint"] += ChangeSprintingState;
+        input.AddListenerOnButtonDown(ChangeSprintingState, "Sprint");
+        input.AddListenerOnButtonUp(ChangeSprintingState, "Sprint");
 
         // Walking
-        input.OnButtonDown["Walk"] += ChangeWalkingState;
-        input.OnButtonUp["Walk"] += ChangeWalkingState;
+        input.AddListenerOnButtonDown(ChangeWalkingState, "Walk");
+        input.AddListenerOnButtonUp(ChangeWalkingState, "Walk");
 
         // Crouching
-        input.OnButtonDown["Crouch"] += ChangeCrouchingState;
-        input.OnButtonUp["Crouch"] += ChangeCrouchingState;
+        input.AddListenerOnButtonDown(ChangeCrouchingState, "Crouch");
+        input.AddListenerOnButtonUp(ChangeCrouchingState, "Crouch");
 
         // Jumping
-        input.OnButtonDown["Jump"] += Jump;
-        input.OnButtonUp["Jump"] += Jump;
+        input.AddListenerOnButtonDown(Jump, "Jump");
+        input.AddListenerOnButtonUp(Jump, "Jump");
+
     }
     
     private void Update()

@@ -8,6 +8,7 @@ public class ContainerInteraction : EntityInteraction
 
     private void OnValidate()
     {
+        if (interactionName == "Open ") return;
         interactionName = "Open ";
         interactionType = InteractionType.Container;
         itemHolder = GetComponentInParent<ItemHolder>();

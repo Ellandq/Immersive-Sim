@@ -9,6 +9,7 @@ public class ItemInteraction : EntityInteraction
     
     private void OnValidate()
     {
+        if (interactionName == "Pick up ") return;
         interactionName = "Pick up ";
         interactionType = InteractionType.Item;
         itemHolder = GetComponentInParent<ItemHolder>();

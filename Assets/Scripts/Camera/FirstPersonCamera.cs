@@ -5,7 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class FirstPersonCamera : PlayerCamera
 {
-    [SerializeField] private Camera camera;
+    [SerializeField] private Camera playerCamera;
     public override void Move()
     {
         float mouseX = Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
@@ -20,6 +20,6 @@ public class FirstPersonCamera : PlayerCamera
 
     public override Camera GetCamera()
     {
-        return camera;
+        return playerCamera;
     }
 }

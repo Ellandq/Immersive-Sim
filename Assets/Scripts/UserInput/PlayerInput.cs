@@ -6,8 +6,8 @@ using UnityEngine;
 public class PlayerInput : MonoBehaviour
 {
     [Header ("Events")]
-    public Dictionary<string, Action> OnButtonDown;
-    public Dictionary<string, Action> OnButtonUp;
+    private Dictionary<string, Action> OnButtonDown;
+    private Dictionary<string, Action> OnButtonUp;
 
     [Header ("Key Information")]
     private Dictionary<string, KeyCode> buttonAssignment;
@@ -21,6 +21,12 @@ public class PlayerInput : MonoBehaviour
 
         UpdateButtonStateDictionary();
         UpdateEventDictionaries();
+    }
+    
+    private void OnApplicationQuit()
+    {
+        OnButtonDown.Clear();
+        OnButtonUp.Clear();
     }
 
     private void Update ()
@@ -73,6 +79,10 @@ public class PlayerInput : MonoBehaviour
             OnButtonUp.Add(action, () => {});
         }
     }
+    
+    public void AddListenerOnButtonDown (Action actionToAdd, string key) { OnButtonDown[key] += actionToAdd; }
+    
+    public void AddListenerOnButtonUp (Action actionToAdd, string key) { OnButtonUp[key] += actionToAdd; }
 
     public bool GetButtonState (KeyCode key){
         return buttonStates[key];

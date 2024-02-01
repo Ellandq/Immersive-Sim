@@ -28,7 +28,7 @@ public class ItemHolder : MonoBehaviour
     {
         try
         {
-            InputManager.GetMouseHandle().CheckForObjectRemoval(gameObject);
+            InputManager.GetMouseHandle().CheckForObjectRemoval(transform.GetChild(0).GetComponent<EntityInteraction>());
         }
         catch (NullReferenceException e)
         {

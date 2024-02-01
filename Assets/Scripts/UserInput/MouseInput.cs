@@ -8,9 +8,9 @@ using UnityEngine;
 public class MouseInput : MonoBehaviour
 {
     [Header ("Events")]
-    public Dictionary<string, Action> OnButtonDown;
-    public Dictionary<string, Action> OnButtonUp;
-    public Action<GameObject> OnSelectedObjectChange;
+    private Dictionary<string, Action> OnButtonDown;
+    private Dictionary<string, Action> OnButtonUp;
+    private Action<EntityInteraction> OnSelectedObjectChange;
 
     [Header ("Key Information")]
     private Dictionary<string, int> buttonAssignment;
@@ -22,7 +22,7 @@ public class MouseInput : MonoBehaviour
     [SerializeField] private LayerMask layerMask;
 
     [Header ("Object Selection")]
-    [SerializeField] private GameObject selectedObject;
+    [SerializeField] private EntityInteraction selectedObject;
 
     private void Awake ()
     {
@@ -38,6 +38,13 @@ public class MouseInput : MonoBehaviour
     private void Start ()
     {
         playerCamera = CameraManager.GetCurrentCamera();
+    }
+
+    private void OnApplicationQuit()
+    {
+        OnButtonDown.Clear();
+        OnButtonUp.Clear();
+        OnSelectedObjectChange = null;
     }
 
     private void Update ()
@@ -63,17 +70,17 @@ public class MouseInput : MonoBehaviour
 
     private void CheckForObjects ()
     {
-        Ray ray = playerCamera.ScreenPointToRay(playerCamera.pixelRect.center);
+        var ray = playerCamera.ScreenPointToRay(playerCamera.pixelRect.center);
 
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, range, layerMask))
+        if (Physics.Raycast(ray, out var hit, range, layerMask))
         {
             GameObject obj = hit.collider.transform.gameObject;
 
-            if (!obj.CompareTag("Interactable") || obj == selectedObject) return;
+            if (!obj.CompareTag("Interactable")) return;
+            var interactor = obj.GetComponent<EntityInteraction>();
             
-            selectedObject = obj;
+            if (interactor == selectedObject) return;
+            selectedObject = interactor;
 
             OnSelectedObjectChange?.Invoke(selectedObject);
         }
@@ -84,7 +91,7 @@ public class MouseInput : MonoBehaviour
         }
     }
 
-    public void CheckForObjectRemoval (GameObject obj)
+    public void CheckForObjectRemoval (EntityInteraction obj)
     {
         if (obj != selectedObject) return;
         
@@ -129,9 +136,17 @@ public class MouseInput : MonoBehaviour
         }
     }
 
-    public GameObject GetSelectedObject () { return selectedObject; }
+    public void AddListenerOnButtonDown (Action actionToAdd, string key) { OnButtonDown[key] += actionToAdd; }
+    
+    public void AddListenerOnButtonUp (Action actionToAdd, string key) { OnButtonUp[key] += actionToAdd; }
+    
+    public void AddListenerOnObjectChange (Action<EntityInteraction> actionToAdd) { OnSelectedObjectChange += actionToAdd; }
+
+    public EntityInteraction GetSelectedObject () { return selectedObject; }
 
     public bool GetButtonState (int key){
         return buttonStates[key];
     }
+    
+    
 }
