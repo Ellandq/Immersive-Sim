@@ -69,9 +69,9 @@ public class MouseInput : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, range, layerMask))
         {
-            GameObject obj = hit.collider.transform.parent.gameObject;
+            GameObject obj = hit.collider.transform.gameObject;
 
-            if (obj == selectedObject) return;
+            if (!obj.CompareTag("Interactable") || obj == selectedObject) return;
             
             selectedObject = obj;
 

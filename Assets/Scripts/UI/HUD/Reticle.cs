@@ -24,7 +24,7 @@ public class Reticle : MonoBehaviour
         InputManager.GetMouseHandle().OnSelectedObjectChange += ChangeHoveringState;
     }
 
-    public void ChangeHoveringState (GameObject obj)
+    private void ChangeHoveringState (GameObject obj)
     {
         if (ReferenceEquals(obj, null))
         {
@@ -33,7 +33,6 @@ public class Reticle : MonoBehaviour
                 StopCoroutine(hoverCoroutine);
                 ResetPosition();
                 hoverCoroutine = null;
-                
             }
         }
         else if (hoverCoroutine == null)

@@ -6,7 +6,7 @@ public class PlayerInteraction : MonoBehaviour
 {
     [SerializeField] private Player player;
 
-    private GameObject selectedObject;
+    private EntityInteraction selectedObject;
 
     public void Start ()
     {
@@ -19,20 +19,20 @@ public class PlayerInteraction : MonoBehaviour
         mouseHandle.OnSelectedObjectChange += UpdateSelectedObject;
     }
 
-    public void InteractWithObject ()
+    private void InteractWithObject ()
     {
         if (selectedObject == null) return;
-
-        ItemHolder itemHolder = selectedObject.GetComponentInParent<ItemHolder>();
-
-        if (itemHolder == null) return;
-
-        Inventory inv = player.GetInventory();
-
-        inv.AddItems(itemHolder.GetItems());
-
-        Destroy(itemHolder.gameObject);
+        
+        selectedObject.Interact(player);
     }
 
-    private void UpdateSelectedObject (GameObject obj) { selectedObject = obj; }
+    private void UpdateSelectedObject(GameObject obj)
+    {
+        if (ReferenceEquals(obj, null))
+        {
+            selectedObject = null;
+            return;
+        }
+        selectedObject = obj.GetComponent<EntityInteraction>();
+    }
 }

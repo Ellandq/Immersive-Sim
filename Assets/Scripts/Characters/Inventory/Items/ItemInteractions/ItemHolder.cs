@@ -49,12 +49,12 @@ public class ItemHolder : MonoBehaviour
                 return;
             
             case (1):
-                Instantiate(itemDatas[0].ItemObject.Prefab, transform);
+                Instantiate(itemDatas[0].ItemObject.Prefab, transform).AddComponent<ItemInteraction>();
                 UpdateName(itemDatas[0].ItemObject.Name);
                 break;
                 
             default:
-                Instantiate(ItemManager.GetContainer(containerType), transform);
+                Instantiate(ItemManager.GetContainer(containerType), transform).AddComponent<ContainerInteraction>();
                 UpdateName(containerType.ToString());
                 break;
         }
