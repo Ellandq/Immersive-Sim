@@ -16,7 +16,6 @@ public class Reticle : MonoBehaviour
     [SerializeField] private float startingDistance;
     [SerializeField] private float hoverDistance;
     [SerializeField] private float hoverSpeed;
-    [SerializeField] private float allowedOffset;
     
     private bool hoveringOutwards;
 
@@ -45,12 +44,10 @@ public class Reticle : MonoBehaviour
         {
             if (ReferenceEquals(selectedObject, null))
             {
-                if (hoverCoroutine != null)
-                {
-                    StopCoroutine(hoverCoroutine);
-                    ResetPosition();
-                    hoverCoroutine = null;
-                }
+                if (hoverCoroutine == null) return;
+                StopCoroutine(hoverCoroutine);
+                ResetPosition();
+                hoverCoroutine = null;
             }
             else if (hoverCoroutine == null)
             {
@@ -66,36 +63,33 @@ public class Reticle : MonoBehaviour
         private void EndPositionAdjustment ()
         {
             positionAdjustment = null;
+            hoveringOutwards = true;
         }
 
-        private bool MovingOutwards ()
+        private void MovingOutwards ()
         {
-            Vector3 startPos = reticleParts[0].localPosition.normalized * (startingDistance + allowedOffset);
-            Vector3 endPos = reticleParts[0].localPosition.normalized * (startingDistance + hoverDistance - allowedOffset);
-            return hoveringOutwards ? reticleParts[0].localPosition.x <= endPos.x : reticleParts[0].localPosition.x <= startPos.x;
+            var currentPos = Mathf.Abs(reticleParts[0].localPosition.x);
+            hoveringOutwards = hoveringOutwards ? currentPos < startingDistance + hoverDistance : startingDistance >= currentPos;
         }
 
         private IEnumerator Hover()
         {
-            float t = 0f;    
+            var moveValue = 0f;    
 
             while (true)
             {
-                hoveringOutwards = MovingOutwards();
+                MovingOutwards();
+                var hoverPos = hoveringOutwards ? hoverDistance : 0f;   
+                
+                moveValue = Mathf.MoveTowards(
+                    Mathf.SmoothStep(moveValue, hoverPos, hoverSpeed * Time.deltaTime), 
+                    hoverPos, hoverSpeed * Time.deltaTime * 5f
+                    );
 
-                if (hoveringOutwards)
-                {
-                    t = Mathf.Lerp(t, hoverDistance, hoverSpeed * Time.deltaTime);
-                }
-                else 
-                {
-                    t = Mathf.Lerp(t, 0f, hoverSpeed * Time.deltaTime);
-                }
-
-                foreach (RectTransform rectT in reticleParts)
+                foreach (var rectT in reticleParts)
                 {
                     var localPosition = rectT.localPosition;
-                    localPosition = localPosition.normalized * startingDistance + t * localPosition.normalized;
+                    localPosition = localPosition.normalized * startingDistance + moveValue * localPosition.normalized;
                     rectT.localPosition = localPosition;
                 }
 
@@ -108,21 +102,23 @@ public class Reticle : MonoBehaviour
             var targetPos = reticleParts[0].localPosition.normalized * startingDistance;
             while ((reticleParts[0].localPosition.magnitude  - targetPos.magnitude) > 1f)
             {
-                foreach (RectTransform rectT in reticleParts)
+                foreach (var rectT in reticleParts)
                 {
-                    Vector3 localPosition = rectT.localPosition;
-                    Vector3 startingPos = localPosition.normalized * 50f;
+                    var localPosition = rectT.localPosition;
+                    var startingPos = localPosition.normalized * 50f;
 
-                    float t = Mathf.SmoothStep(0f, 1f, Time.time * hoverSpeed);
-
+                    var t = Mathf.SmoothStep(0f, 1f, Time.time * hoverSpeed);
+                    
                     localPosition = Vector3.Lerp(localPosition, startingPos, t * Time.deltaTime * 5f);
+                    
+                    // var moveValue = Mathf.Lerp(localPosition, )
                     rectT.localPosition = localPosition;
                 }
 
                 yield return null;
             }
             
-            foreach (RectTransform rectT in reticleParts)
+            foreach (var rectT in reticleParts)
             {
                 rectT.localPosition = rectT.localPosition.normalized * 50f;
             }
