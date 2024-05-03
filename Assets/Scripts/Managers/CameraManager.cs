@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 
 
-public class CameraManager : MonoBehaviour
+public class CameraManager : MonoBehaviour, IManager
 {
     private static CameraManager Instance;
 
@@ -13,12 +13,10 @@ public class CameraManager : MonoBehaviour
 
     [Header ("Camera References")]
     private Dictionary<ActiveCamera, PlayerCamera> cameras;
-    [SerializeField] private PlayerCamera firstPersonCamera;
-    [SerializeField] private PlayerCamera thirdPersonCamera;
     [SerializeField] private PlayerCamera cutsceneCamera;
 
     [Header ("Object References")]
-    [SerializeField] private Transform playerBody;
+    private Transform playerBody;
 
     [Header ("Camera Information")]
     [SerializeField] private ActiveCamera activeCamera;
@@ -29,18 +27,25 @@ public class CameraManager : MonoBehaviour
     private void Awake ()
     {
         Instance = this;
+    }
+
+    public void SetUp()
+    {
         cameraMovementEnabled = true;
         Cursor.lockState = CursorLockMode.Locked;
 
+        var player = PlayerManager.GetPlayer();
+        playerBody = player.transform;
+
         cameras = new Dictionary<ActiveCamera, PlayerCamera>
         {
-            { ActiveCamera.FirstPerson, firstPersonCamera },
-            { ActiveCamera.ThirdPerson, thirdPersonCamera },
+            { ActiveCamera.FirstPerson, player.GetFirstPersonCamera() },
+            { ActiveCamera.ThirdPerson, player.GetThirdPersonCamera() },
             { ActiveCamera.Cutscene, cutsceneCamera }   
         };
         
-        firstPersonCamera.Initialize(firstPersonCameraSensitivity, playerBody);
-        thirdPersonCamera.Initialize(firstPersonCameraSensitivity, playerBody);
+        cameras[ActiveCamera.FirstPerson].Initialize(firstPersonCameraSensitivity, playerBody);
+        cameras[ActiveCamera.ThirdPerson].Initialize(firstPersonCameraSensitivity, playerBody);
         cutsceneCamera.Initialize(0f, playerBody);
     }
 
@@ -56,8 +61,7 @@ public class CameraManager : MonoBehaviour
         this.activeCamera = activeCamera;
         foreach (ActiveCamera cam in Enum.GetValues(typeof(ActiveCamera)))
         {
-            if (activeCamera == cam) cameras[cam].Enabled = true;
-            else cameras[cam].Enabled = false;
+            cameras[cam].Enabled = activeCamera == cam;
         }
         OnCameraChange?.Invoke(cameras[activeCamera].GetCamera());
     }

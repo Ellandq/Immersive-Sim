@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InputManager : MonoBehaviour
+public class InputManager : MonoBehaviour, IManager
 {
     public static InputManager Instance;
 
@@ -20,9 +20,16 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    public static PlayerInput GetInputHandle (){
-        return Instance.inputHandle;
+    public void SetUp()
+    {
+        mouseInputHandle.SetUp();
+        inputHandle.enabled = true;
+        mouseInputHandle.enabled = true;
     }
+
+    public static InputManager GetInstance() { return Instance;}
+
+    public static PlayerInput GetInputHandle (){ return Instance.inputHandle; }
 
 
     public static MouseInput GetMouseHandle (){
