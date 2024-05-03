@@ -41,7 +41,7 @@ public class Inventory : MonoBehaviour
 
     public void AddItems (List<Item> items)
     {
-        foreach (Item item in items) AddItem(item);
+        foreach (var item in items) AddItem(item);
     }
 
     public bool RemoveItem (Item item)
@@ -60,5 +60,13 @@ public class Inventory : MonoBehaviour
     private void OnValidate()
     {
         InitializeInventory();
+    }
+
+    [ContextMenu("Reset Inventory")]
+    private void ResetInventory()
+    {
+        itemCollections.Clear();
+        InitializeInventory();
+        gold = 0;
     }
 }

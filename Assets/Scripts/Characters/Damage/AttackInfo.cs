@@ -18,8 +18,8 @@ public class AttackInfo
         attackType = AttackType.Immediate; // TODO
         
         // Get damage multipliers
-        float damageMultiplier =  1f + characterStats.GetDamageTypeMultiplier(damageType) +
-                                 characterStats.GetElementalDamageMultiplier(this.elementalType);
+        var damageMultiplier =  1f + characterStats.GetDamageTypeMultiplier(damageType) +
+                                characterStats.GetElementalDamageMultiplier(this.elementalType);
 
         // Calculate attack value
         attackValue = damageMultiplier * attackSource.GetBaseDamageValue();

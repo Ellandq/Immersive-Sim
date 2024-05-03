@@ -71,6 +71,8 @@ public class CharacterMover : MonoBehaviour
 
     protected bool IsGrounded => controller.isGrounded || Physics.CheckSphere(groundCheck.position, .5f, groundMask);
     
+    protected bool IsMoving { get; set; }
+    
     protected bool IsJumping { get; set; }
 
     protected bool IsCrouching { get; set; }

@@ -4,17 +4,24 @@ using UnityEngine;
 
 public class Player : MonoBehaviour, ICharacter
 {
+    [Header ("Core Components")]
     [SerializeField] private PlayerMovement movementHandle;
     [SerializeField] private PlayerInteraction interactionHandle;
     [SerializeField] private PlayerStats playerStats;
     [SerializeField] private Inventory playerInventory;
+
+    [Header("Cameras")] 
+    [SerializeField] private FirstPersonCamera firstPersonCamera;
+    [SerializeField] private FirstPersonCamera thirdPersonCamera;
+    
+
+    public PlayerMovement GetMovementHandle() { return movementHandle; }
     
     public Inventory GetInventory (){ return playerInventory; }
 
     public CharacterStats GetStatistics() { return playerStats; }
 
-
-
-
-
+    public FirstPersonCamera GetFirstPersonCamera() { return firstPersonCamera; }
+    
+    public FirstPersonCamera GetThirdPersonCamera() { return thirdPersonCamera; }
 }   

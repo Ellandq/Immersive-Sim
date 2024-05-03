@@ -7,11 +7,20 @@ public class CharacterStats : MonoBehaviour
 {
     [Header("Basic info")] 
     // HEALTH
-    [SerializeField] private float maxHealth = 100f;
-    private float Health { get; set; }
+    [SerializeField] protected float maxHealth = 100f;
+    [SerializeField] protected float health;
     // STAMINA
-    [SerializeField] private float maxStamina = 100f;
-    private float Stamina{ get; set; }
+    [SerializeField] protected float maxStamina = 100f;
+    [SerializeField] protected float stamina;
+    // MANA
+    [SerializeField] protected float maxMana = 100f;
+    [SerializeField] protected float mana;
+    
+    [Header("Stamina Options")] 
+    protected const float JumpStaminaDrain = 10f;
+    protected const float SprintStaminaDrainPerSecond = 5f;
+    protected const float StaminaUseMultiplier = 1f;
+    protected const float StaminaRegenerationPerSecond = 0.2f;
 
     [Header("Damage Multipliers")] 
     private Dictionary<ElementalType, float> elementalDamageMultipliers;
@@ -32,6 +41,10 @@ public class CharacterStats : MonoBehaviour
             elementalDamageMultipliers.Add(value, 1f);
             elementalDefenseMultipliers.Add(value, 1f);
         }
+
+        health = maxHealth;
+        stamina = maxStamina;
+        mana = maxMana;
     }
 
     public float GetElementalDamageMultiplier(ElementalType type) { return elementalDamageMultipliers[type]; }
@@ -41,6 +54,31 @@ public class CharacterStats : MonoBehaviour
     public float GetDamageTypeMultiplier(DamageType type) { return damageTypeMultipler[type]; }
     
     public float GetDefenseTypeMultiplier(DamageType type) { return defenseTypeMultipler[type]; }
+
+    public float GetMaxStatValue(StatType statType)
+    {
+        return statType switch
+        {
+            StatType.Health => maxHealth,
+            StatType.Stamina => maxStamina,
+            StatType.Mana => maxMana,
+            _ => throw new ArgumentOutOfRangeException(nameof(statType), statType, null)
+        };
+    }
     
-    
+    public float GetStatValue(StatType statType)
+    {
+        return statType switch
+        {
+            StatType.Health => health,
+            StatType.Stamina => stamina,
+            StatType.Mana => mana,
+            _ => throw new ArgumentOutOfRangeException(nameof(statType), statType, null)
+        };
+    }
+}
+
+public enum StatType
+{
+    Health, Stamina, Mana
 }

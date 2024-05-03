@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class PlayerMovement : CharacterMover
 {
@@ -17,13 +18,21 @@ public class PlayerMovement : CharacterMover
     private bool ignoreNextJumpInput;
 
     [Header ("Movement settings")] 
-    private readonly List<float> movementSpeed = new List<float>(){ 4f, 10f, 16f };
-    private const float CrouchingSpeedMultiplier = .4f;
-    private const float DefaultSpeedMultiplier = 1f;
-    private const float JumpHeight = 1.8f;
-    private const float JumpMovementReduction = 0.5f;
-    private const float GravityMultiplier = 4f;
+    [SerializeField] private List<float> movementSpeed = new List<float>(){ 4f, 10f, 16f };
+    [SerializeField] private float crouchingSpeedMultiplier = .4f;
+    [SerializeField] private float defaultSpeedMultiplier = 1f;
+    [SerializeField] private float jumpHeight = 1.8f;
+    [SerializeField] private float jumpMovementReduction = 0.5f;
+    [SerializeField] private float gravityMultiplier = 4f;
 
+    [Header("Stamina Information")]
+    [SerializeField] private float playerStamina;
+    [SerializeField] private float playerStaminaUseMultiplier;
+    private const float BaseJumpStaminaCost = 5f;
+
+    [Header("Events")] 
+    private Action onJump;
+    private Action onSprint;
 
     private void Start ()
     {
@@ -36,9 +45,9 @@ public class PlayerMovement : CharacterMover
         };
 
         currentSpeed = movementSpeed[(int)MovementType.Run];
-        speedMultiplier = DefaultSpeedMultiplier;
+        speedMultiplier = defaultSpeedMultiplier;
 
-        PlayerInput input = InputManager.GetInputHandle();
+        var input = InputManager.GetInputHandle();
 
         // Forwards Movement
         input.AddListenerOnButtonDown(ChangeForwardMovementState, "Move Forwards");
@@ -71,17 +80,21 @@ public class PlayerMovement : CharacterMover
         // Jumping
         input.AddListenerOnButtonDown(Jump, "Jump");
         input.AddListenerOnButtonUp(Jump, "Jump");
-
+        
+        PlayerManager.SubscribeToOnPlayerStaminaChange(UpdatePlayerCurrentStamina);
+        PlayerManager.SubscribeToOnPlayerStaminaMultiplierChange(UpdatePlayerStaminaUseMultiplier);
     }
     
     private void Update()
     {
-        Vector3 horizontalMovement = movementVector.normalized * (currentSpeed * speedMultiplier);
+        var horizontalMovement = movementVector.normalized * (currentSpeed * speedMultiplier);
+
+        IsMoving = (horizontalMovement.magnitude != 0f);
         
         if (!IsGrounded)
         {
-            Vector3 jumpingMovementMask = new Vector3(Mathf.Sign(jumpingHorizontalMovementVector.x), 0f, Mathf.Sign(jumpingHorizontalMovementVector.z)) - jumpingHorizontalMovementVector.normalized;
-            horizontalMovement *= JumpMovementReduction;
+            var jumpingMovementMask = new Vector3(Mathf.Sign(jumpingHorizontalMovementVector.x), 0f, Mathf.Sign(jumpingHorizontalMovementVector.z)) - jumpingHorizontalMovementVector.normalized;
+            horizontalMovement *= jumpMovementReduction;
             horizontalMovement.Scale(jumpingMovementMask);
             horizontalMovement += jumpingHorizontalMovementVector;
         }
@@ -93,49 +106,50 @@ public class PlayerMovement : CharacterMover
         ApplyGravity();
         
         Move(adjustedMovementVector);
+        
+        if (IsMoving && IsSprinting) onSprint.Invoke();
     }
 
     #region Movement
 
         private void Jump ()
         {
-            if (ignoreNextJumpInput){
+            if (ignoreNextJumpInput || !CanJump()){
                 ignoreNextJumpInput = false;
                 return;
             }
             ignoreNextJumpInput = true;
-            if (IsGrounded)
-            {
-                jumpingHorizontalMovementVector = adjustedMovementVector;
-                jumpingHorizontalMovementVector.y = 0f;
-                adjustedMovementVector.y = Mathf.Sqrt(Physics.gravity.y * GravityMultiplier * -2f * JumpHeight);
-                IsJumping = true;
-            }
+            if (!IsGrounded) return;
+            jumpingHorizontalMovementVector = adjustedMovementVector;
+            jumpingHorizontalMovementVector.y = 0f;
+            adjustedMovementVector.y = Mathf.Sqrt(Physics.gravity.y * gravityMultiplier * -2f * jumpHeight);
+            IsJumping = true;
+            
+            onJump?.Invoke();
         }
 
         private void ApplyGravity ()
         {
             if (IsGrounded && adjustedMovementVector.y < 0f)
             {
-                adjustedMovementVector.y = -2f;
+                adjustedMovementVector.y = -4f;
                 IsJumping = false;
             }
             else
             {
-                adjustedMovementVector.y += Physics.gravity.y * GravityMultiplier * Time.deltaTime;
+                adjustedMovementVector.y += Physics.gravity.y * gravityMultiplier * Time.deltaTime;
             }
         }
 
         private void ChangeForwardMovementState ()
         {
-            Vector3 directionalMovement = new Vector3(0f, 0f, 1f);
             if (moveStatus[MoveDirection.Forwards]) 
             {
-                movementVector -= directionalMovement;
+                movementVector -= Vector3.forward;
             } 
             else 
             {
-                movementVector += directionalMovement;
+                movementVector += Vector3.forward;
             }
 
             moveStatus[MoveDirection.Forwards] = !moveStatus[MoveDirection.Forwards];
@@ -143,14 +157,13 @@ public class PlayerMovement : CharacterMover
 
         private void ChangeBackwardsMovementState ()
         {
-            Vector3 directionalMovement = new Vector3(0f, 0f, -1f);
             if (moveStatus[MoveDirection.Backwards]) 
             {
-                movementVector -= directionalMovement;
+                movementVector -= Vector3.back;
             } 
             else 
             {
-                movementVector += directionalMovement;
+                movementVector += Vector3.back;
             }
 
             moveStatus[MoveDirection.Backwards] = !moveStatus[MoveDirection.Backwards];
@@ -158,14 +171,13 @@ public class PlayerMovement : CharacterMover
 
         private void ChangeLeftMovementState ()
         {
-            Vector3 directionalMovement = new Vector3(-1f, 0f, 0f);
             if (moveStatus[MoveDirection.Left]) 
             {
-                movementVector -= directionalMovement;
+                movementVector -= Vector3.left;
             } 
             else 
             {
-                movementVector += directionalMovement;
+                movementVector += Vector3.left;
             }
 
             moveStatus[MoveDirection.Left] = !moveStatus[MoveDirection.Left];
@@ -173,14 +185,13 @@ public class PlayerMovement : CharacterMover
 
         private void ChangeRightMovementState ()
         {
-            Vector3 directionalMovement = new Vector3(1f, 0f, 0f);
             if (moveStatus[MoveDirection.Right]) 
             {
-                movementVector -= directionalMovement;
+                movementVector -= Vector3.right;
             } 
             else 
             {
-                movementVector += directionalMovement;
+                movementVector += Vector3.right;
             }
 
             moveStatus[MoveDirection.Right] = !moveStatus[MoveDirection.Right];
@@ -194,7 +205,7 @@ public class PlayerMovement : CharacterMover
         {
             IsCrouching = !IsCrouching;
 
-            speedMultiplier = IsCrouching ? CrouchingSpeedMultiplier : DefaultSpeedMultiplier;
+            speedMultiplier = IsCrouching ? crouchingSpeedMultiplier : defaultSpeedMultiplier;
 
             if (IsCrouching && IsSprinting)
             {
@@ -251,10 +262,10 @@ public class PlayerMovement : CharacterMover
                 ignoreNextSprintInput = true;
                 return;
             }
-
+            
             IsSprinting = !IsSprinting;
 
-            if (IsSprinting)
+            if (IsSprinting && CanSprint())
             {
                 currentSpeed = movementSpeed[(int)MovementType.Sprint];
                 Sprint();
@@ -266,4 +277,20 @@ public class PlayerMovement : CharacterMover
         }
 
     #endregion
+
+    private void UpdatePlayerStaminaUseMultiplier(float multiplier) { playerStaminaUseMultiplier = multiplier; }
+
+    private void UpdatePlayerCurrentStamina(float stamina)
+    {
+        playerStamina = stamina;
+        if (stamina == 0f && IsSprinting) ChangeSprintingState();
+    }
+
+    private bool CanJump() { return playerStamina >= BaseJumpStaminaCost * playerStaminaUseMultiplier; }
+
+    private bool CanSprint() { return playerStamina != 0f; }
+    
+    public void AddOnJumpListener(Action listener) { onJump += listener; }
+    
+    public void AddOnSprintListener(Action listener) { onSprint += listener; }
 }

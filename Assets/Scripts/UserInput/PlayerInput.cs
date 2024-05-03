@@ -31,19 +31,20 @@ public class PlayerInput : MonoBehaviour
 
     private void Update ()
     {
-        foreach (KeyValuePair<string, KeyCode> button in buttonAssignment)
+        foreach (var button in buttonAssignment)
         {
-            bool previousState = buttonStates[button.Value];
+            var previousState = buttonStates[button.Value];
 
             buttonStates[button.Value] = Input.GetKey(button.Value);
 
-            if (buttonStates[button.Value] && !previousState)
+            switch (buttonStates[button.Value])
             {
-                OnButtonDown[button.Key]?.Invoke();
-            }
-            else if (!buttonStates[button.Value] && previousState) 
-            {
-                OnButtonUp[button.Key]?.Invoke();
+                case true when !previousState:
+                    OnButtonDown[button.Key]?.Invoke();
+                    break;
+                case false when previousState:
+                    OnButtonUp[button.Key]?.Invoke();
+                    break;
             }
         }
     } 
@@ -64,7 +65,7 @@ public class PlayerInput : MonoBehaviour
     {
         buttonStates = new Dictionary<KeyCode, bool>();
 
-        foreach (KeyValuePair<string, KeyCode> button in buttonAssignment){
+        foreach (var button in buttonAssignment){
             buttonStates.Add(button.Value, false);
         }
     }
@@ -74,7 +75,7 @@ public class PlayerInput : MonoBehaviour
         OnButtonDown = new Dictionary<string, Action>();
         OnButtonUp = new Dictionary<string, Action>();
 
-        foreach (string action in InputManager.defaultInputCodes){
+        foreach (var action in InputManager.defaultInputCodes){
             OnButtonDown.Add(action, () => {});
             OnButtonUp.Add(action, () => {});
         }

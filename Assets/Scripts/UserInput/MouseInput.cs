@@ -35,7 +35,7 @@ public class MouseInput : MonoBehaviour
         UpdateEventDictionaries();
     }
 
-    private void Start ()
+    public void SetUp ()
     {
         playerCamera = CameraManager.GetCurrentCamera();
     }
@@ -49,19 +49,20 @@ public class MouseInput : MonoBehaviour
 
     private void Update ()
     {
-        foreach (KeyValuePair<string, int> button in buttonAssignment)
+        foreach (var button in buttonAssignment)
         {
-            bool previousState = buttonStates[button.Value];
+            var previousState = buttonStates[button.Value];
 
             buttonStates[button.Value] = Input.GetMouseButton(button.Value);
 
-            if (buttonStates[button.Value] && !previousState)
+            switch (buttonStates[button.Value])
             {
-                OnButtonDown[button.Key]?.Invoke();
-            }
-            else if (!buttonStates[button.Value] && previousState) 
-            {
-                OnButtonUp[button.Key]?.Invoke();
+                case true when !previousState:
+                    OnButtonDown[button.Key]?.Invoke();
+                    break;
+                case false when previousState:
+                    OnButtonUp[button.Key]?.Invoke();
+                    break;
             }
         }
 
@@ -74,7 +75,7 @@ public class MouseInput : MonoBehaviour
 
         if (Physics.Raycast(ray, out var hit, range, layerMask))
         {
-            GameObject obj = hit.collider.transform.gameObject;
+            var obj = hit.collider.transform.gameObject;
 
             if (!obj.CompareTag("Interactable")) return;
             var interactor = obj.GetComponent<EntityInteraction>();
@@ -120,7 +121,7 @@ public class MouseInput : MonoBehaviour
     {
         buttonStates = new Dictionary<int, bool>();
 
-        foreach (KeyValuePair<string, int> button in buttonAssignment){
+        foreach (var button in buttonAssignment){
             buttonStates.Add(button.Value, false);
         }
     }
