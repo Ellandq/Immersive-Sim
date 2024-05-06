@@ -30,21 +30,24 @@ public class InputManager : MonoBehaviour, IManager
     public static InputManager GetInstance() { return Instance;}
 
     public static PlayerInput GetInputHandle (){ return Instance.inputHandle; }
+    
+    public static bool IsKeyDown(KeyCode input) { return Instance.inputHandle.GetButtonState(input); }
 
-
+    public static bool IsKeyDown(string input) { return Instance.inputHandle.GetButtonState(input); }
+    
     public static MouseInput GetMouseHandle (){
         return Instance.mouseInputHandle;
     }
 
     public static List<string> defaultInputCodes = new List<string>(){
         "Move Left", "Move Right", "Move Forwards", "Move Backwards", 
-        "Jump", "Sprint", "Crouch", "Walk", "Interact", "Inventory", "Character Info", 
+        "Jump", "Sprint", "Crouch", "Walk", "Interact", "Inventory", "Escape", 
         "Item Slot 1", "Item Slot 2", "Item Slot 3", "Item Slot 4", "Item Slot 5",
     };
 
     public static List<KeyCode> defaultInputKeys = new List<KeyCode>(){
         KeyCode.A, KeyCode.D, KeyCode.W, KeyCode.S,
-        KeyCode.Space, KeyCode.LeftShift, KeyCode.LeftControl, KeyCode.LeftAlt, KeyCode.E, KeyCode.Tab, KeyCode.C,
+        KeyCode.Space, KeyCode.LeftShift, KeyCode.LeftControl, KeyCode.LeftAlt, KeyCode.E, KeyCode.Tab, KeyCode.Escape,
         KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4, KeyCode.Alpha5
     };
 

@@ -16,6 +16,7 @@ public class PlayerMovement : CharacterMover
     private bool ignoreNextSprintInput;
     private bool ignoreNextWalkingInput;
     private bool ignoreNextJumpInput;
+    private bool movementEnabled;
 
     [Header ("Movement settings")] 
     [SerializeField] private List<float> movementSpeed = new List<float>(){ 4f, 10f, 16f };
@@ -46,6 +47,7 @@ public class PlayerMovement : CharacterMover
 
         currentSpeed = movementSpeed[(int)MovementType.Run];
         speedMultiplier = defaultSpeedMultiplier;
+        movementEnabled = true;
 
         var input = InputManager.GetInputHandle();
 
@@ -114,6 +116,7 @@ public class PlayerMovement : CharacterMover
 
         private void Jump ()
         {
+            if (!movementEnabled) return;
             if (ignoreNextJumpInput || !CanJump()){
                 ignoreNextJumpInput = false;
                 return;
@@ -143,6 +146,7 @@ public class PlayerMovement : CharacterMover
 
         private void ChangeForwardMovementState ()
         {
+            if (!movementEnabled) return;
             if (moveStatus[MoveDirection.Forwards]) 
             {
                 movementVector -= Vector3.forward;
@@ -157,6 +161,7 @@ public class PlayerMovement : CharacterMover
 
         private void ChangeBackwardsMovementState ()
         {
+            if (!movementEnabled) return;
             if (moveStatus[MoveDirection.Backwards]) 
             {
                 movementVector -= Vector3.back;
@@ -171,6 +176,7 @@ public class PlayerMovement : CharacterMover
 
         private void ChangeLeftMovementState ()
         {
+            if (!movementEnabled) return;
             if (moveStatus[MoveDirection.Left]) 
             {
                 movementVector -= Vector3.left;
@@ -185,6 +191,7 @@ public class PlayerMovement : CharacterMover
 
         private void ChangeRightMovementState ()
         {
+            if (!movementEnabled) return;
             if (moveStatus[MoveDirection.Right]) 
             {
                 movementVector -= Vector3.right;
@@ -199,10 +206,37 @@ public class PlayerMovement : CharacterMover
 
     #endregion
 
-    #region Movement Type 
+    #region Movement Type
+
+        public void EnableMovement()
+        {
+            movementEnabled = true;
+            
+            if (InputManager.IsKeyDown("Move Backwards")) ChangeBackwardsMovementState();
+            if (InputManager.IsKeyDown("Move Forwards")) ChangeForwardMovementState();
+            if (InputManager.IsKeyDown("Move Left")) ChangeLeftMovementState();
+            if (InputManager.IsKeyDown("Move Right")) ChangeRightMovementState();
+            
+            if (InputManager.IsKeyDown("Crouch")) ChangeCrouchingState();
+            if (InputManager.IsKeyDown("Sprint")) ChangeSprintingState();
+            if (InputManager.IsKeyDown("Jump")) ignoreNextJumpInput = true;
+        }
+
+        public void DisableMovement()
+        {
+            if (moveStatus[MoveDirection.Right]) ChangeRightMovementState();
+            if (moveStatus[MoveDirection.Left]) ChangeLeftMovementState();
+            if (moveStatus[MoveDirection.Forwards]) ChangeForwardMovementState();
+            if (moveStatus[MoveDirection.Backwards]) ChangeBackwardsMovementState();
+            if (IsCrouching) ChangeCrouchingState();
+            if (IsSprinting) ChangeSprintingState();
+            
+            movementEnabled = false;
+        }
 
         private void ChangeCrouchingState ()
         {
+            if (!movementEnabled) return;
             IsCrouching = !IsCrouching;
 
             speedMultiplier = IsCrouching ? crouchingSpeedMultiplier : defaultSpeedMultiplier;
@@ -251,6 +285,7 @@ public class PlayerMovement : CharacterMover
 
         private void ChangeSprintingState ()
         {
+            if (!movementEnabled) return;
             if (ignoreNextSprintInput)
             {
                 ignoreNextSprintInput = false;

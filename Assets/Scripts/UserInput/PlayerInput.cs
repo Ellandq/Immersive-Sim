@@ -88,4 +88,8 @@ public class PlayerInput : MonoBehaviour
     public bool GetButtonState (KeyCode key){
         return buttonStates[key];
     }
+    
+    public bool GetButtonState (string action){
+        return buttonStates[buttonAssignment[action]];
+    }
 }

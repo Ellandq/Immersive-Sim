@@ -60,4 +60,8 @@ public class PlayerManager : MonoBehaviour, IManager
             .GetStatistics())
             .AddStaminaChangeListener(listener);
     }
+    
+    public static void EnableMovement (){ Instance.player.GetMovementHandle().EnableMovement(); }
+    
+    public static void DisableMovement (){ Instance.player.GetMovementHandle().DisableMovement(); }
 }
