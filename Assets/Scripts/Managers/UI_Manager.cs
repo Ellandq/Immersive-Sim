@@ -7,13 +7,26 @@ using UnityEngine;
 public class UI_Manager : MonoBehaviour, IManager
 {
     private static UI_Manager Instance;
+    
+    [Header ("UI References")]
     [SerializeField] private UI_ItemList UI;
+
+    [Header("UI Info")] 
+    private bool isPauseMenuEnabled;
 
     private void Awake()
     {
         Instance = this;
+        isPauseMenuEnabled = false;
     }
 
+    private void Start()
+    {
+        var inputHandle = InputManager.GetInputHandle();
+        
+        inputHandle.AddListenerOnButtonDown(HandleInventoryDisplay, "Inventory");
+    }
+    
     public void SetUp()
     {
         foreach (var component in UI)
@@ -23,15 +36,22 @@ public class UI_Manager : MonoBehaviour, IManager
             switch (component.Key)
             {
                 case UI_Key.Reticle:
+                    component.IsEnabled = true;
                     break;
                 case UI_Key.StatDisplay_Health:
                     ((StatDisplay)uiComponent).SetUpDisplay(StatType.Health);
+                    component.IsEnabled = true;
                     break;
                 case UI_Key.StatDisplay_Stamina:
                     ((StatDisplay)uiComponent).SetUpDisplay(StatType.Stamina);
+                    component.IsEnabled = true;
                     break;
                 case UI_Key.StatDisplay_Mana:
                     ((StatDisplay)uiComponent).SetUpDisplay(StatType.Mana);
+                    component.IsEnabled = true;
+                    break;
+                case UI_Key.Inventory:
+                    component.IsEnabled = false;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -40,6 +60,25 @@ public class UI_Manager : MonoBehaviour, IManager
     }
 
     public static UI_Manager GetInstance() { return Instance; }
+
+    private void HandleInventoryDisplay()
+    {
+        if (isPauseMenuEnabled) return;
+        
+        var display = (InventoryDisplay)UI.GetValue(UI_Key.Inventory);
+
+        if (display.IsEnabled)
+        {
+            UI.GetValue(UI_Key.Reticle).EnableComponent();
+            display.DisableComponent();
+        }
+        else
+        {
+            UI.GetValue(UI_Key.Reticle).DisableComponent();
+            display.EnableComponent();
+            display.SetUp();
+        }
+    }
 
 }
 
@@ -96,6 +135,8 @@ public class UI_Item
 {
     [SerializeField] public UI_Key Key;
     [SerializeField] public UI_Component Value;
+    
+    public bool IsEnabled { get; set; }
 
     public UI_Item(UI_Key key, UI_Component value)
     {
@@ -108,7 +149,7 @@ public enum UI_Key
 {
     // HUD
     // MIDDLE SECTION
-    Reticle,
+    Reticle, Inventory,
     // LEFT SECTION
     
     // RIGHT SECTION

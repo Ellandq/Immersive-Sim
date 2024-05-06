@@ -57,6 +57,8 @@ public class Inventory : MonoBehaviour
 
     public Dictionary<ItemType, ItemCollection> GetItems() { return items; }
 
+    public ItemCollection GetCollection(ItemType itemType) { return items[itemType]; }
+
     private void OnValidate()
     {
         InitializeInventory();
