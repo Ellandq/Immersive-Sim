@@ -56,6 +56,7 @@ public class InventoryDisplay : UI_Component
             .GetItems();
 
         var rowCount = Math.Max(
+            // ReSharper disable once PossibleLossOfFraction
             Mathf.CeilToInt((items.Count + 1) / 8), 3);
 
         for (var rowIndex = 0; rowIndex < rowCount; rowIndex++)
@@ -71,7 +72,7 @@ public class InventoryDisplay : UI_Component
             itemRows[rowIndex].SetUp(
                 items.Count > rowIndex * 8
                     ? items.GetRange(rowIndex * 8,
-                        ((rowIndex + 1) * 8) >= items.Count ? items.Count - 1 : (rowIndex + 1) * 8)
+                        items.Count % 8)
                     : new List<Item>());
         }
     }
@@ -84,9 +85,10 @@ public class InventoryDisplay : UI_Component
         {
             Destroy(itemRows[index].gameObject);
         }
+        itemRows.Clear();
     }
 
-    public void ShowCollection(ItemType itemType)
+    private void ShowCollection(ItemType itemType)
     {
         currentDisplayedCollection = itemType;
         ClearRows();
