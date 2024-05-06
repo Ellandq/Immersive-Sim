@@ -20,7 +20,7 @@ public class UI_Component : MonoBehaviour
     private Coroutine fadeCoroutine;
     private Coroutine fadeCooldownCoroutine;
     
-    public void EnableComponent(bool instant = true)
+    public virtual void EnableComponent(bool instant = true)
     {
         if (fadeCoroutine != null) StopCoroutine(fadeCoroutine);
         if (instant)
@@ -34,7 +34,7 @@ public class UI_Component : MonoBehaviour
         fadeCoroutine =  StartCoroutine(FadeIn());
     }
     
-    public void DisableComponent(bool instant = true)
+    public virtual void DisableComponent(bool instant = true)
     {
         if (fadeCoroutine != null) StopCoroutine(fadeCoroutine);
         if (instant)

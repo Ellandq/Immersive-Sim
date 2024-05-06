@@ -49,6 +49,18 @@ public class CameraManager : MonoBehaviour, IManager
         cutsceneCamera.Initialize(0f, playerBody);
     }
 
+    public static void ChangeCameraState(CursorLockMode lockMode)
+    {
+        Cursor.lockState = lockMode;
+        Instance.cameraMovementEnabled = lockMode switch
+        {
+            CursorLockMode.None => false,
+            CursorLockMode.Locked => true,
+            CursorLockMode.Confined => true,
+            _ => throw new ArgumentOutOfRangeException(nameof(lockMode), lockMode, null)
+        };
+    }
+
     private void Update ()
     {
         if (!cameraMovementEnabled) return;
