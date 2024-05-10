@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DisplayedItem : UI_Component
+public class UI_Inventory_DisplayedItem : UI_Component
 {
     private Item item;
 

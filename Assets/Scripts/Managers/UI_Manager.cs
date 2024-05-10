@@ -39,15 +39,15 @@ public class UI_Manager : MonoBehaviour, IManager
                     component.IsEnabled = true;
                     break;
                 case UI_Key.StatDisplay_Health:
-                    ((StatDisplay)uiComponent).SetUpDisplay(StatType.Health);
+                    ((UI_StatDisplay)uiComponent).SetUpDisplay(StatType.Health);
                     component.IsEnabled = true;
                     break;
                 case UI_Key.StatDisplay_Stamina:
-                    ((StatDisplay)uiComponent).SetUpDisplay(StatType.Stamina);
+                    ((UI_StatDisplay)uiComponent).SetUpDisplay(StatType.Stamina);
                     component.IsEnabled = true;
                     break;
                 case UI_Key.StatDisplay_Mana:
-                    ((StatDisplay)uiComponent).SetUpDisplay(StatType.Mana);
+                    ((UI_StatDisplay)uiComponent).SetUpDisplay(StatType.Mana);
                     component.IsEnabled = true;
                     break;
                 case UI_Key.Inventory:
@@ -65,7 +65,7 @@ public class UI_Manager : MonoBehaviour, IManager
     {
         if (isPauseMenuEnabled) return;
         
-        var display = (InventoryDisplay)UI.GetValue(UI_Key.Inventory);
+        var display = (UI_Inventory)UI.GetValue(UI_Key.Inventory);
 
         if (display.IsEnabled)
         {

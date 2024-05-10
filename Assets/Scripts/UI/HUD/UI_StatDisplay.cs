@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Slider = UnityEngine.UI.Slider;
 
-public class StatDisplay : UI_Component
+public class UI_StatDisplay : UI_Component
 {
     [Header("Object References")]
     [SerializeField] private Slider slider;

@@ -224,12 +224,16 @@ public class PlayerMovement : CharacterMover
 
         public void DisableMovement()
         {
+            
             if (moveStatus[MoveDirection.Right]) ChangeRightMovementState();
             if (moveStatus[MoveDirection.Left]) ChangeLeftMovementState();
             if (moveStatus[MoveDirection.Forwards]) ChangeForwardMovementState();
             if (moveStatus[MoveDirection.Backwards]) ChangeBackwardsMovementState();
+            
             if (IsCrouching) ChangeCrouchingState();
             if (IsSprinting) ChangeSprintingState();
+            
+            if (InputManager.IsKeyDown("Jump")) ignoreNextJumpInput = false;
             
             movementEnabled = false;
         }

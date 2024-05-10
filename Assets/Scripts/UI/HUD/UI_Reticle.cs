@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
 
-public class Reticle : UI_Component
+public class UI_Reticle : UI_Component
 {
     [Header("Object References")]
     [SerializeField] private TMP_Text interactionInfoDisplay;

@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class InventoryDisplay : UI_Component
+public class UI_Inventory : UI_Component
 {
     [Header("Display Information")]
     [SerializeField] private Vector3 firstRowPosition;
     private Inventory playerInventory;
     private ItemType currentDisplayedCollection;
-    private List<ItemRow> itemRows;
+    private List<UI_Inventory_ItemRow> itemRows;
     private const float VerticalRowOffset = 143.65f;
     
     [Header("Object References")]
@@ -19,7 +19,7 @@ public class InventoryDisplay : UI_Component
 
     private void Start()
     {
-        itemRows = new List<ItemRow>();
+        itemRows = new List<UI_Inventory_ItemRow>();
     }
 
     public override void EnableComponent(bool instant = true)
@@ -49,7 +49,7 @@ public class InventoryDisplay : UI_Component
 
     private void CreateRows()
     {
-        itemRows ??= new List<ItemRow>();
+        itemRows ??= new List<UI_Inventory_ItemRow>();
 
         var items = playerInventory
             .GetCollection(currentDisplayedCollection)
@@ -67,7 +67,7 @@ public class InventoryDisplay : UI_Component
                         panel.transform.position + new Vector3(0f, -VerticalRowOffset * (rowIndex - 1) / 5.5f, 0f), 
                         Quaternion.identity, 
                         panel)
-                    .GetComponent<ItemRow>());
+                    .GetComponent<UI_Inventory_ItemRow>());
             
             itemRows[rowIndex].SetUp(
                 items.Count > rowIndex * 8
@@ -79,7 +79,7 @@ public class InventoryDisplay : UI_Component
 
     private void ClearRows()
     {
-        itemRows ??= new List<ItemRow>();
+        itemRows ??= new List<UI_Inventory_ItemRow>();
         if (itemRows.Count == 0) return;
         for (var index = itemRows.Count - 1; index >= 0; index--)
         {

@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemRow : UI_Component
+public class UI_Inventory_ItemRow : UI_Component
 {
-    [SerializeField] private List<DisplayedItem> displayedItems;
+    [SerializeField] private List<UI_Inventory_DisplayedItem> displayedItems;
     
     public void SetUp(List<Item> items)
     {
