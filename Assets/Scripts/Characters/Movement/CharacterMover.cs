@@ -14,6 +14,12 @@ public class CharacterMover : MonoBehaviour
     private Coroutine coroutine;
 
     [Header("Movement Settings")] 
+    [SerializeField] protected List<float> movementSpeed = new List<float>(){ 5f, 10f, 16f };
+    [SerializeField] protected float crouchingSpeedMultiplier = .4f;
+    [SerializeField] protected float defaultSpeedMultiplier = 1f;
+    [SerializeField] protected float jumpHeight = 1.8f;
+    [SerializeField] protected float jumpMovementReduction = 0.5f;
+    [SerializeField] protected float gravityMultiplier = 4f;
     private Quaternion currentMovementAngle;
 
     [Header("Crouch Settings")]
@@ -25,14 +31,22 @@ public class CharacterMover : MonoBehaviour
     private Vector2 animationState;
     private Vector2 targetAnimationState;
     private int xVelHash;
+    private int yVelHash;
     private int zVelHash;
+    private int groundHash;
+    private int jumpHash;
+    private int fallingHash;
 
 
     private void Awake ()
     {
         // Fetching Hash values from animator
         xVelHash = Animator.StringToHash("X_Velocity");
+        yVelHash = Animator.StringToHash("Y_Velocity");
         zVelHash = Animator.StringToHash("Z_Velocity");
+        jumpHash = Animator.StringToHash("Jump");
+        groundHash = Animator.StringToHash("Grounded");
+        fallingHash = Animator.StringToHash("Falling");
         
         // Initializing variables
         groundMask = (1 << LayerMask.NameToLayer("Ground")) | (1 << LayerMask.NameToLayer("Prop"));
@@ -48,7 +62,16 @@ public class CharacterMover : MonoBehaviour
     protected void Move (Vector3 moveVector)
     {
         // If the player is grounded adjust the directional vector
-        if (IsGrounded) UpdateCurrentMovementAngle();
+        if (IsGrounded)
+        {
+            UpdateCurrentMovementAngle();
+            SetAnimationGrounding(true);
+        }
+        else
+        {
+            SetAnimationGrounding(false);
+            animator.SetFloat(zVelHash, characterRigidbody.velocity.y);
+        }
         
         // Adjusting current animation
         targetAnimationState = ConvertMovementVectorToAnimation(moveVector);
@@ -91,7 +114,20 @@ public class CharacterMover : MonoBehaviour
 
     protected void Jump()
     {
-        // TODO
+        animator.SetTrigger(jumpHash);
+    }
+
+    public void JumpAddForce()
+    {
+        characterRigidbody.AddForce(-characterRigidbody.velocity.y * Vector3.up, ForceMode.VelocityChange);
+        characterRigidbody.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
+        animator.ResetTrigger(jumpHash);
+    }
+
+    private void SetAnimationGrounding(bool isGrounded)
+    {
+        animator.SetBool(fallingHash, !isGrounded);
+        animator.SetBool(groundHash, isGrounded);
     }
 
     private void UpdateCurrentMovementAngle()
@@ -99,7 +135,7 @@ public class CharacterMover : MonoBehaviour
         currentMovementAngle = Quaternion.Euler(0, transform.eulerAngles.y, 0);
     }
 
-    protected bool IsGrounded =>  Physics.CheckSphere(groundCheck.position, .5f, groundMask);
+    protected bool IsGrounded =>  Physics.CheckSphere(groundCheck.position, .7f, groundMask);
     
     protected bool IsMoving { get; set; }
     

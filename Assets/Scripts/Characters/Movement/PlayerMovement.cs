@@ -15,14 +15,6 @@ public class PlayerMovement : CharacterMover
     private float speedMultiplier;
     private bool movementEnabled;
 
-    [Header ("Movement settings")] 
-    [SerializeField] private List<float> movementSpeed = new List<float>(){ 5f, 10f, 16f };
-    [SerializeField] private float crouchingSpeedMultiplier = .4f;
-    [SerializeField] private float defaultSpeedMultiplier = 1f;
-    [SerializeField] private float jumpHeight = 1.8f;
-    [SerializeField] private float jumpMovementReduction = 0.5f;
-    [SerializeField] private float gravityMultiplier = 4f;
-
     [Header("Stamina Information")]
     [SerializeField] private float playerStamina;
     [SerializeField] private float playerStaminaUseMultiplier;
@@ -117,6 +109,7 @@ public class PlayerMovement : CharacterMover
             adjustedMovementVector.y = Mathf.Sqrt(Physics.gravity.y * gravityMultiplier * -2f * jumpHeight);
             IsJumping = true;
             
+            Jump();
             onJump?.Invoke();
         }
 
@@ -186,11 +179,11 @@ public class PlayerMovement : CharacterMover
         {
             movementEnabled = true;
             const ButtonState state = ButtonState.Down;
+            
             if (InputManager.IsKeyDown("Move Backwards")) ChangeBackwardsMovementState(state);
             if (InputManager.IsKeyDown("Move Forwards")) ChangeForwardMovementState(state);
             if (InputManager.IsKeyDown("Move Left")) ChangeLeftMovementState(state);
             if (InputManager.IsKeyDown("Move Right")) ChangeRightMovementState(state);
-            
             if (InputManager.IsKeyDown("Crouch")) ChangeCrouchingState(state);
             if (InputManager.IsKeyDown("Sprint")) ChangeSprintingState(state);
         }
