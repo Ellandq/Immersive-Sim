@@ -13,13 +13,10 @@ public class PlayerMovement : CharacterMover
     private Vector3 jumpingHorizontalMovementVector;
     private float currentSpeed;
     private float speedMultiplier;
-    private bool ignoreNextSprintInput;
-    private bool ignoreNextWalkingInput;
-    private bool ignoreNextJumpInput;
     private bool movementEnabled;
 
     [Header ("Movement settings")] 
-    [SerializeField] private List<float> movementSpeed = new List<float>(){ 4f, 10f, 16f };
+    [SerializeField] private List<float> movementSpeed = new List<float>(){ 5f, 10f, 16f };
     [SerializeField] private float crouchingSpeedMultiplier = .4f;
     [SerializeField] private float defaultSpeedMultiplier = 1f;
     [SerializeField] private float jumpHeight = 1.8f;
@@ -37,6 +34,7 @@ public class PlayerMovement : CharacterMover
 
     private void Start ()
     {
+        // Initializing variables
         moveStatus = new Dictionary<MoveDirection, bool>(4)
         {
             { MoveDirection.Forwards, false },
@@ -52,42 +50,34 @@ public class PlayerMovement : CharacterMover
         var input = InputManager.GetInputHandle();
 
         // Forwards Movement
-        input.AddListenerOnButtonDown(ChangeForwardMovementState, "Move Forwards");
-        input.AddListenerOnButtonUp(ChangeForwardMovementState, "Move Forwards");
+        input.AddListenerOnInputAction(ChangeForwardMovementState, "Move Forwards");
 
         // Backwards Movement
-        input.AddListenerOnButtonDown(ChangeBackwardsMovementState, "Move Backwards");
-        input.AddListenerOnButtonUp(ChangeBackwardsMovementState, "Move Backwards");
+        input.AddListenerOnInputAction(ChangeBackwardsMovementState, "Move Backwards");
 
         // Left Movement
-        input.AddListenerOnButtonDown(ChangeLeftMovementState, "Move Left");
-        input.AddListenerOnButtonUp(ChangeLeftMovementState, "Move Left");
+        input.AddListenerOnInputAction(ChangeLeftMovementState, "Move Left");
 
         // Right Movement
-        input.AddListenerOnButtonDown(ChangeRightMovementState, "Move Right");
-        input.AddListenerOnButtonUp(ChangeRightMovementState, "Move Right");
+        input.AddListenerOnInputAction(ChangeRightMovementState, "Move Right");
 
         // Sprinting
-        input.AddListenerOnButtonDown(ChangeSprintingState, "Sprint");
-        input.AddListenerOnButtonUp(ChangeSprintingState, "Sprint");
+        input.AddListenerOnInputAction(ChangeSprintingState, "Sprint");
 
         // Walking
-        input.AddListenerOnButtonDown(ChangeWalkingState, "Walk");
-        input.AddListenerOnButtonUp(ChangeWalkingState, "Walk");
+        input.AddListenerOnInputAction(ChangeWalkingState, "Walk");
 
         // Crouching
-        input.AddListenerOnButtonDown(ChangeCrouchingState, "Crouch");
-        input.AddListenerOnButtonUp(ChangeCrouchingState, "Crouch");
+        input.AddListenerOnInputAction(ChangeCrouchingState, "Crouch");
 
         // Jumping
-        input.AddListenerOnButtonDown(Jump, "Jump");
-        input.AddListenerOnButtonUp(Jump, "Jump");
+        input.AddListenerOnInputAction(Jump, "Jump");
         
         PlayerManager.SubscribeToOnPlayerStaminaChange(UpdatePlayerCurrentStamina);
         PlayerManager.SubscribeToOnPlayerStaminaMultiplierChange(UpdatePlayerStaminaUseMultiplier);
     }
     
-    private void Update()
+    private void FixedUpdate()
     {
         var horizontalMovement = movementVector.normalized * (currentSpeed * speedMultiplier);
 
@@ -109,20 +99,19 @@ public class PlayerMovement : CharacterMover
         
         Move(adjustedMovementVector);
         
-        if (IsMoving && IsSprinting) onSprint.Invoke();
+        if (IsMoving && IsSprinting && moveStatus[MoveDirection.Forwards]) onSprint.Invoke();
     }
 
     #region Movement
 
-        private void Jump ()
+        private void Jump (ButtonState state)
         {
-            if (!movementEnabled) return;
-            if (ignoreNextJumpInput || !CanJump()){
-                ignoreNextJumpInput = false;
-                return;
-            }
-            ignoreNextJumpInput = true;
-            if (!IsGrounded) return;
+            if (!movementEnabled
+                || state == ButtonState.Up
+                || !IsGrounded
+                || !CanJump()) return;
+            
+            
             jumpingHorizontalMovementVector = adjustedMovementVector;
             jumpingHorizontalMovementVector.y = 0f;
             adjustedMovementVector.y = Mathf.Sqrt(Physics.gravity.y * gravityMultiplier * -2f * jumpHeight);
@@ -144,62 +133,47 @@ public class PlayerMovement : CharacterMover
             }
         }
 
-        private void ChangeForwardMovementState ()
+        private void ChangeForwardMovementState (ButtonState state)
         {
             if (!movementEnabled) return;
-            if (moveStatus[MoveDirection.Forwards]) 
-            {
-                movementVector -= Vector3.forward;
-            } 
-            else 
-            {
-                movementVector += Vector3.forward;
-            }
+            movementVector += state == ButtonState.Down ? 
+                Vector3.forward :
+                Vector3.back;
+            
+            currentSpeed = state == ButtonState.Down && IsSprinting ? 
+                movementSpeed[(int)MovementType.Sprint] :
+                movementSpeed[(int)MovementType.Run];
+            if (IsSprinting) currentSpeed = movementSpeed[(int)MovementType.Run];
 
             moveStatus[MoveDirection.Forwards] = !moveStatus[MoveDirection.Forwards];
         }
 
-        private void ChangeBackwardsMovementState ()
+        private void ChangeBackwardsMovementState (ButtonState state)
         {
             if (!movementEnabled) return;
-            if (moveStatus[MoveDirection.Backwards]) 
-            {
-                movementVector -= Vector3.back;
-            } 
-            else 
-            {
-                movementVector += Vector3.back;
-            }
+            movementVector += state == ButtonState.Down ? 
+                Vector3.back :
+                Vector3.forward;
 
             moveStatus[MoveDirection.Backwards] = !moveStatus[MoveDirection.Backwards];
         }
 
-        private void ChangeLeftMovementState ()
+        private void ChangeLeftMovementState (ButtonState state)
         {
             if (!movementEnabled) return;
-            if (moveStatus[MoveDirection.Left]) 
-            {
-                movementVector -= Vector3.left;
-            } 
-            else 
-            {
-                movementVector += Vector3.left;
-            }
+            movementVector += state == ButtonState.Down ? 
+                Vector3.left :
+                Vector3.right;
 
             moveStatus[MoveDirection.Left] = !moveStatus[MoveDirection.Left];
         }
 
-        private void ChangeRightMovementState ()
+        private void ChangeRightMovementState (ButtonState state)
         {
             if (!movementEnabled) return;
-            if (moveStatus[MoveDirection.Right]) 
-            {
-                movementVector -= Vector3.right;
-            } 
-            else 
-            {
-                movementVector += Vector3.right;
-            }
+            movementVector += state == ButtonState.Down ? 
+                Vector3.right :
+                Vector3.left;
 
             moveStatus[MoveDirection.Right] = !moveStatus[MoveDirection.Right];
         }
@@ -211,64 +185,45 @@ public class PlayerMovement : CharacterMover
         public void EnableMovement()
         {
             movementEnabled = true;
+            const ButtonState state = ButtonState.Down;
+            if (InputManager.IsKeyDown("Move Backwards")) ChangeBackwardsMovementState(state);
+            if (InputManager.IsKeyDown("Move Forwards")) ChangeForwardMovementState(state);
+            if (InputManager.IsKeyDown("Move Left")) ChangeLeftMovementState(state);
+            if (InputManager.IsKeyDown("Move Right")) ChangeRightMovementState(state);
             
-            if (InputManager.IsKeyDown("Move Backwards")) ChangeBackwardsMovementState();
-            if (InputManager.IsKeyDown("Move Forwards")) ChangeForwardMovementState();
-            if (InputManager.IsKeyDown("Move Left")) ChangeLeftMovementState();
-            if (InputManager.IsKeyDown("Move Right")) ChangeRightMovementState();
-            
-            if (InputManager.IsKeyDown("Crouch")) ChangeCrouchingState();
-            if (InputManager.IsKeyDown("Sprint")) ChangeSprintingState();
-            if (InputManager.IsKeyDown("Jump")) ignoreNextJumpInput = true;
+            if (InputManager.IsKeyDown("Crouch")) ChangeCrouchingState(state);
+            if (InputManager.IsKeyDown("Sprint")) ChangeSprintingState(state);
         }
 
         public void DisableMovement()
         {
+            const ButtonState state = ButtonState.Down;
+            if (moveStatus[MoveDirection.Right]) ChangeRightMovementState(state);
+            if (moveStatus[MoveDirection.Left]) ChangeLeftMovementState(state);
+            if (moveStatus[MoveDirection.Forwards]) ChangeForwardMovementState(state);
+            if (moveStatus[MoveDirection.Backwards]) ChangeBackwardsMovementState(state);
             
-            if (moveStatus[MoveDirection.Right]) ChangeRightMovementState();
-            if (moveStatus[MoveDirection.Left]) ChangeLeftMovementState();
-            if (moveStatus[MoveDirection.Forwards]) ChangeForwardMovementState();
-            if (moveStatus[MoveDirection.Backwards]) ChangeBackwardsMovementState();
-            
-            if (IsCrouching) ChangeCrouchingState();
-            if (IsSprinting) ChangeSprintingState();
-            
-            if (InputManager.IsKeyDown("Jump")) ignoreNextJumpInput = false;
+            if (IsCrouching) ChangeCrouchingState(state);
+            if (IsSprinting) ChangeSprintingState(state);
             
             movementEnabled = false;
         }
 
-        private void ChangeCrouchingState ()
+        private void ChangeCrouchingState (ButtonState state)
         {
             if (!movementEnabled) return;
-            IsCrouching = !IsCrouching;
+            IsCrouching = state == ButtonState.Down;
 
             speedMultiplier = IsCrouching ? crouchingSpeedMultiplier : defaultSpeedMultiplier;
 
-            if (IsCrouching && IsSprinting)
-            {
-                ignoreNextSprintInput = true;
-                ChangeRunningState();
-            }
+            if (IsCrouching && IsSprinting) ChangeRunningState();
             
             Crouch();
         }
 
-        private void ChangeWalkingState ()
+        private void ChangeWalkingState (ButtonState state)
         {
-            if (ignoreNextWalkingInput)
-            {
-                ignoreNextWalkingInput = false;
-                return;
-            }
-
-            if (IsSprinting)
-            {
-                ignoreNextWalkingInput = true;
-                return;
-            }
-
-            IsWalking = !IsWalking;
+            IsWalking = state == ButtonState.Down;
 
             if (IsWalking)
             {
@@ -287,26 +242,15 @@ public class PlayerMovement : CharacterMover
             Run();
         }
 
-        private void ChangeSprintingState ()
+        private void ChangeSprintingState (ButtonState state)
         {
-            if (!movementEnabled) return;
-            if (ignoreNextSprintInput)
-            {
-                ignoreNextSprintInput = false;
-                return;
-            }
-
-            if (IsCrouching)
-            {
-                ignoreNextSprintInput = true;
-                return;
-            }
+            if (!movementEnabled || IsCrouching) return;
             
-            IsSprinting = !IsSprinting;
+            IsSprinting = state == ButtonState.Down;
 
             if (IsSprinting && CanSprint())
             {
-                currentSpeed = movementSpeed[(int)MovementType.Sprint];
+                if (moveStatus[MoveDirection.Forwards]) currentSpeed = movementSpeed[(int)MovementType.Sprint];
                 Sprint();
             }
             else 
@@ -322,7 +266,7 @@ public class PlayerMovement : CharacterMover
     private void UpdatePlayerCurrentStamina(float stamina)
     {
         playerStamina = stamina;
-        if (stamina == 0f && IsSprinting) ChangeSprintingState();
+        if (stamina == 0f && IsSprinting) ChangeSprintingState(ButtonState.Up);
     }
 
     private bool CanJump() { return playerStamina >= BaseJumpStaminaCost * playerStaminaUseMultiplier; }

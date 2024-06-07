@@ -5,9 +5,8 @@ using UnityEngine;
 
 public class PlayerInput : MonoBehaviour
 {
-    [Header ("Events")]
-    private Dictionary<string, Action> OnButtonDown;
-    private Dictionary<string, Action> OnButtonUp;
+    [Header("Events")] 
+    private Dictionary<string, Action<ButtonState>> OnInputAction;
 
     [Header ("Key Information")]
     private Dictionary<string, KeyCode> buttonAssignment;
@@ -25,8 +24,7 @@ public class PlayerInput : MonoBehaviour
     
     private void OnApplicationQuit()
     {
-        OnButtonDown.Clear();
-        OnButtonUp.Clear();
+        OnInputAction.Clear();
     }
 
     private void Update ()
@@ -40,10 +38,10 @@ public class PlayerInput : MonoBehaviour
             switch (buttonStates[button.Value])
             {
                 case true when !previousState:
-                    OnButtonDown[button.Key]?.Invoke();
+                    OnInputAction[button.Key]?.Invoke(ButtonState.Down);
                     break;
                 case false when previousState:
-                    OnButtonUp[button.Key]?.Invoke();
+                    OnInputAction[button.Key]?.Invoke(ButtonState.Up);
                     break;
             }
         }
@@ -72,24 +70,22 @@ public class PlayerInput : MonoBehaviour
 
     private void UpdateEventDictionaries () 
     {
-        OnButtonDown = new Dictionary<string, Action>();
-        OnButtonUp = new Dictionary<string, Action>();
+        OnInputAction = new Dictionary<string, Action<ButtonState>>();
 
         foreach (var action in InputManager.defaultInputCodes){
-            OnButtonDown.Add(action, () => {});
-            OnButtonUp.Add(action, () => {});
+            OnInputAction.Add(action, (val) => {});
         }
     }
     
-    public void AddListenerOnButtonDown (Action actionToAdd, string key) { OnButtonDown[key] += actionToAdd; }
-    
-    public void AddListenerOnButtonUp (Action actionToAdd, string key) { OnButtonUp[key] += actionToAdd; }
+    public void AddListenerOnInputAction (Action<ButtonState> actionToAdd, string key) { OnInputAction[key] += actionToAdd; }
 
-    public bool GetButtonState (KeyCode key){
-        return buttonStates[key];
-    }
+    public bool GetButtonState (KeyCode key){ return buttonStates[key]; }
     
     public bool GetButtonState (string action){
         return buttonStates[buttonAssignment[action]];
     }
+}
+public enum ButtonState
+{
+    Up, Down
 }

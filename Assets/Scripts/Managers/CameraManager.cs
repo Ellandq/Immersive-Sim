@@ -16,7 +16,7 @@ public class CameraManager : MonoBehaviour, IManager
     [SerializeField] private PlayerCamera cutsceneCamera;
 
     [Header ("Object References")]
-    private Transform playerBody;
+    private Rigidbody playerBody;
 
     [Header ("Camera Information")]
     [SerializeField] private ActiveCamera activeCamera;
@@ -35,7 +35,7 @@ public class CameraManager : MonoBehaviour, IManager
         Cursor.lockState = CursorLockMode.Locked;
 
         var player = PlayerManager.GetPlayer();
-        playerBody = player.transform;
+        playerBody = player.GetPlayerBody();
 
         cameras = new Dictionary<ActiveCamera, PlayerCamera>
         {
@@ -61,7 +61,7 @@ public class CameraManager : MonoBehaviour, IManager
         };
     }
 
-    private void Update ()
+    private void LateUpdate ()
     {
         if (!cameraMovementEnabled) return;
 

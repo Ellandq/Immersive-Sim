@@ -8,9 +8,8 @@ using UnityEngine;
 public class MouseInput : MonoBehaviour
 {
     [Header ("Events")]
-    private Dictionary<string, Action> OnButtonDown;
-    private Dictionary<string, Action> OnButtonUp;
-    private Action<EntityInteraction> OnSelectedObjectChange;
+    private Dictionary<string, Action<ButtonState>> onInputAction;
+    private Action<EntityInteraction> onSelectedObjectChange;
 
     [Header ("Key Information")]
     private Dictionary<string, int> buttonAssignment;
@@ -42,9 +41,8 @@ public class MouseInput : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        OnButtonDown.Clear();
-        OnButtonUp.Clear();
-        OnSelectedObjectChange = null;
+        onInputAction.Clear();
+        onSelectedObjectChange = null;
     }
 
     private void Update ()
@@ -58,10 +56,10 @@ public class MouseInput : MonoBehaviour
             switch (buttonStates[button.Value])
             {
                 case true when !previousState:
-                    OnButtonDown[button.Key]?.Invoke();
+                    onInputAction[button.Key]?.Invoke(ButtonState.Down);
                     break;
                 case false when previousState:
-                    OnButtonUp[button.Key]?.Invoke();
+                    onInputAction[button.Key]?.Invoke(ButtonState.Up);
                     break;
             }
         }
@@ -83,12 +81,12 @@ public class MouseInput : MonoBehaviour
             if (interactor == selectedObject) return;
             selectedObject = interactor;
 
-            OnSelectedObjectChange?.Invoke(selectedObject);
+            onSelectedObjectChange?.Invoke(selectedObject);
         }
         else if (!ReferenceEquals(selectedObject, null))
         {
             selectedObject = null;
-            OnSelectedObjectChange?.Invoke(selectedObject);
+            onSelectedObjectChange?.Invoke(selectedObject);
         }
     }
 
@@ -97,7 +95,7 @@ public class MouseInput : MonoBehaviour
         if (obj != selectedObject) return;
         
         selectedObject = null;
-        OnSelectedObjectChange?.Invoke(selectedObject);
+        onSelectedObjectChange?.Invoke(selectedObject);
     }
 
     private void UpdateCamera (Camera camera)
@@ -128,20 +126,16 @@ public class MouseInput : MonoBehaviour
 
     private void UpdateEventDictionaries () 
     {
-        OnButtonDown = new Dictionary<string, Action>();
-        OnButtonUp = new Dictionary<string, Action>();
+        onInputAction = new Dictionary<string, Action<ButtonState>>();
 
         foreach (var action in InputManager.defaultMouseInput){
-            OnButtonDown.Add(action, () => {});
-            OnButtonUp.Add(action, () => {});
+            onInputAction.Add(action, (state) => {});
         }
     }
 
-    public void AddListenerOnButtonDown (Action actionToAdd, string key) { OnButtonDown[key] += actionToAdd; }
+    public void AddListenerOnInputAction (Action<ButtonState> actionToAdd, string key) { onInputAction[key] += actionToAdd; }
     
-    public void AddListenerOnButtonUp (Action actionToAdd, string key) { OnButtonUp[key] += actionToAdd; }
-    
-    public void AddListenerOnObjectChange (Action<EntityInteraction> actionToAdd) { OnSelectedObjectChange += actionToAdd; }
+    public void AddListenerOnObjectChange (Action<EntityInteraction> actionToAdd) { onSelectedObjectChange += actionToAdd; }
 
     public EntityInteraction GetSelectedObject () { return selectedObject; }
 

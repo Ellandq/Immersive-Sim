@@ -24,7 +24,7 @@ public class UI_Manager : MonoBehaviour, IManager
     {
         var inputHandle = InputManager.GetInputHandle();
         
-        inputHandle.AddListenerOnButtonDown(HandleInventoryDisplay, "Inventory");
+        inputHandle.AddListenerOnInputAction(HandleInventoryDisplay, "Inventory");
     }
     
     public void SetUp()
@@ -61,9 +61,9 @@ public class UI_Manager : MonoBehaviour, IManager
 
     public static UI_Manager GetInstance() { return Instance; }
 
-    private void HandleInventoryDisplay()
+    private void HandleInventoryDisplay(ButtonState state)
     {
-        if (isPauseMenuEnabled) return;
+        if (state == ButtonState.Up || isPauseMenuEnabled) return;
         
         var display = (UI_Inventory)UI.GetValue(UI_Key.Inventory);
 

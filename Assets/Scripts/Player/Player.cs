@@ -9,6 +9,7 @@ public class Player : MonoBehaviour, ICharacter
     [SerializeField] private PlayerInteraction interactionHandle;
     [SerializeField] private PlayerStats playerStats;
     [SerializeField] private Inventory playerInventory;
+    [SerializeField] private Rigidbody playerBody;
 
     [Header("Cameras")] 
     [SerializeField] private FirstPersonCamera firstPersonCamera;
@@ -24,4 +25,6 @@ public class Player : MonoBehaviour, ICharacter
     public FirstPersonCamera GetFirstPersonCamera() { return firstPersonCamera; }
     
     public FirstPersonCamera GetThirdPersonCamera() { return thirdPersonCamera; }
+
+    public Rigidbody GetPlayerBody() { return playerBody; }
 }   

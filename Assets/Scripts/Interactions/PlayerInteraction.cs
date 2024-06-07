@@ -11,15 +11,15 @@ public class PlayerInteraction : MonoBehaviour
     public void Start ()
     {
         var inputHandle = InputManager.GetInputHandle();
-        inputHandle.AddListenerOnButtonDown(InteractWithObject, "Interact");
+        inputHandle.AddListenerOnInputAction(InteractWithObject, "Interact");
 
         var mouseHandle = InputManager.GetMouseHandle();
         mouseHandle.AddListenerOnObjectChange(UpdateSelectedObject);
     }
 
-    private void InteractWithObject ()
+    private void InteractWithObject (ButtonState state)
     {
-        if (selectedObject == null) return;
+        if (state == ButtonState.Up || selectedObject == null) return;
         
         selectedObject.Interact(player);
     }
