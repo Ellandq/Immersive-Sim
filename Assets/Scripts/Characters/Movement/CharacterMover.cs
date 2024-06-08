@@ -6,8 +6,8 @@ public class CharacterMover : MonoBehaviour
 {
     [Header("Object References")]
     [SerializeField] private Animator animator;
+    [SerializeField] private Transform groundCheck;
     private Rigidbody characterRigidbody;
-    private Transform groundCheck;
 
     [Header("Object Information")]
     private LayerMask groundMask;
@@ -22,11 +22,6 @@ public class CharacterMover : MonoBehaviour
     [SerializeField] protected float distanceFromGround = 1.6f;
     private Quaternion currentMovementAngle;
 
-    [Header("Crouch Settings")]
-    private const float StartingHorizontalScale = 1f;
-    private const float CrouchingHorizontalScale = 0.6f;
-    private const float StateChangeSpeed = 12f;
-
     [Header("Animation Info")] 
     private Vector2 animationState;
     private Vector2 targetAnimationState;
@@ -36,6 +31,7 @@ public class CharacterMover : MonoBehaviour
     private int groundHash;
     private int jumpHash;
     private int fallingHash;
+    private int crouchHash;
 
     private void Awake ()
     {
@@ -46,6 +42,7 @@ public class CharacterMover : MonoBehaviour
         jumpHash = Animator.StringToHash("Jump");
         groundHash = Animator.StringToHash("Grounded");
         fallingHash = Animator.StringToHash("Falling");
+        crouchHash = Animator.StringToHash("Crouch");
         
         // Initializing variables
         groundMask = (1 << LayerMask.NameToLayer("Ground")) | (1 << LayerMask.NameToLayer("Prop"));
@@ -55,8 +52,6 @@ public class CharacterMover : MonoBehaviour
         
         // Initializing components
         characterRigidbody = GetComponent<Rigidbody>();
-        groundCheck = transform.GetChild(0).GetComponent<Transform>();
-        
     }
 
     protected void Move (Vector3 moveVector)
@@ -71,12 +66,11 @@ public class CharacterMover : MonoBehaviour
         {
             SetAnimationGrounding(false);
             animator.SetFloat(yVelHash, characterRigidbody.velocity.y / 4);
-            Debug.Log("?");
         }
         
         // Adjusting current animation
         targetAnimationState = ConvertMovementVectorToAnimation(moveVector);
-        animationState = Vector2.Lerp(animationState, targetAnimationState, Time.deltaTime * 10f);
+        animationState = Vector2.Lerp(animationState, targetAnimationState, Time.smoothDeltaTime * 4f);
         animator.SetFloat(xVelHash, animationState.x);
         animator.SetFloat(zVelHash, animationState.y);
         
@@ -89,11 +83,7 @@ public class CharacterMover : MonoBehaviour
 
     protected void Crouch ()
     {
-        // TODO Make crouching use animations rather the size changes
-        if (coroutine != null){
-            StopCoroutine(coroutine);
-        }
-        coroutine = StartCoroutine(ChangeCrouchingState());
+        animator.SetBool(crouchHash, IsCrouching);
     }
     
     protected void Walk ()
@@ -141,7 +131,8 @@ public class CharacterMover : MonoBehaviour
         {
             RaycastHit hitInfo;
             return Physics.Raycast(characterRigidbody.worldCenterOfMass, Vector3.down, out hitInfo,
-                distanceFromGround + .1f, groundMask);
+                       distanceFromGround + .1f, groundMask)
+                   || Physics.CheckSphere(groundCheck.position, 0.4f, groundMask);
         }
     }
 
@@ -158,54 +149,14 @@ public class CharacterMover : MonoBehaviour
     public bool IsMovementEnabled { get; set; }
     
     private static Vector2 ConvertMovementVectorToAnimation(Vector3 vector) { return new Vector2(vector.x / 5f, vector.z / 5f); }
-
-    #region Coroutines
-
-        // TODO REPLACE WITH ANIMATIONS 
-        private IEnumerator ChangeCrouchingState () 
-        {
-            var currentScale = transform.localScale;
-            if (IsCrouching)
-            {
-                while (CrouchingHorizontalScale != currentScale.y)
-                {
-
-                    if (CrouchingHorizontalScale >= currentScale.y - .05f)
-                    {
-                        currentScale.y = Mathf.MoveTowards(currentScale.y, CrouchingHorizontalScale, Time.deltaTime * StateChangeSpeed);
-                        transform.localScale = currentScale;
-                    }
-                    else
-                    {
-                        currentScale.y = Mathf.Lerp(currentScale.y, CrouchingHorizontalScale, Time.deltaTime * StateChangeSpeed);
-                        transform.localScale = currentScale;
-                    }
-
-                    yield return null;
-                }
-            }
-            else 
-            {
-                while (StartingHorizontalScale != currentScale.y)
-                {
-                    if (StartingHorizontalScale <= currentScale.y - .05f)
-                    {
-                        currentScale.y = Mathf.MoveTowards(currentScale.y, StartingHorizontalScale, Time.deltaTime * StateChangeSpeed);
-                        transform.localScale = currentScale;
-                    }
-                    else
-                    {
-                        currentScale.y = Mathf.Lerp(currentScale.y, StartingHorizontalScale, Time.deltaTime * StateChangeSpeed);
-                        transform.localScale = currentScale;
-                    }
-
-                    yield return null;
-                }
-            }
-            coroutine = null;
-        }
-
-    #endregion
+    
+    private void OnDrawGizmos()
+    {
+        if (characterRigidbody == null || groundCheck == null) return;
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(characterRigidbody.worldCenterOfMass, characterRigidbody.worldCenterOfMass + Vector3.down * (distanceFromGround + .1f));
+        Gizmos.DrawWireSphere(groundCheck.position, 0.4f);
+    }
 }
 
 public enum MoveDirection{

@@ -1672,6 +1672,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 9059378221102232966}
+  groundCheck: {fileID: 4421632157889040701}
   movementSpeed:
   - 4
   - 10
