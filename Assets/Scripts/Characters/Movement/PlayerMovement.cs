@@ -92,6 +92,11 @@ public class PlayerMovement : CharacterMover
         {
             IsJumping = false;
         }
+        else if (IsJumping)
+        {
+            IsJumping = false;
+            ignoreJump = false;
+        }
         
         adjustedMovementVector.x = horizontalMovement.x;
         adjustedMovementVector.z = horizontalMovement.z;
@@ -105,6 +110,11 @@ public class PlayerMovement : CharacterMover
 
         private void Jump (ButtonState state)
         {
+            // if (state != ButtonState.Up) Debug.Log("MovementEnabled: " + !movementEnabled +
+            //                                        "\nIgnoreJump: " + ignoreJump + 
+            //                                        "\nIsGrounded: " + !IsGrounded +
+            //                                        "\nIsJumping: " + IsJumping +
+            //                                        "\nCanJump: " +!CanJump());
             if (state == ButtonState.Up
                 || !movementEnabled
                 || ignoreJump
@@ -183,7 +193,7 @@ public class PlayerMovement : CharacterMover
 
         public void DisableMovement()
         {
-            const ButtonState state = ButtonState.Down;
+            const ButtonState state = ButtonState.Up;
             
             if (moveStatus[MoveDirection.Right]) ChangeRightMovementState(state);
             if (moveStatus[MoveDirection.Left]) ChangeLeftMovementState(state);

@@ -18,7 +18,7 @@ public class CharacterMover : MonoBehaviour
     [SerializeField] protected float crouchingSpeedMultiplier = .4f;
     [SerializeField] protected float defaultSpeedMultiplier = 1f;
     [SerializeField] protected float jumpHeight = 1.8f;
-    [SerializeField] protected float jumpMovementReduction = 0.5f;
+    [SerializeField] protected float jumpMovementReduction = 0.8f;
     [SerializeField] protected float distanceFromGround = 1.6f;
     private Quaternion currentMovementAngle;
 
@@ -111,9 +111,12 @@ public class CharacterMover : MonoBehaviour
 
     public void JumpAddForce()
     {
-        characterRigidbody.AddForce(-characterRigidbody.velocity.y * Vector3.up, ForceMode.VelocityChange);
-        var jumpForce = Mathf.Sqrt(2f * jumpHeight * Physics.gravity.magnitude * characterRigidbody.mass) * 8f;
-        characterRigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        if (IsGrounded)
+        {
+            characterRigidbody.AddForce(-characterRigidbody.velocity.y * Vector3.up, ForceMode.VelocityChange);
+            var jumpForce = Mathf.Sqrt(2f * jumpHeight * Physics.gravity.magnitude * characterRigidbody.mass) * 8f;
+            characterRigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
         animator.ResetTrigger(jumpHash);
     }
 
@@ -132,7 +135,7 @@ public class CharacterMover : MonoBehaviour
             RaycastHit hitInfo;
             return Physics.Raycast(characterRigidbody.worldCenterOfMass, Vector3.down, out hitInfo,
                        distanceFromGround + .1f, groundMask)
-                   || Physics.CheckSphere(groundCheck.position, 0.4f, groundMask);
+                   || Physics.CheckSphere(groundCheck.position, 0.25f, groundMask);
         }
     }
 
