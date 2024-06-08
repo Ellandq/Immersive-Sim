@@ -37,7 +37,6 @@ public class CharacterMover : MonoBehaviour
     private int jumpHash;
     private int fallingHash;
 
-
     private void Awake ()
     {
         // Fetching Hash values from animator
@@ -52,6 +51,7 @@ public class CharacterMover : MonoBehaviour
         groundMask = (1 << LayerMask.NameToLayer("Ground")) | (1 << LayerMask.NameToLayer("Prop"));
         animationState = new Vector2();
         IsMovementEnabled = true;
+        IsJumping = false;
         
         // Initializing components
         characterRigidbody = GetComponent<Rigidbody>();

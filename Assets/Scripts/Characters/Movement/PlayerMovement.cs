@@ -14,6 +14,7 @@ public class PlayerMovement : CharacterMover
     private float currentSpeed;
     private float speedMultiplier;
     private bool movementEnabled;
+    private bool ignoreJump;
 
     [Header("Stamina Information")]
     [SerializeField] private float playerStamina;
@@ -38,6 +39,7 @@ public class PlayerMovement : CharacterMover
         currentSpeed = movementSpeed[(int)MovementType.Run];
         speedMultiplier = defaultSpeedMultiplier;
         movementEnabled = true;
+        ignoreJump = false;
 
         var input = InputManager.GetInputHandle();
 
@@ -77,11 +79,14 @@ public class PlayerMovement : CharacterMover
         
         if (!IsGrounded)
         {
+            if (ignoreJump) ignoreJump = false;
             var jumpingMovementMask = new Vector3(Mathf.Sign(jumpingHorizontalMovementVector.x), 0f, Mathf.Sign(jumpingHorizontalMovementVector.z)) - jumpingHorizontalMovementVector.normalized;
             horizontalMovement *= jumpMovementReduction;
             horizontalMovement.Scale(jumpingMovementMask);
             horizontalMovement += jumpingHorizontalMovementVector;
         }
+        
+        
         
         adjustedMovementVector.x = horizontalMovement.x;
         adjustedMovementVector.z = horizontalMovement.z;
@@ -98,12 +103,15 @@ public class PlayerMovement : CharacterMover
 
         private void Jump (ButtonState state)
         {
-            if (!movementEnabled
-                || state == ButtonState.Up
+            Debug.Log("ignore jump: " + ignoreJump +"\nIs grounded: " + IsGrounded);
+            if (state == ButtonState.Up
+                || !movementEnabled
+                || ignoreJump
                 || !IsGrounded
+                || IsJumping
                 || !CanJump()) return;
-            
-            
+
+            ignoreJump = true;
             jumpingHorizontalMovementVector = adjustedMovementVector;
             jumpingHorizontalMovementVector.y = 0f;
             adjustedMovementVector.y = Mathf.Sqrt(Physics.gravity.y * gravityMultiplier * -2f * jumpHeight);
@@ -191,6 +199,7 @@ public class PlayerMovement : CharacterMover
         public void DisableMovement()
         {
             const ButtonState state = ButtonState.Down;
+            
             if (moveStatus[MoveDirection.Right]) ChangeRightMovementState(state);
             if (moveStatus[MoveDirection.Left]) ChangeLeftMovementState(state);
             if (moveStatus[MoveDirection.Forwards]) ChangeForwardMovementState(state);
