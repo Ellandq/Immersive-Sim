@@ -135,7 +135,7 @@ public class CharacterMover : MonoBehaviour
             RaycastHit hitInfo;
             return Physics.Raycast(characterRigidbody.worldCenterOfMass, Vector3.down, out hitInfo,
                        distanceFromGround + .1f, groundMask)
-                   || Physics.CheckSphere(groundCheck.position, 0.25f, groundMask);
+                   || Physics.CheckSphere(groundCheck.position, 0.4f, groundMask);
         }
     }
 
