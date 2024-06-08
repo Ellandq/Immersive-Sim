@@ -5,6 +5,7 @@ using UnityEngine;
 public class FirstPersonCamera : PlayerCamera
 {
     [SerializeField] private Transform cameraRoot;
+    [SerializeField] private Transform cameraFollowObject;
     
     public override void Move()
     {
@@ -12,12 +13,14 @@ public class FirstPersonCamera : PlayerCamera
         var mouseY = Input.GetAxis("Mouse Y") * sensitivity * Time.smoothDeltaTime;
 
         transform.position = cameraRoot.position;
+        var forwardPoint = transform.position + transform.forward * 3.0f;
+        cameraFollowObject.position = forwardPoint;
 
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
         transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        playerBody.MoveRotation(playerBody.rotation * Quaternion.Euler(0f, mouseX, 0f)); //Vector3.up, mouseX
+        playerBody.MoveRotation(playerBody.rotation * Quaternion.Euler(0f, mouseX, 0f));
     }
 
     public override Camera GetCamera()

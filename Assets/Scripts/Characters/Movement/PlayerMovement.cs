@@ -112,6 +112,7 @@ public class PlayerMovement : CharacterMover
                 || IsJumping
                 || !CanJump()) return;
 
+            if (IsCrouching) ChangeCrouchingState(ButtonState.Up);
             ignoreJump = true;
             
             Jump();

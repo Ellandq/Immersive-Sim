@@ -6748,6 +6748,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 0}
   cameraRoot: {fileID: 0}
+  cameraFollowObject: {fileID: 0}
 --- !u!20 &1513439790
 Camera:
   m_ObjectHideFlags: 0
