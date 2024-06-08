@@ -79,20 +79,22 @@ public class PlayerMovement : CharacterMover
         
         if (!IsGrounded)
         {
-            if (ignoreJump) ignoreJump = false;
+            if (ignoreJump)
+            {
+                ignoreJump = false;
+            }
             var jumpingMovementMask = new Vector3(Mathf.Sign(jumpingHorizontalMovementVector.x), 0f, Mathf.Sign(jumpingHorizontalMovementVector.z)) - jumpingHorizontalMovementVector.normalized;
             horizontalMovement *= jumpMovementReduction;
             horizontalMovement.Scale(jumpingMovementMask);
             horizontalMovement += jumpingHorizontalMovementVector;
         }
-        
-        
+        else if (!ignoreJump)
+        {
+            IsJumping = false;
+        }
         
         adjustedMovementVector.x = horizontalMovement.x;
         adjustedMovementVector.z = horizontalMovement.z;
-        
-
-        ApplyGravity();
         
         Move(adjustedMovementVector);
         
@@ -103,7 +105,6 @@ public class PlayerMovement : CharacterMover
 
         private void Jump (ButtonState state)
         {
-            Debug.Log("ignore jump: " + ignoreJump +"\nIs grounded: " + IsGrounded);
             if (state == ButtonState.Up
                 || !movementEnabled
                 || ignoreJump
@@ -112,26 +113,9 @@ public class PlayerMovement : CharacterMover
                 || !CanJump()) return;
 
             ignoreJump = true;
-            jumpingHorizontalMovementVector = adjustedMovementVector;
-            jumpingHorizontalMovementVector.y = 0f;
-            adjustedMovementVector.y = Mathf.Sqrt(Physics.gravity.y * gravityMultiplier * -2f * jumpHeight);
-            IsJumping = true;
             
             Jump();
             onJump?.Invoke();
-        }
-
-        private void ApplyGravity ()
-        {
-            if (IsGrounded && adjustedMovementVector.y < 0f)
-            {
-                adjustedMovementVector.y = -4f;
-                IsJumping = false;
-            }
-            else
-            {
-                adjustedMovementVector.y += Physics.gravity.y * gravityMultiplier * Time.deltaTime;
-            }
         }
 
         private void ChangeForwardMovementState (ButtonState state)

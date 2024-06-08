@@ -19,7 +19,7 @@ public class CharacterMover : MonoBehaviour
     [SerializeField] protected float defaultSpeedMultiplier = 1f;
     [SerializeField] protected float jumpHeight = 1.8f;
     [SerializeField] protected float jumpMovementReduction = 0.5f;
-    [SerializeField] protected float gravityMultiplier = 4f;
+    [SerializeField] protected float distanceFromGround = 1.6f;
     private Quaternion currentMovementAngle;
 
     [Header("Crouch Settings")]
@@ -70,7 +70,8 @@ public class CharacterMover : MonoBehaviour
         else
         {
             SetAnimationGrounding(false);
-            animator.SetFloat(zVelHash, characterRigidbody.velocity.y);
+            animator.SetFloat(yVelHash, characterRigidbody.velocity.y / 4);
+            Debug.Log("?");
         }
         
         // Adjusting current animation
@@ -114,13 +115,15 @@ public class CharacterMover : MonoBehaviour
 
     protected void Jump()
     {
+        IsJumping = true;
         animator.SetTrigger(jumpHash);
     }
 
     public void JumpAddForce()
     {
         characterRigidbody.AddForce(-characterRigidbody.velocity.y * Vector3.up, ForceMode.VelocityChange);
-        characterRigidbody.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
+        var jumpForce = Mathf.Sqrt(2f * jumpHeight * Physics.gravity.magnitude * characterRigidbody.mass) * 8f;
+        characterRigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         animator.ResetTrigger(jumpHash);
     }
 
@@ -130,16 +133,21 @@ public class CharacterMover : MonoBehaviour
         animator.SetBool(groundHash, isGrounded);
     }
 
-    private void UpdateCurrentMovementAngle()
+    private void UpdateCurrentMovementAngle() { currentMovementAngle = Quaternion.Euler(0, transform.eulerAngles.y, 0); }
+
+    protected bool IsGrounded
     {
-        currentMovementAngle = Quaternion.Euler(0, transform.eulerAngles.y, 0);
+        get
+        {
+            RaycastHit hitInfo;
+            return Physics.Raycast(characterRigidbody.worldCenterOfMass, Vector3.down, out hitInfo,
+                distanceFromGround + .1f, groundMask);
+        }
     }
 
-    protected bool IsGrounded =>  Physics.CheckSphere(groundCheck.position, .7f, groundMask);
-    
     protected bool IsMoving { get; set; }
     
-    protected bool IsJumping { get; set; }
+    protected bool IsJumping { get; set; }  
 
     protected bool IsCrouching { get; set; }
 
