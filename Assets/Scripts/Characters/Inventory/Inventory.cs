@@ -7,6 +7,7 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class Inventory : MonoBehaviour
 {
+    [Header("Currency")]
     [SerializeField] private long gold;
     
     [Header("Inventory")]
@@ -19,7 +20,7 @@ public class Inventory : MonoBehaviour
 
         foreach (ItemType type in Enum.GetValues(typeof(ItemType)))
         {
-            items[type] = itemCollections[(int)type];
+            items.Add(type, itemCollections[(int)type]);
         }
     }
     
@@ -35,41 +36,54 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public void AddItem (Item item)
-    {
-        items[item.GetItemType()].AddItem(item);
-    }
+    #region Item Manipulation
 
-    public void AddItems (List<Item> items)
-    {
-        foreach (var item in items) AddItem(item);
-    }
-
-    public bool RemoveItem (Item item)
-    {
-        try {
-            items[item.GetItemType()].RemoveItem(item);
-            return true;
-        } catch (ItemNegativeCountException e){
-            Debug.LogError(e.Message);
-            return false;
+        public void AddItem (Item item)
+        {
+            items[item.GetItemType()].AddItem(item);
         }
-    }
 
-    public Dictionary<ItemType, ItemCollection> GetItems() { return items; }
+        public void AddItems (List<Item> items)
+        {
+            foreach (var item in items) AddItem(item);
+        }
 
-    public ItemCollection GetCollection(ItemType itemType) { return items[itemType]; }
+        public bool RemoveItem (Item item)
+        {
+            try {
+                items[item.GetItemType()].RemoveItem(item);
+                return true;
+            } catch (ItemNegativeCountException e){
+                Debug.LogError(e.Message);
+                return false;
+            }
+        }
 
-    private void OnValidate()
-    {
-        InitializeInventory();
-    }
+    #endregion
 
-    [ContextMenu("Reset Inventory")]
-    private void ResetInventory()
-    {
-        if (itemCollections.Count != 0) itemCollections.Clear();
-        InitializeInventory();
-        gold = 0;
-    }
+    #region Getters/Setters
+
+        public Dictionary<ItemType, ItemCollection> GetItems() { return items; }
+
+        public ItemCollection GetCollection(ItemType itemType) { return items[itemType]; }
+
+    #endregion
+
+    #region Editor
+    
+        private void OnValidate()
+        {
+            InitializeInventory();
+        }
+
+        [ContextMenu("Reset Inventory")]
+        private void ResetInventory()
+        {
+            if (itemCollections.Count != 0) itemCollections.Clear();
+            InitializeInventory();
+            gold = 0;
+        }
+    
+    #endregion
+   
 }

@@ -16,41 +16,22 @@ public class ItemObject : ScriptableObject
 
     [Header ("Item Visuals")]
     [SerializeField] private Sprite itemIcon;
-    [SerializeField] private GameObject itemPrefab;
 
-    public GameObject Prefab {
-        get { return itemPrefab; }
-    }
+    public Sprite Icon => itemIcon;
 
-    public Sprite Icon {
-        get { return itemIcon; }
-    }
+    public ItemType Type => itemType;
 
-    public ItemType Type {
-        get { return itemType; }
-    }
+    public string Name => itemName;
 
-    public string Name {
-        get { return itemName; }
-    }
+    public string HiddenName => hiddenName;
 
-    public string Collection {
-        get { return collection; }
-    }
+    public string Collection => collection;
 
-    public string Description {
-        get { return itemDescription; }
-    }
+    public string Description => itemDescription;
 
-    public int GoldValue {
-        get { return goldValue; }
-    }
+    public int GoldValue => goldValue;
 
-    public bool IsStackable {
-        get { return isStackable; }
-    }
+    public bool IsStackable => isStackable;
 
-    public override string ToString (){
-        return collection + "_" + hiddenName;
-    }
+    public override string ToString (){ return collection + "/" + hiddenName; }
 }

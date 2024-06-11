@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Default Local Group
+  m_EditorClassIdentifier: 
+  m_GroupName: Default Local Group
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 0ab16fb6a2d447f41a78e807ef415667
+  m_SerializeEntries:
+  - m_GUID: 036ba0cb9b087f34c80f75a0e7a5aa81
+    m_Address: weapons/bows/bow_tmp_01
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Weapon
+  - m_GUID: 2ccaed420c5c1344d8209a968ae9ddd5
+    m_Address: props/containers/sack
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Container
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: d04ef444555bbba428387412b34b95db, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: c0d6f9a16edcfbf4dbce744a2a7bc0c1, type: 2}
+    - {fileID: 11400000, guid: 122b4632b2f60664c8557fedc2d0b26a, type: 2}

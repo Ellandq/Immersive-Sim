@@ -37,6 +37,10 @@ public class GameManager : MonoBehaviour
         // Debug.Log("Camera Manager ready.");
         yield return null;
         
+        ItemManager
+            .GetInstance()
+            .SetUp();
+        
         // Debug.Log("Setting Up Input Manager...");
         InputManager
             .GetInstance()

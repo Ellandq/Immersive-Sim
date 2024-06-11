@@ -44,18 +44,38 @@ public class ItemHolder : MonoBehaviour
 
         switch (itemDatas.Count)
         {
-            case (0):
+            case 0:
                 UpdateName("Item");
                 return;
             
-            case (1):
-                Instantiate(itemDatas[0].ItemObject.Prefab, transform).AddComponent<ItemInteraction>();
-                UpdateName(itemDatas[0].ItemObject.Name);
+            case 1:
+                ItemManager.GetItemPrefab(itemDatas[0].ItemObject, (loadedPrefab) =>
+                {
+                    if (loadedPrefab != null)
+                    {
+                        Instantiate(loadedPrefab, transform).AddComponent<ItemInteraction>();
+                        UpdateName(itemDatas[0].ItemObject.Name);
+                    }
+                    else
+                    {
+                        Debug.LogError("Failed to load item prefab.");
+                    }
+                });
                 break;
                 
             default:
-                Instantiate(ItemManager.GetContainer(containerType), transform).AddComponent<ContainerInteraction>();
-                UpdateName(containerType.ToString());
+                ItemManager.GetContainerPrefab(containerType, (loadedPrefab) =>
+                {
+                    if (loadedPrefab != null)
+                    {
+                        Instantiate(loadedPrefab, transform).AddComponent<ContainerInteraction>();
+                        UpdateName(containerType.ToString());
+                    }
+                    else
+                    {
+                        Debug.LogError("Failed to load container prefab.");
+                    }
+                });
                 break;
         }
     }
@@ -81,7 +101,7 @@ public class ItemHolder : MonoBehaviour
 
     private void RemoveModel()
     {
-        for (int i = 0; i < transform.childCount; i++)
+        for (var i = 0; i < transform.childCount; i++)
         {
             DestroyImmediate(transform.GetChild(i).gameObject);
         }
