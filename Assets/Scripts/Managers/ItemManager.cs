@@ -33,8 +33,14 @@ public class ItemManager : MonoBehaviour
 
 public enum ItemType 
 {
-    MeleeWeapon, RangedWeapon, Ammunition,
-    Plant, Ingredient,  
+    // Weapons
+    MeleeWeapon, RangedWeapon, Staff,
+    // Ammunition
+    Ammunition,
+    // Consumables
+    Potions, Scrolls, Runes,
+    // Misc
+    Plant, Ingredient, Book
 }
 
 public enum ContainerType

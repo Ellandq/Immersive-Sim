@@ -24,12 +24,12 @@ public class CharacterStats : MonoBehaviour
 
     [Header("Damage Multipliers")] 
     private Dictionary<ElementalType, float> elementalDamageMultipliers;
-    private Dictionary<DamageType, float> damageTypeMultipler;
+    // private Dictionary<DamageType, float> damageTypeMultipler;
     
 
     [Header("Defense Multipliers")]
     private Dictionary<ElementalType, float> elementalDefenseMultipliers;
-    private Dictionary<DamageType, float> defenseTypeMultipler;
+    // private Dictionary<DamageType, float> defenseTypeMultipler;
     
     private void Awake()
     {
@@ -51,9 +51,9 @@ public class CharacterStats : MonoBehaviour
     
     public float GetElementalDefenseMultiplier(ElementalType type) { return elementalDamageMultipliers[type]; }
     
-    public float GetDamageTypeMultiplier(DamageType type) { return damageTypeMultipler[type]; }
-    
-    public float GetDefenseTypeMultiplier(DamageType type) { return defenseTypeMultipler[type]; }
+    // public float GetDamageTypeMultiplier(DamageType type) { return damageTypeMultipler[type]; }
+    //
+    // public float GetDefenseTypeMultiplier(DamageType type) { return defenseTypeMultipler[type]; }
 
     public float GetMaxStatValue(StatType statType)
     {

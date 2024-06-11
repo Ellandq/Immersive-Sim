@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [ExecuteInEditMode]
@@ -67,7 +68,7 @@ public class Inventory : MonoBehaviour
     [ContextMenu("Reset Inventory")]
     private void ResetInventory()
     {
-        itemCollections.Clear();
+        if (itemCollections.Count != 0) itemCollections.Clear();
         InitializeInventory();
         gold = 0;
     }
