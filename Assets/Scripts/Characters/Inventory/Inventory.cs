@@ -17,7 +17,7 @@ public class Inventory : MonoBehaviour
     private void Awake ()
     {
         items = new Dictionary<ItemType, ItemCollection>();
-
+        
         foreach (ItemType type in Enum.GetValues(typeof(ItemType)))
         {
             items.Add(type, itemCollections[(int)type]);

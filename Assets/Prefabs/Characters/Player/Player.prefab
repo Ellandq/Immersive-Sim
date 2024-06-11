@@ -1870,7 +1870,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2047078530b24f240b72daec8670dbc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gold: 100
+  gold: 0
   itemCollections:
   - collectionType: 0
     items: []
@@ -1881,6 +1881,16 @@ MonoBehaviour:
   - collectionType: 3
     items: []
   - collectionType: 4
+    items: []
+  - collectionType: 5
+    items: []
+  - collectionType: 6
+    items: []
+  - collectionType: 7
+    items: []
+  - collectionType: 8
+    items: []
+  - collectionType: 9
     items: []
 --- !u!114 &4421632158406748656
 MonoBehaviour:

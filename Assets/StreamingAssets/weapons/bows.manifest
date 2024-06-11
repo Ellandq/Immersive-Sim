@@ -1,0 +1,35 @@
+ManifestFileVersion: 0
+CRC: 4106135875
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 0d6d0b222f9be8f802e4832755307a1e
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 69086f427ffc051a418bec2882f85244
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 54
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Prefabs/Weapons/Bows/Bow_Tmp_01/Bow_Tmp_01.prefab
+Dependencies: []

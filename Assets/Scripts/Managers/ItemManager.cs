@@ -30,7 +30,7 @@ public class ItemManager : MonoBehaviour, IManager
     public void SetUp()
     {
         containerBundle
-            = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, "props/container"));
+            = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, "props/containers"));
         // containerBundle
         //     = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, "enviroment/container"));
     }
