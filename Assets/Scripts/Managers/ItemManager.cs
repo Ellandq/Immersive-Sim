@@ -132,18 +132,30 @@ public class ItemManager : MonoBehaviour, IManager
         }
 
     #endregion
+
+    public static ItemSection GetItemSection(ItemType itemType) { return (ItemSection)((int)itemType % 10); }
+}
+
+public enum ItemSection
+{
+    Weapon = 0,
+    Armor = 1,
+    Consumable = 2,
+    Miscellaneous = 3
 }
 
 public enum ItemType 
 {
     // Weapons
-    MeleeWeapon, RangedWeapon, Staff,
+    MeleeWeapon = 0, RangedWeapon = 10, Staff = 20,
     // Ammunition
-    Ammunition,
+    Ammunition = 30,
+    // Armor
+    LightArmor = 1, MediumArmor = 11, HeavyArmor = 21, Robe = 31,
     // Consumables
-    Potions, Scrolls, Runes,
+    Potions = 2, Scrolls = 12, Runes = 22,
     // Misc
-    Plant, Ingredient, Book
+    Plant = 3, Ingredient = 13, Book = 23, Key = 33
 }
 
 public enum ContainerType

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class FavoriteItems : MonoBehaviour
@@ -37,10 +38,12 @@ public class FavoriteItems : MonoBehaviour
             case ItemType.Staff:
                     favoriteEquippable.Add(new EquippableItem(item));
                 break;
+            
             // AMMUNITION
             case ItemType.Ammunition:
                     favouriteAmmunition.Add(item);
                 break;
+            
             // CONSUMABLES
             case ItemType.Potions:
             case ItemType.Scrolls:
@@ -49,6 +52,11 @@ public class FavoriteItems : MonoBehaviour
                 break;
                 
             // Other cases are dismissed
+            case ItemType.LightArmor:
+            case ItemType.MediumArmor:
+            case ItemType.HeavyArmor:
+            case ItemType.Robe:
+            case ItemType.Key:
             case ItemType.Plant:
             case ItemType.Ingredient:
             case ItemType.Book:
@@ -65,15 +73,14 @@ public class FavoriteItems : MonoBehaviour
             case ItemType.MeleeWeapon: 
             case ItemType.RangedWeapon:
             case ItemType.Staff:
-                foreach (var equippableItem in favoriteEquippable)
-                {
-                    if (item.ItemData.ToString() == equippableItem.item.ItemData.ToString()) ;
-                }
-                break;
+                favoriteEquippable.RemoveAll(equippableItem => item.ItemData.ToString() == equippableItem.item.ItemData.ToString());
+                return;
+            
             // AMMUNITION
             case ItemType.Ammunition:
                 favouriteAmmunition.Add(item);
                 break;
+            
             // CONSUMABLES
             case ItemType.Potions:
             case ItemType.Scrolls:
@@ -82,6 +89,11 @@ public class FavoriteItems : MonoBehaviour
                 break;
                 
             // Other cases are dismissed
+            case ItemType.LightArmor:
+            case ItemType.MediumArmor:
+            case ItemType.HeavyArmor:
+            case ItemType.Robe:
+            case ItemType.Key:
             case ItemType.Plant:
             case ItemType.Ingredient:
             case ItemType.Book:

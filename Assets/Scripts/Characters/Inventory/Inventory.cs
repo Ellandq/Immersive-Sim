@@ -17,10 +17,11 @@ public class Inventory : MonoBehaviour
     private void Awake ()
     {
         items = new Dictionary<ItemType, ItemCollection>();
-        
+        var index = 0;
         foreach (ItemType type in Enum.GetValues(typeof(ItemType)))
         {
-            items.Add(type, itemCollections[(int)type]);
+            items.Add(type, itemCollections[index]);
+            index++;
         }
     }
     
@@ -29,7 +30,7 @@ public class Inventory : MonoBehaviour
         if (itemCollections.Count != 0) return; 
         
         itemCollections = new List<ItemCollection>();
-
+        
         foreach (ItemType type in Enum.GetValues(typeof(ItemType)))
         {
             itemCollections.Add(new ItemCollection(type));
