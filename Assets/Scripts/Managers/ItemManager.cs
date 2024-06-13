@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -134,6 +135,12 @@ public class ItemManager : MonoBehaviour, IManager
     #endregion
 
     public static ItemSection GetItemSection(ItemType itemType) { return (ItemSection)((int)itemType % 10); }
+
+    public static List<ItemType> GetItemTypes(ItemSection itemSection)
+    {
+        return Enum.GetValues(typeof(ItemType)).Cast<ItemType>()
+            .Where(itemType => (int)itemType % 10 == (int)itemSection).ToList();
+    }
 }
 
 public enum ItemSection

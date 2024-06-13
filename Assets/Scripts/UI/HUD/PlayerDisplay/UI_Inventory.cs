@@ -6,97 +6,95 @@ using UnityEngine;
 
 public class UI_Inventory : UI_Component
 {
-    [Header("Display Information")]
-    [SerializeField] private Vector3 firstRowPosition;
-    private Inventory playerInventory;
-    private ItemType currentDisplayedCollection;
-    private List<UI_Inventory_ItemRow> itemRows;
-    private const float VerticalRowOffset = 143.65f;
-    
-    [Header("Object References")]
-    [SerializeField] private GameObject itemRowPrefab;
-    [SerializeField] private Transform panel;
+    private Inventory inventory;
+    private List<Item> currentDisplayedItems;
+    private const int MaxItemsInRow = 6;
 
+    [Header("Item Rows")] 
+    [SerializeField] private Transform itemDisplayParent;
+    [SerializeField] private GameObject itemRowPrefab;
+    private List<UI_Inventory_ItemRow> itemRows;
+
+    [Header("Settings")] 
+    private SortType sortType;
+    
     private void Start()
     {
-        itemRows = new List<UI_Inventory_ItemRow>();
-    }
-
-    public override void EnableComponent(bool instant = true)
-    {
-        base.EnableComponent(instant);
-
-        CameraManager.ChangeCameraState(CursorLockMode.None);
-        PlayerManager.DisableMovement();
-    }
-    
-    public override void DisableComponent(bool instant = true)
-    {
-        base.DisableComponent(instant);
-
-        CameraManager.ChangeCameraState(CursorLockMode.Locked);
-        PlayerManager.EnableMovement();
+        inventory = PlayerManager.GetPlayer().GetInventory();
     }
     
     public void SetUp()
     {
-        if (playerInventory == null) playerInventory = PlayerManager
-            .GetPlayer()
-            .GetInventory();
-        
-        ShowCollection(ItemType.MeleeWeapon);
+        SetUpInventory();
     }
 
-    private void CreateRows()
+    public void SetUpInventory()
     {
-        itemRows ??= new List<UI_Inventory_ItemRow>();
+        foreach (ItemSection section in Enum.GetValues(typeof(ItemSection))) SetUpInventory(section);
+    }
+    
+    public void SetUpInventory(ItemSection itemSection)
+    {
+        foreach (var type in ItemManager.GetItemTypes(itemSection)) SetUpInventory(type);
+    }
+    
+    public void SetUpInventory(ItemType itemType)
+    {
+        currentDisplayedItems.AddRange(SortItems(inventory.GetCollection(itemType).GetItems()));
+        SetUpSelection();
+    }
 
-        var items = playerInventory
-            .GetCollection(currentDisplayedCollection)
-            .GetItems();
+    private List<Item> SortItems(List<Item> items)
+    {
+        // TODO Implement sorting system
+        return items;
+    }
 
-        var rowCount = Math.Max(
-            // ReSharper disable once PossibleLossOfFraction
-            Mathf.CeilToInt((items.Count + 1) / 8), 3);
+    private void SetUpSelection()
+    {
+        if (currentDisplayedItems.Count == 0) return;
+        
+        var rowItems = new List<List<Item>>();
+        var tempRow = new List<Item>();
 
-        for (var rowIndex = 0; rowIndex < rowCount; rowIndex++)
+        foreach (var item in currentDisplayedItems)
         {
-            itemRows.Add(
-                Instantiate(
-                        itemRowPrefab, 
-                        panel.transform.position + new Vector3(0f, -VerticalRowOffset * (rowIndex - 1) / 5.5f, 0f), 
-                        Quaternion.identity, 
-                        panel)
-                    .GetComponent<UI_Inventory_ItemRow>());
-            
-            itemRows[rowIndex].SetUp(
-                items.Count > rowIndex * 8
-                    ? items.GetRange(rowIndex * 8,
-                        items.Count % 8)
-                    : new List<Item>());
+            tempRow.Add(item);
+            if (tempRow.Count != MaxItemsInRow) continue;
+            rowItems.Add(tempRow);
+            tempRow = new List<Item>();
+        }
+        
+        if (tempRow.Count > 0)
+        {
+            rowItems.Add(tempRow);
+        }
+        
+        CreateItemRows(rowItems);
+    }
+
+    private void CreateItemRows(List<List<Item>> itemLists)
+    {
+        var index = 0;
+        foreach (var rowItems in itemLists)
+        {
+            itemRows.Add(Instantiate(itemRowPrefab, Vector3.zero, Quaternion.identity, itemDisplayParent)
+                .GetComponent<UI_Inventory_ItemRow>());
+            itemRows[index].SetUp(rowItems);
+            index++;
         }
     }
 
     private void ClearRows()
     {
-        itemRows ??= new List<UI_Inventory_ItemRow>();
-        if (itemRows.Count == 0) return;
-        for (var index = itemRows.Count - 1; index >= 0; index--)
+        foreach (var row in itemRows)
         {
-            Destroy(itemRows[index].gameObject);
+            Destroy(row.gameObject);
         }
-        itemRows.Clear();
     }
+}
 
-    private void ShowCollection(ItemType itemType)
-    {
-        currentDisplayedCollection = itemType;
-        ClearRows();
-        CreateRows();
-    }
+public enum SortType
+{
     
-    public void ShowCollection(int itemType)
-    {
-        ShowCollection((ItemType)itemType);
-    }
 }

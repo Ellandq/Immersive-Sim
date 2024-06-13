@@ -6,6 +6,8 @@ using UnityEngine;
 [Serializable]
 public class Item
 {
+    public Action onItemCountChange;
+    
     [Header ("Item Information")]
     [SerializeField] private ItemObject itemData;
     [SerializeField] private int count;
@@ -22,14 +24,18 @@ public class Item
         public static Item operator +(Item a, Item b)
         {
             if (a != b) throw new ItemTypeException("Cannot convert from: " + a.GetId() + ", to: " + b.GetId());
-            return new Item(a.ItemData, a.Count + b.Count);
+            a.count += b.count;
+            a.onItemCountChange?.Invoke();
+            return a;
         }
 
         public static Item operator -(Item a, Item b)
         {
             if (a != b) throw new ItemTypeException("Cannot convert from: " + a.GetId() + ", to: " + b.GetId());
-            if (a.Count < b.Count) throw new ItemNegativeCountException();
-            return new Item(a.ItemData, a.Count - b.Count);
+            if (a.count < b.count) throw new ItemNegativeCountException();
+            a.count -= b.count;
+            a.onItemCountChange?.Invoke();
+            return a;
         }
 
         public static bool operator ==(Item a, Item b) { return a.GetId() == b.GetId(); }
