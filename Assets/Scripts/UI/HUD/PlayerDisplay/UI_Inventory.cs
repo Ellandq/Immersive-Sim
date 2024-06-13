@@ -13,6 +13,9 @@ public class UI_Inventory : UI_Component
     private bool isSetUp = false;
     private bool isSectionSetUp = false;
 
+    [Header("Object References")] 
+    [SerializeField] private UI_StatDisplay healthDisplay;
+
     [Header("Item Rows")] 
     [SerializeField] private Transform itemDisplayParent;
     [SerializeField] private GameObject itemRowPrefab;
@@ -20,6 +23,19 @@ public class UI_Inventory : UI_Component
 
     [Header("Settings")] 
     private SortType sortType;
+    
+    public override void EnableComponent(bool instant = true)
+    {
+        healthDisplay.SetToStay(true);
+        base.EnableComponent(instant);
+    }
+    
+    public override void DisableComponent(bool instant = true)
+    {
+        healthDisplay.SetToStay(false);
+        ClearRows();
+        base.DisableComponent(instant);
+    }
     
     public void SetUp()
     {

@@ -23,6 +23,7 @@ public class CameraManager : MonoBehaviour, IManager
     [SerializeField] private float firstPersonCameraSensitivity = 500f;
     [SerializeField] private float thirdPersonCameraSensitivity = 80f;
     private bool cameraMovementEnabled = false;
+    private bool cameraSetUp = false;
 
     private void Awake ()
     {
@@ -31,6 +32,7 @@ public class CameraManager : MonoBehaviour, IManager
 
     public void SetUp()
     {
+        cameraSetUp = true;
         cameraMovementEnabled = true;
         Cursor.lockState = CursorLockMode.Locked;
 
@@ -63,9 +65,8 @@ public class CameraManager : MonoBehaviour, IManager
 
     private void LateUpdate ()
     {
-        if (!cameraMovementEnabled) return;
-
-        cameras[activeCamera].Move();
+        if (!cameraSetUp) return;
+        cameras[activeCamera].Move(cameraMovementEnabled);
     }
 
     public void SwitchCamera (ActiveCamera activeCamera)

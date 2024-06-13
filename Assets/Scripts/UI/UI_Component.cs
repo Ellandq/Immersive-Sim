@@ -64,6 +64,12 @@ public class UI_Component : MonoBehaviour
         fadeOutCooldownTimer = 0;
     }
 
+    protected void ResetFadeStatus()
+    {
+        if (fadeCooldownCoroutine == null) return;
+        StopCoroutine(fadeCooldownCoroutine);
+    }
+
     private IEnumerator FadeIn()
     {
         while (canvasGroup.alpha != 1f)
