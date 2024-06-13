@@ -34,15 +34,12 @@ public class UI_Inventory_DisplayedItem : UI_Component
             itemCountObject.SetActive(true);
             ChangeItemCountDisplay();
         }
-
-        if (this.item.IsFavourite)
-        {
-            isFavouriteObject.SetActive(true);
-        }
         else
         {
-            isFavouriteObject.SetActive(false);
+            itemCountObject.SetActive(false);
         }
+
+        isFavouriteObject.SetActive(this.item.IsFavourite);
     }
 
     private void ChangeItemCountDisplay()

@@ -10,7 +10,7 @@ public class UI_Inventory_ItemRow : UI_Component
 
     private List<UI_Inventory_DisplayedItem> itemRow;
     
-    public void SetUp(IReadOnlyList<Item> items)
+    public void SetUp(List<Item> items)
     {
         var index = 0;
         ClearRow();

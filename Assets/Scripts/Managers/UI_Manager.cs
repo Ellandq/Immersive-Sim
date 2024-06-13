@@ -71,12 +71,14 @@ public class UI_Manager : MonoBehaviour, IManager
         {
             UI.GetValue(UI_Key.Reticle).EnableComponent();
             display.DisableComponent();
+            CameraManager.ChangeCameraState(CursorLockMode.Locked);
         }
         else
         {
             UI.GetValue(UI_Key.Reticle).DisableComponent();
             display.EnableComponent();
             display.SetUp();
+            CameraManager.ChangeCameraState(CursorLockMode.None);
         }
     }
 

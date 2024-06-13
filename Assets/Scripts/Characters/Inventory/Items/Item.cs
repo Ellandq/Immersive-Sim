@@ -38,13 +38,58 @@ public class Item
             return a;
         }
 
-        public static bool operator ==(Item a, Item b) { return a.GetId() == b.GetId(); }
+        public static bool operator ==(Item a, Item b)
+        {
+            // If both are null, or both are the same instance, return true.
+            if (ReferenceEquals(a, b))
+            {
+                return true;
+            }
 
-        public static bool operator !=(Item a, Item b) { return a.GetId() != b.GetId(); }
+            // If one is null, but not both, return false.
+            if (a is null || b is null)
+            {
+                return false;
+            }
 
-        public static bool operator ==(Item a, ItemType b) { return a.GetItemType() == b; }
+            // Otherwise, compare their IDs.
+            return a.GetId() == b.GetId();
+        }
 
-        public static bool operator !=(Item a, ItemType b) { return a.GetItemType() != b; }
+        public static bool operator !=(Item a, Item b)
+        {
+            return !(a == b);
+        }
+
+        public static bool operator ==(Item a, ItemType b)
+        {
+            if (a is null)
+            {
+                return false;
+            }
+
+            return a.GetItemType() == b;
+        }
+
+        public static bool operator !=(Item a, ItemType b)
+        {
+            return !(a == b);
+        }
+
+        // Override Equals and GetHashCode when overloading == and !=
+        public override bool Equals(object obj)
+        {
+            if (obj is Item item)
+            {
+                return this == item;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return GetId().GetHashCode();
+        }
 
     #endregion
 

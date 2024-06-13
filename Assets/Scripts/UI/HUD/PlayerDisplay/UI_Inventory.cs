@@ -18,30 +18,28 @@ public class UI_Inventory : UI_Component
     [Header("Settings")] 
     private SortType sortType;
     
-    private void Start()
-    {
-        inventory = PlayerManager.GetPlayer().GetInventory();
-    }
-    
     public void SetUp()
     {
+        inventory = PlayerManager.GetPlayer().GetInventory();
+        currentDisplayedItems = new List<Item>();
+        itemRows = new List<UI_Inventory_ItemRow>();
         SetUpInventory();
+        SetUpSelection();
     }
 
     public void SetUpInventory()
     {
-        foreach (ItemSection section in Enum.GetValues(typeof(ItemSection))) SetUpInventory(section);
+        foreach (ItemSection section in Enum.GetValues(typeof(ItemSection))) SetUpInventoryBySection((int)section);
     }
     
-    public void SetUpInventory(ItemSection itemSection)
+    public void SetUpInventoryBySection(int itemSection)
     {
-        foreach (var type in ItemManager.GetItemTypes(itemSection)) SetUpInventory(type);
+        foreach (var type in ItemManager.GetItemTypes((ItemSection)itemSection)) SetUpInventoryByType((int)type);
     }
     
-    public void SetUpInventory(ItemType itemType)
+    public void SetUpInventoryByType(int itemType)
     {
-        currentDisplayedItems.AddRange(SortItems(inventory.GetCollection(itemType).GetItems()));
-        SetUpSelection();
+        currentDisplayedItems.AddRange(SortItems(inventory.GetCollection((ItemType)itemType).GetItems()));
     }
 
     private List<Item> SortItems(List<Item> items)
@@ -50,7 +48,7 @@ public class UI_Inventory : UI_Component
         return items;
     }
 
-    private void SetUpSelection()
+    public void SetUpSelection()
     {
         if (currentDisplayedItems.Count == 0) return;
         
@@ -78,19 +76,20 @@ public class UI_Inventory : UI_Component
         var index = 0;
         foreach (var rowItems in itemLists)
         {
-            itemRows.Add(Instantiate(itemRowPrefab, Vector3.zero, Quaternion.identity, itemDisplayParent)
+            itemRows.Add(Instantiate(itemRowPrefab, itemDisplayParent.position, itemDisplayParent.rotation, itemDisplayParent)
                 .GetComponent<UI_Inventory_ItemRow>());
             itemRows[index].SetUp(rowItems);
             index++;
         }
     }
 
-    private void ClearRows()
+    public void ClearRows()
     {
         foreach (var row in itemRows)
         {
             Destroy(row.gameObject);
         }
+        itemRows.Clear();
     }
 }
 

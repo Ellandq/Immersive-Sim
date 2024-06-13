@@ -2,12 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Slider = UnityEngine.UI.Slider;
 
 public class UI_StatDisplay : UI_Component
 {
     [Header("Object References")]
     [SerializeField] private Slider slider;
+    [SerializeField] private Text numericDisplay;
     private float value;
     private const float ValueChangeSpeed = 50f;
 
@@ -27,6 +29,8 @@ public class UI_StatDisplay : UI_Component
         slider.value = playerStats.GetStatValue(statType);
         ChangeDisplayedValue(playerStats.GetStatValue(statType));
     }
+    
+    
 
     private void ChangeDisplayedValue(float value)
     {
