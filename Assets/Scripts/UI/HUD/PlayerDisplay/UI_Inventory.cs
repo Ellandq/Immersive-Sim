@@ -10,6 +10,9 @@ public class UI_Inventory : UI_Component
     private List<Item> currentDisplayedItems;
     private const int MaxItemsInRow = 6;
 
+    private bool isSetUp = false;
+    private bool isSectionSetUp = false;
+
     [Header("Item Rows")] 
     [SerializeField] private Transform itemDisplayParent;
     [SerializeField] private GameObject itemRowPrefab;
@@ -29,16 +32,23 @@ public class UI_Inventory : UI_Component
 
     public void SetUpInventory()
     {
+        isSetUp = true;
+        ClearRows();
         foreach (ItemSection section in Enum.GetValues(typeof(ItemSection))) SetUpInventoryBySection((int)section);
+        isSetUp = false;
     }
     
     public void SetUpInventoryBySection(int itemSection)
     {
+        if (!isSetUp) ClearRows();
+        isSectionSetUp = true;
         foreach (var type in ItemManager.GetItemTypes((ItemSection)itemSection)) SetUpInventoryByType((int)type);
+        isSectionSetUp = false;
     }
     
     public void SetUpInventoryByType(int itemType)
     {
+        if (!isSectionSetUp && !isSetUp) ClearRows();
         currentDisplayedItems.AddRange(SortItems(inventory.GetCollection((ItemType)itemType).GetItems()));
     }
 
@@ -85,6 +95,7 @@ public class UI_Inventory : UI_Component
 
     public void ClearRows()
     {
+        currentDisplayedItems = new List<Item>();
         foreach (var row in itemRows)
         {
             Destroy(row.gameObject);
