@@ -1,9 +1,13 @@
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [CreateAssetMenu(fileName = "New Item", menuName = "ScriptableObjects/Item Object")]
 public class ItemObject : ScriptableObject
 {
     [Header ("Item Basic Information")]
+    [SerializeField] private string id;
     [SerializeField] private string itemName;
     [SerializeField] private string hiddenName;
     [SerializeField] private string collection;
@@ -16,6 +20,8 @@ public class ItemObject : ScriptableObject
 
     [Header ("Item Visuals")]
     [SerializeField] private Sprite itemIcon;
+
+    public string ID => id;
 
     public Sprite Icon => itemIcon;
 
@@ -34,4 +40,13 @@ public class ItemObject : ScriptableObject
     public bool IsStackable => isStackable;
 
     public override string ToString (){ return collection + "/" + hiddenName; }
+    
+    #if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (!string.IsNullOrEmpty(id)) return;
+            id = GUID.Generate().ToString();
+            EditorUtility.SetDirty(this);
+        }
+    #endif
 }
