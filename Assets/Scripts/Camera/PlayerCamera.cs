@@ -17,7 +17,7 @@ public class PlayerCamera : MonoBehaviour, ICameraController
         this.playerBody = playerBody;
     }
     
-    public virtual void Move()
+    public virtual void Move(bool canMove)
     {
         
     }

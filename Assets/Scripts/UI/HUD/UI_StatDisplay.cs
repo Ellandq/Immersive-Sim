@@ -1,13 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using Slider = UnityEngine.UI.Slider;
 
 public class UI_StatDisplay : UI_Component
 {
     [Header("Object References")]
     [SerializeField] private Slider slider;
+    [SerializeField] private TMP_Text numericDisplay;
     private float value;
     private const float ValueChangeSpeed = 50f;
 
@@ -28,10 +31,28 @@ public class UI_StatDisplay : UI_Component
         ChangeDisplayedValue(playerStats.GetStatValue(statType));
     }
 
+    public void SetToStay(bool state)
+    {
+        numericDisplay.gameObject.SetActive(state);
+        if (state)
+        {
+            EnableComponent(true);
+            useCooldown = false;
+            ResetFadeStatus();
+        }
+        else
+        {
+            DisableComponent(false);
+            useCooldown = true;
+        }
+    }
+
     private void ChangeDisplayedValue(float value)
     {
         EnableComponent(false);
         this.value = value;
+
+        numericDisplay.text = Convert.ToString(value) + " / " + Convert.ToString(slider.maxValue);
 
         changeValueCoroutine ??= StartCoroutine(ChangeValue());
     }

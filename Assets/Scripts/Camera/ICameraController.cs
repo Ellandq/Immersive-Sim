@@ -6,7 +6,7 @@ public interface ICameraController
 {
     bool Enabled { get; set; }
 
-    void Move();
+    void Move(bool canMove);
     
     Camera GetCamera();
 }

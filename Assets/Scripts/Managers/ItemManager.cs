@@ -1,46 +1,168 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
-public class ItemManager : MonoBehaviour
+[ExecuteInEditMode]
+public class ItemManager : MonoBehaviour, IManager
 {
-    public static ItemManager Instance;
+    private static ItemManager Instance;
 
-    [Header("Item Prefabs")] 
-    [SerializeField] private List<GameObject> containers;
+    [Header("AssetBundles")] 
+    private string currentLoadedBundlePath = "";
+    private AssetBundle loadedBundle = null;
+    private bool bundleLoaded = false;
+
+    [Header("Special Bundles")] 
+    private AssetBundle containerBundle;
+    private AssetBundle ammunitionBundle;
     
     [ContextMenu("Set Instance")]
     private void SetInstance()
     {
         Instance = this;
     }
-    
-    public static GameObject GetContainer(ContainerType containerType)
+
+    public void SetUp()
+    {
+        containerBundle
+            = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, "props/containers"));
+        // containerBundle
+        //     = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, "enviroment/container"));
+    }
+
+    public static ItemManager GetInstance()
     {
         if (Instance == null)
         {
             FindObjectOfType<ItemManager>().SetInstance();
         }
-        return Instance.containers[(int)containerType];
+
+        return Instance;
     }
 
-    public static void SortItems(List<ItemData> itemDatas)
-    {
+    #region Runtime
+
+        private void UnloadBundle(string bundlePath = "")
+        {
+            if (bundlePath == currentLoadedBundlePath) return;
+            currentLoadedBundlePath = "";
+            loadedBundle.Unload(false);
+            bundleLoaded = false;
+        }
+
+        private void LoadBundle(string bundlePath)
+        {
+            UnloadBundle(bundlePath);
+            if (bundleLoaded) return;
+
+            loadedBundle = AssetBundle.LoadFromFile(bundlePath);
+            if (loadedBundle == null)
+            {
+                Debug.LogError("Failed to load asset bundle: " + bundlePath);
+                bundleLoaded = false;
+                currentLoadedBundlePath = "";
+                return;
+            }
+            bundleLoaded = true;
+            currentLoadedBundlePath = bundlePath;
+            
+        }
         
+        public static GameObject GetContainerPrefab(ContainerType containerType)
+        {
+            return Instance.containerBundle.LoadAsset<GameObject>(containerType.ToString());
+        }
+
+        public static GameObject GetItemPrefab(ItemObject itemData)
+        {
+            Instance.LoadBundle(GetAssetBundlePath(itemData));
+            return Instance.bundleLoaded ? Instance.loadedBundle.LoadAsset<GameObject>(itemData.HiddenName) : null;
+        }
+
+        private static string GetAssetBundlePath(ItemObject itemData)
+        {
+            return Path.Combine(Application.streamingAssetsPath, itemData.Collection);
+        }
+
+    #endregion
+
+    #region Editor
+
+        public static void GetItemPrefab(ItemObject itemData, Action<GameObject> callback)
+        {
+            var address = itemData.ToString().ToLower();
+            var handle = Addressables.LoadAssetAsync<GameObject>(address);
+
+            handle.Completed += (AsyncOperationHandle<GameObject> opHandle) =>
+            {
+                if (opHandle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    callback?.Invoke(opHandle.Result);
+                }
+                else
+                {
+                    Debug.LogError("Failed to load item prefab: " + address);
+                    callback?.Invoke(null);
+                }
+            };
+        }
+
+        public static void GetContainerPrefab(ContainerType containerType, Action<GameObject> callback)
+        {
+            var address = "props/containers/" + containerType.ToString().ToLower();
+            var handle = Addressables.LoadAssetAsync<GameObject>(address);
+
+            handle.Completed += (AsyncOperationHandle<GameObject> opHandle) =>
+            {
+                if (opHandle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    callback?.Invoke(opHandle.Result);
+                }
+                else
+                {
+                    Debug.LogError("Failed to load container prefab: " + address);
+                    callback?.Invoke(null);
+                }
+            };
+        }
+
+    #endregion
+
+    public static ItemSection GetItemSection(ItemType itemType) { return (ItemSection)((int)itemType % 10); }
+
+    public static List<ItemType> GetItemTypes(ItemSection itemSection)
+    {
+        return Enum.GetValues(typeof(ItemType)).Cast<ItemType>()
+            .Where(itemType => (int)itemType % 10 == (int)itemSection).ToList();
     }
+}
+
+public enum ItemSection
+{
+    Weapon = 0,
+    Armor = 1,
+    Consumable = 2,
+    Miscellaneous = 3
 }
 
 public enum ItemType 
 {
     // Weapons
-    MeleeWeapon, RangedWeapon, Staff,
+    MeleeWeapon = 0, RangedWeapon = 10, Staff = 20,
     // Ammunition
-    Ammunition,
+    Ammunition = 30,
+    // Armor
+    LightArmor = 1, MediumArmor = 11, HeavyArmor = 21, Robe = 31,
     // Consumables
-    Potions, Scrolls, Runes,
+    Potions = 2, Scrolls = 12, Runes = 22,
     // Misc
-    Plant, Ingredient, Book
+    Plant = 3, Ingredient = 13, Book = 23, Key = 33
 }
 
 public enum ContainerType

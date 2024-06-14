@@ -30,6 +30,7 @@ public class UI_Reticle : UI_Component
     
         private void ChangeInteractionDisplayVisibility()
         {
+            if (!isActiveAndEnabled) return;
             if (interactionInfoDisplayCoroutine != null) StopCoroutine(interactionInfoDisplayCoroutine);
             if (ReferenceEquals(selectedObject, null))
             {

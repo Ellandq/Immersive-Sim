@@ -1,0 +1,10 @@
+ManifestFileVersion: 0
+CRC: 1156776983
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: weapons/bows
+      Dependencies: {}
+    Info_1:
+      Name: props/containers
+      Dependencies: {}

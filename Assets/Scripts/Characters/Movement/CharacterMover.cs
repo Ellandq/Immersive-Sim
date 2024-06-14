@@ -70,7 +70,7 @@ public class CharacterMover : MonoBehaviour
         
         // Adjusting current animation
         targetAnimationState = ConvertMovementVectorToAnimation(moveVector);
-        animationState = Vector2.Lerp(animationState, targetAnimationState, Time.smoothDeltaTime * 4f);
+        animationState = Vector2.Lerp(animationState, targetAnimationState, Time.smoothDeltaTime * 2f);
         animator.SetFloat(xVelHash, animationState.x);
         animator.SetFloat(zVelHash, animationState.y);
         
@@ -114,7 +114,7 @@ public class CharacterMover : MonoBehaviour
         if (IsGrounded)
         {
             characterRigidbody.AddForce(-characterRigidbody.velocity.y * Vector3.up, ForceMode.VelocityChange);
-            var jumpForce = Mathf.Sqrt(2f * jumpHeight * Physics.gravity.magnitude * characterRigidbody.mass) * 8f;
+            var jumpForce = Mathf.Sqrt(2f * jumpHeight * Physics.gravity.magnitude * characterRigidbody.mass) * 10;
             characterRigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
         animator.ResetTrigger(jumpHash);

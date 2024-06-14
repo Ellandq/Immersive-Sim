@@ -64,4 +64,8 @@ public class PlayerManager : MonoBehaviour, IManager
     public static void EnableMovement (){ Instance.player.GetMovementHandle().EnableMovement(); }
     
     public static void DisableMovement (){ Instance.player.GetMovementHandle().DisableMovement(); }
+    
+    public static void EnableInteractions (){ Instance.player.GetInteractionHandle().AllowInteraction = true; }
+    
+    public static void DisableInteractions (){ Instance.player.GetInteractionHandle().AllowInteraction = false; }
 }

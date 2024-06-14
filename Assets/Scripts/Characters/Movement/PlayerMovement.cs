@@ -110,11 +110,6 @@ public class PlayerMovement : CharacterMover
 
         private void Jump (ButtonState state)
         {
-            // if (state != ButtonState.Up) Debug.Log("MovementEnabled: " + !movementEnabled +
-            //                                        "\nIgnoreJump: " + ignoreJump + 
-            //                                        "\nIsGrounded: " + !IsGrounded +
-            //                                        "\nIsJumping: " + IsJumping +
-            //                                        "\nCanJump: " +!CanJump());
             if (state == ButtonState.Up
                 || !movementEnabled
                 || ignoreJump
