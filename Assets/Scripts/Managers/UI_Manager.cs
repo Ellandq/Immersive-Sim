@@ -73,6 +73,7 @@ public class UI_Manager : MonoBehaviour, IManager
             display.DisableComponent();
             CameraManager.ChangeCameraState(CursorLockMode.Locked);
             PlayerManager.EnableMovement();
+            PlayerManager.EnableInteractions();
         }
         else
         {
@@ -81,6 +82,7 @@ public class UI_Manager : MonoBehaviour, IManager
             display.SetUp();
             CameraManager.ChangeCameraState(CursorLockMode.None);
             PlayerManager.DisableMovement();
+            PlayerManager.DisableInteractions();
         }
     }
 

@@ -44,7 +44,6 @@ public class UI_Inventory : UI_Component
         currentDisplayedItems = new List<Item>();
         items = new List<UI_Inventory_DisplayedItem>();
         SetUpInventory();
-        CreateItemDisplay();
     }
 
     public void SetUpInventory()
@@ -56,6 +55,7 @@ public class UI_Inventory : UI_Component
         ClearRows();
         foreach (ItemSection section in Enum.GetValues(typeof(ItemSection))) SetUpInventoryBySection((int)section);
         isSetUp = false;
+        CreateItemDisplay();
     }
     
     public void SetUpInventoryBySection(int itemSection)
@@ -70,12 +70,14 @@ public class UI_Inventory : UI_Component
         isSectionSetUp = true;
         foreach (var type in ItemManager.GetItemTypes((ItemSection)itemSection)) SetUpInventoryByType((int)type);
         isSectionSetUp = false;
+        if (!isSetUp) CreateItemDisplay();
     }
     
     public void SetUpInventoryByType(int itemType)
     {
         if (!isSectionSetUp && !isSetUp) ClearRows();
         currentDisplayedItems.AddRange(SortItems(inventory.GetCollection((ItemType)itemType).GetItems()));
+        if (!isSectionSetUp && !isSetUp) CreateItemDisplay();
     }
 
     private List<Item> SortItems(List<Item> items)
