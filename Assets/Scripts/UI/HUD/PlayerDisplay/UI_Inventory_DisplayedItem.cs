@@ -7,17 +7,24 @@ using UnityEngine.UI;
 
 public class UI_Inventory_DisplayedItem : UI_Component
 {
+    public Action<int> onSelect;
+    
     [Header("Item Info")] 
     private Item item;
+    private bool isSelected;
+    private int id;
 
     [Header("Object References")] 
     [SerializeField] private Image itemIcon;
     [SerializeField] private GameObject itemCountObject;
     [SerializeField] private Text itemCount;
     [SerializeField] private GameObject isFavouriteObject;
+    [SerializeField] private Outline outline; 
     
-    public void SetUp(Item item)
+    public void SetUp(Item item, int id)
     {
+        this.id = id;
+        isSelected = false;
         if (item == null)
         {
             Destroy(gameObject);
@@ -60,7 +67,23 @@ public class UI_Inventory_DisplayedItem : UI_Component
 
     private void OnDestroy()
     {
+        onSelect = null;
         if (item == null) return;
         if (item.ItemData.IsStackable) item.onItemCountChange -= ChangeItemCountDisplay;
+    }
+    
+    public void Select()
+    {
+        if (isSelected) return;
+        isSelected = true;
+        outline.enabled = true;
+        onSelect.Invoke(id);
+    }
+
+    public void Deselect()
+    {
+        if (!isSelected) return;
+        outline.enabled = false;
+        isSelected = false;
     }
 }

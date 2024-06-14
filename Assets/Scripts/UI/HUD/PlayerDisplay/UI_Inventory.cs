@@ -16,6 +16,7 @@ public class UI_Inventory : UI_Component
     [SerializeField] private UI_StatDisplay healthDisplay;
     [SerializeField] private List<GameObject> subsectionButtons;
     private int currentOpenSection = 0;
+    private int? currentSelectedItem = null;
 
     [Header("Item Rows")] 
     [SerializeField] private Transform itemDisplayParent;
@@ -93,19 +94,30 @@ public class UI_Inventory : UI_Component
         {
             items.Add(Instantiate(itemHolderPrefab, itemDisplayParent.position, itemDisplayParent.rotation, itemDisplayParent)
                 .GetComponent<UI_Inventory_DisplayedItem>());
-            items[index].SetUp(rowItems);
+            items[index].SetUp(rowItems, index);
+            items[index].onSelect += SelectedItemChange;
             index++;
         }
     }
 
     public void ClearRows()
     {
+        currentSelectedItem = null;
         currentDisplayedItems = new List<Item>();
         foreach (var row in items)
         {
             Destroy(row.gameObject);
         }
         items.Clear();
+    }
+
+    private void SelectedItemChange(int index)
+    {
+        if (currentSelectedItem != null)
+        {
+            items[(int)currentSelectedItem].Deselect();
+        }
+        currentSelectedItem = index;
     }
 }
 
