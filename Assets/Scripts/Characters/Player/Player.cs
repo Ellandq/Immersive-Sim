@@ -22,6 +22,10 @@ public class Player : MonoBehaviour, ICharacter
     
     public Inventory GetInventory (){ return playerInventory; }
 
+    public Equipment GetEquipment() { return playerInventory.GetEquipment(); }
+    
+    public FavoriteItems GetFavoriteItemsHandle() { return playerInventory.GetFavoriteItemsHandle(); }
+
     public CharacterStats GetStatistics() { return playerStats; }
 
     public FirstPersonCamera GetFirstPersonCamera() { return firstPersonCamera; }

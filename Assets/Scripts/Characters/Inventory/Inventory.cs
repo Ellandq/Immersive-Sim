@@ -13,6 +13,7 @@ public class Inventory : MonoBehaviour
     [Header("Inventory")]
     private Dictionary<ItemType, ItemCollection> items;
     [SerializeField] private List<ItemCollection> itemCollections;
+    [SerializeField] private Equipment equipment;
     
     private void Awake ()
     {
@@ -67,6 +68,10 @@ public class Inventory : MonoBehaviour
         public Dictionary<ItemType, ItemCollection> GetItems() { return items; }
 
         public ItemCollection GetCollection(ItemType itemType) { return items[itemType]; }
+
+        public Equipment GetEquipment() { return equipment; }
+
+        public FavoriteItems GetFavoriteItemsHandle() { return equipment.GetFavoriteItemsHandle(); }
 
     #endregion
 

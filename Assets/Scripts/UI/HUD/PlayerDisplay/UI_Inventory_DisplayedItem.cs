@@ -86,4 +86,11 @@ public class UI_Inventory_DisplayedItem : UI_Component
         outline.enabled = false;
         isSelected = false;
     }
+
+    public bool ChangeFavouriteStatus()
+    {
+        var wasFavourite = !item.IsFavourite;
+        isFavouriteObject.SetActive(wasFavourite);
+        return wasFavourite;
+    }
 }

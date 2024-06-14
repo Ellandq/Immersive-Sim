@@ -7,16 +7,17 @@ using UnityEngine;
 public class UI_Inventory : UI_Component
 {
     private Inventory inventory;
+    
     private List<Item> currentDisplayedItems;
 
-    private bool isSetUp = false;
-    private bool isSectionSetUp = false;
+    private bool isSetUp;
+    private bool isSectionSetUp;
 
     [Header("Object References")] 
     [SerializeField] private UI_StatDisplay healthDisplay;
     [SerializeField] private List<GameObject> subsectionButtons;
-    private int currentOpenSection = 0;
-    private int? currentSelectedItem = null;
+    private int currentOpenSection;
+    private int? currentSelectedItem;
 
     [Header("Item Rows")] 
     [SerializeField] private Transform itemDisplayParent;
@@ -118,6 +119,16 @@ public class UI_Inventory : UI_Component
             items[(int)currentSelectedItem].Deselect();
         }
         currentSelectedItem = index;
+    }
+
+    private void HandleFavouriteSelection()
+    {
+        if (!enabled || currentSelectedItem == null) return;
+
+        if (items[(int)currentSelectedItem].ChangeFavouriteStatus())
+        {
+            
+        }
     }
 }
 
