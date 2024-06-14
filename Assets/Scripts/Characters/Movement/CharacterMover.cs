@@ -135,7 +135,7 @@ public class CharacterMover : MonoBehaviour
             RaycastHit hitInfo;
             return Physics.Raycast(characterRigidbody.worldCenterOfMass, Vector3.down, out hitInfo,
                        distanceFromGround + .1f, groundMask)
-                   || Physics.CheckSphere(groundCheck.position, 0.4f, groundMask);
+                   || Physics.CheckSphere(groundCheck.position, 0.6f, groundMask);
         }
     }
 
@@ -158,7 +158,7 @@ public class CharacterMover : MonoBehaviour
         if (characterRigidbody == null || groundCheck == null) return;
         Gizmos.color = Color.red;
         Gizmos.DrawLine(characterRigidbody.worldCenterOfMass, characterRigidbody.worldCenterOfMass + Vector3.down * (distanceFromGround + .1f));
-        Gizmos.DrawWireSphere(groundCheck.position, 0.4f);
+        Gizmos.DrawWireSphere(groundCheck.position, 0.6f);
     }
 }
 
