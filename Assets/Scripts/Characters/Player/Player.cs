@@ -18,6 +18,8 @@ public class Player : MonoBehaviour, ICharacter
 
     public PlayerMovement GetMovementHandle() { return movementHandle; }
     
+    public PlayerInteraction GetInteractionHandle() { return interactionHandle; }
+    
     public Inventory GetInventory (){ return playerInventory; }
 
     public CharacterStats GetStatistics() { return playerStats; }
