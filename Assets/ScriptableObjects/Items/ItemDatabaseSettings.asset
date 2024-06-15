@@ -21,6 +21,10 @@ MonoBehaviour:
     Value: Miscellaneous
   - Key: Weapon
     Value: Weapon
+  - Key: Weapon/Ammunition
+    Value: Ammunition
+  - Key: Weapon/Ammunition/Arrows
+    Value: Arrows
   - Key: Weapon/Melee
     Value: Melee
   - Key: Weapon/Melee/Axes
@@ -50,6 +54,8 @@ MonoBehaviour:
   sections:
   - Section: 0
     Subsections:
+    - Path: Ammunition
+      ItemType: 30
     - Path: Melee
       ItemType: 0
     - Path: Ranged

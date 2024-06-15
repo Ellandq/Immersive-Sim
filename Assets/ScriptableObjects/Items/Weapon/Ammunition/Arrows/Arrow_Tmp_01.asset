@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e61c7c8957c01374d8fe5fcec95b964c, type: 3}
-  m_Name: Bow_Tmp_01
+  m_Name: Arrow_Tmp_01
   m_EditorClassIdentifier: 
   ItemName: 
-  HiddenName: Bow_Tmp_01
-  Collection: Bows
-  ItemType: 10
+  HiddenName: Arrow_Tmp_01
+  Collection: Arrows
+  ItemType: 30
   ItemDescription: 
   GoldValue: 0
   IsStackable: 0

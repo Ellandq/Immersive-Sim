@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using UnityEngine.Rendering;
 
 [CreateAssetMenu(fileName = "ItemDatabaseSettings", menuName = "Item Database Settings")]
 public class ItemDatabaseSettings : ScriptableObject
@@ -31,6 +33,7 @@ public class ItemDatabaseSettings : ScriptableObject
     public string this[string key]{
         get
         {
+            key = key.Replace('\\', '/');
             return tags.FirstOrDefault(tag => tag.Key == key)?.Value;
         }
     }
@@ -57,6 +60,49 @@ public class ItemDatabaseSettings : ScriptableObject
             {
                 sections.Add(new ItemDatabaseSettings_Section(kvp));
             }
+        }
+    }
+
+    public ItemType GetItemType(string path)
+    {
+        path = path.Replace('\\', '/');
+        
+        var parts = path.Split('/');
+        
+        if (parts.Length >= 1)
+        {
+            var sectionName = parts[1];
+            return this[GetItemSection(path)].FirstOrDefault(subsection => subsection.Key == sectionName).Value;
+        }
+        else
+        {
+            Debug.LogError($"Invalid path format: '{path}'");
+            throw new Exception($"Invalid path format: '{path}'");
+        }
+    }
+
+    public ItemSection GetItemSection(string path)
+    {
+        var parts = path.Split('/');
+
+        if (parts.Length > 0)
+        {
+            var sectionName = parts[0];
+            
+            if (Enum.TryParse<ItemSection>(sectionName, out var itemSection))
+            {
+                return itemSection;
+            }
+            else
+            {
+                Debug.LogError($"Invalid section name: '{sectionName}'");
+                throw new Exception($"Invalid section name: '{sectionName}'");
+            }
+        }
+        else
+        {
+            Debug.LogError($"Invalid path format: '{path}'");
+            throw new Exception($"Invalid path format: '{path}'");
         }
     }
 }

@@ -97,7 +97,7 @@ public class Item
 
         public ItemObject ItemData { get { return itemData; } }
         
-        public ItemType GetItemType () { return itemData.Type; }
+        public ItemType GetItemType () { return itemData.ItemType; }
         
         public string GetId () { return itemData.ToString(); }
 

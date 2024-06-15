@@ -54,7 +54,7 @@ public class ItemHolder : MonoBehaviour
                     if (loadedPrefab != null)
                     {
                         Instantiate(loadedPrefab, transform).AddComponent<ItemInteraction>();
-                        UpdateName(itemDatas[0].ItemObject.Name);
+                        UpdateName(itemDatas[0].ItemObject.ItemName);
                     }
                     else
                     {

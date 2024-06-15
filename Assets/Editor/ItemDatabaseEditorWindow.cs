@@ -5,17 +5,14 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.ResourceManagement.ResourceLocations;
 
 public class ItemDatabaseEditorWindow : EditorWindow
 {
     private ItemDatabase itemDatabase;
-    private ItemDatabaseSettings settings;
+    private static ItemDatabaseSettings settings;
 
-    private const string scriptableObjectPath = "Assets/ScriptableObjects/Items";
-    private const string prefabPath = "Assets/Prefabs/Items";
+    private const string ScriptableObjectPath = "Assets/ScriptableObjects/Items";
+    private const string PrefabPath = "Assets/Prefabs/Items";
     
     private string searchTerm = "";
     private Vector2 scrollPos;
@@ -32,8 +29,8 @@ public class ItemDatabaseEditorWindow : EditorWindow
     
     private void OnEnable()
     {
-        itemDatabase = AssetDatabase.LoadAssetAtPath<ItemDatabase>(Path.Combine(scriptableObjectPath, "ItemDatabase.asset"));
-        settings = AssetDatabase.LoadAssetAtPath<ItemDatabaseSettings>(Path.Combine(scriptableObjectPath, "ItemDatabaseSettings.asset"));
+        itemDatabase = AssetDatabase.LoadAssetAtPath<ItemDatabase>(Path.Combine(ScriptableObjectPath, "ItemDatabase.asset"));
+        settings = AssetDatabase.LoadAssetAtPath<ItemDatabaseSettings>(Path.Combine(ScriptableObjectPath, "ItemDatabaseSettings.asset"));
         if (itemDatabase == null)
         {
             Debug.LogError("ItemDatabase.asset not found.");
@@ -42,7 +39,6 @@ public class ItemDatabaseEditorWindow : EditorWindow
         PopulateTags();
         PopulateSections();
     }
-    
     
     private void OnGUI()
     {
@@ -60,17 +56,8 @@ public class ItemDatabaseEditorWindow : EditorWindow
         var tags = new Dictionary<string, string>(settings.Tags);
         var sections = new Dictionary<ItemSection, Dictionary<string, ItemType>>(settings.Sections);
 
-        EditorGUILayout.BeginHorizontal();
-        searchTerm = EditorGUILayout.TextField("Search", searchTerm);
-
-        if (GUILayout.Button("Update Item List"))
-        {
-            RefreshItemDatabase();
-        }
-        EditorGUILayout.EndHorizontal();
-
+        // Display tags
         EditorGUILayout.Space();
-
         tagsFoldout = EditorGUILayout.Foldout(tagsFoldout, "Tags", true);
         if (tagsFoldout)
         {
@@ -85,8 +72,8 @@ public class ItemDatabaseEditorWindow : EditorWindow
             EditorGUILayout.EndVertical();
         }
 
+        // Display sections
         EditorGUILayout.Space();
-
         sectionsFoldout = EditorGUILayout.Foldout(sectionsFoldout, "Sections", true);
         if (sectionsFoldout)
         {
@@ -111,15 +98,26 @@ public class ItemDatabaseEditorWindow : EditorWindow
             EditorGUILayout.EndVertical();
         }
 
+        // Search bar
+        EditorGUILayout.Space();
+        EditorGUILayout.BeginHorizontal();
+        searchTerm = EditorGUILayout.TextField("Search", searchTerm);
+        if (GUILayout.Button("Update Item List"))
+        {
+            RefreshItemDatabase();
+        }
+        EditorGUILayout.EndHorizontal();
+
+        // Items display
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Items", EditorStyles.boldLabel);
 
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
         var keysToModify = new List<string>();
 
-        foreach (var item in itemDatabase.allItems)
+        foreach (var item in itemDatabase.allItems.ToList())
         {
-            if (string.IsNullOrEmpty(searchTerm) || item.Name.Contains(searchTerm))
+            if (string.IsNullOrEmpty(searchTerm) || item.Name.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 if (!itemFoldouts.ContainsKey(item.Name))
                 {
@@ -153,7 +151,7 @@ public class ItemDatabaseEditorWindow : EditorWindow
                     EditorGUILayout.BeginHorizontal();
                     if (GUILayout.Button("Edit"))
                     {
-                        Selection.activeObject = item.ItemObject;
+                        SelectItemObject(item);
                     }
 
                     if (GUILayout.Button("Delete"))
@@ -170,27 +168,24 @@ public class ItemDatabaseEditorWindow : EditorWindow
 
         foreach (var key in keysToModify)
         {
-            // Modify itemFoldouts dictionary based on some condition if needed
+           
         }
 
         if (GUILayout.Button("Create New Item"))
         {
             CreateNewItem();
         }
-
-        // Assign the modified tags and sections back to settings
+        
         settings.Tags = tags;
         settings.Sections = sections;
-        
-        // Mark the settings as dirty to ensure changes are saved
+
         EditorUtility.SetDirty(settings);
     }
-
-
+    
     private void PopulateTags()
     {
         var tags = settings.Tags;
-        PopulateTagsRecursive(tags, scriptableObjectPath);
+        PopulateTagsRecursive(tags, ScriptableObjectPath);
         settings.Tags = tags;
     }
     
@@ -211,7 +206,7 @@ public class ItemDatabaseEditorWindow : EditorWindow
 
     private string GetFolderPathRelativeToScriptableObjects(string fullPath)
     {
-        return fullPath.Substring(scriptableObjectPath.Length + 1);
+        return fullPath.Substring(ScriptableObjectPath.Length + 1);
     }
 
     private void PopulateSections()
@@ -226,10 +221,10 @@ public class ItemDatabaseEditorWindow : EditorWindow
                 sections[section] = new Dictionary<string, ItemType>();
             }
 
-            var folderPath = Path.Combine(scriptableObjectPath, section.ToString());
+            var folderPath = Path.Combine(ScriptableObjectPath, section.ToString());
             if (!AssetDatabase.IsValidFolder(folderPath))
             {
-                AssetDatabase.CreateFolder(scriptableObjectPath, section.ToString());
+                AssetDatabase.CreateFolder(ScriptableObjectPath, section.ToString());
             }
             PopulateSubsections(sections, folderPath, section);
         }
@@ -261,26 +256,26 @@ public class ItemDatabaseEditorWindow : EditorWindow
 
     private void PopulateDatabase()
     {
-        if (!AssetDatabase.IsValidFolder(prefabPath))
+        if (!AssetDatabase.IsValidFolder(PrefabPath))
         {
-            Debug.LogError($"The prefab folder path is not valid: '{prefabPath}'");
+            Debug.LogError($"The prefab folder path is not valid: '{PrefabPath}'");
             return;
         }
 
-        if (!AssetDatabase.IsValidFolder(scriptableObjectPath))
+        if (!AssetDatabase.IsValidFolder(ScriptableObjectPath))
         {
-            Debug.LogError($"The scriptable object folder path is not valid: '{scriptableObjectPath}'");
+            Debug.LogError($"The scriptable object folder path is not valid: '{ScriptableObjectPath}'");
             return;
         }
 
         var database = new List<ItemDatabaseEntity>();
 
-        CheckFolderForPrefabs(database, prefabPath);
+        CheckFolderForPrefabs(database, PrefabPath);
         CheckFolderForScriptableObjects(database);
 
         itemDatabase.allItems = database;
     }
-
+    
     private static void CheckFolderForPrefabs(List<ItemDatabaseEntity> databaseEntries, string path)
     {
         var subfolders = AssetDatabase.GetSubFolders(path);
@@ -295,16 +290,31 @@ public class ItemDatabaseEditorWindow : EditorWindow
         {
             var assetPath = AssetDatabase.GUIDToAssetPath(guid);
             if (!assetPath.EndsWith(".prefab")) continue;
-            var relativePath = assetPath.Substring(prefabPath.Length);
+            var relativePath = assetPath.Substring(PrefabPath.Length + 1);
             var directoryName = Path.GetDirectoryName(relativePath);
             var fileName = Path.GetFileNameWithoutExtension(assetPath);
-                
+            
             if (!databaseEntries.Any(entry => entry.Name == fileName && entry.Path == directoryName))
             {
                 databaseEntries.Add(new ItemDatabaseEntity(fileName, directoryName));
             }
+            
+            var importer = AssetImporter.GetAtPath(assetPath);
+            if (importer != null)
+            {
+                var currentAssetBundle = importer.assetBundleName;
+                
+                if (!string.IsNullOrEmpty(currentAssetBundle)) continue;
+                importer.assetBundleName = directoryName.Substring(1);
+                importer.SaveAndReimport();
+            }
+            else
+            {
+                Debug.LogWarning($"Failed to get AssetImporter for '{assetPath}'");
+            }
         }
     }
+
 
     private static void CheckFolderForScriptableObjects(List<ItemDatabaseEntity> databaseEntries)
     {
@@ -320,11 +330,11 @@ public class ItemDatabaseEditorWindow : EditorWindow
 
             for (var i = startingIndex; i < currentIndex; i++)
             {
-                var itemPath = scriptableObjectPath + Path.Combine(databaseEntries[i].Path, databaseEntries[i].Name + ".asset");
+                var itemPath = ScriptableObjectPath + '/' + Path.Combine(databaseEntries[i].Path, databaseEntries[i].Name + ".asset");
                 var itemObject = AssetDatabase.LoadAssetAtPath<ItemObject>(itemPath);
 
-                databaseEntries[i].ItemObject = itemObject == null ? CreateItemObject(itemPath) : itemObject;
-                itemPath = scriptableObjectPath + Path.Combine(databaseEntries[i].Path, databaseEntries[i].Name + "_Modifier.asset");
+                databaseEntries[i].ItemObject = itemObject == null ? CreateItemObject(databaseEntries[i], itemPath) : itemObject;
+                itemPath = ScriptableObjectPath + '/' + Path.Combine(databaseEntries[i].Path, databaseEntries[i].Name + "_Modifier.asset");
                 var itemModifier = AssetDatabase.LoadAssetAtPath<ItemModifier>(itemPath);
 
                 if (itemModifier != null)
@@ -335,14 +345,30 @@ public class ItemDatabaseEditorWindow : EditorWindow
         }
     }
 
-    private static ItemObject CreateItemObject(string path)
+    private static ItemObject CreateItemObject(ItemDatabaseEntity referenceObject, string path)
     {
         var itemObject = CreateInstance<ItemObject>();
+        
+        var directoryPath = Path.GetDirectoryName(path);
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+            AssetDatabase.Refresh(); 
+        }
+
+        var trimmedPath = directoryPath.Substring(ScriptableObjectPath.Length + 1);
+    
+        itemObject.HiddenName = referenceObject.Name;
+        itemObject.Collection = settings[trimmedPath];
+        itemObject.ItemType = settings.GetItemType(trimmedPath);
+    
         AssetDatabase.CreateAsset(itemObject, path);
         AssetDatabase.SaveAssets();
         EditorUtility.FocusProjectWindow();
+
         return itemObject;
     }
+
 
     private void ClearDatabase()
     {
@@ -352,7 +378,7 @@ public class ItemDatabaseEditorWindow : EditorWindow
     private void CreateItemDatabase()
     {
         itemDatabase = CreateInstance<ItemDatabase>();
-        AssetDatabase.CreateAsset(itemDatabase, Path.Combine(scriptableObjectPath, "ItemDatabase.asset"));
+        AssetDatabase.CreateAsset(itemDatabase, Path.Combine(ScriptableObjectPath, "ItemDatabase.asset"));
         AssetDatabase.SaveAssets();
         EditorUtility.FocusProjectWindow();
         Selection.activeObject = itemDatabase;
@@ -360,7 +386,7 @@ public class ItemDatabaseEditorWindow : EditorWindow
 
     private void CreateNewItem()
     {
-        var path = Path.Combine(scriptableObjectPath, "NewItem.asset");
+        var path = Path.Combine(ScriptableObjectPath, "NewItem.asset");
         var itemObject = CreateInstance<ItemObject>();
         AssetDatabase.CreateAsset(itemObject, path);
         AssetDatabase.SaveAssets();
@@ -383,5 +409,32 @@ public class ItemDatabaseEditorWindow : EditorWindow
         EditorUtility.SetDirty(itemDatabase);
         AssetDatabase.SaveAssets();
     }
+    
+    private void SelectItemObject(ItemDatabaseEntity item)
+    {
+        var itemObject = item.ItemObject;
+        if (itemObject != null)
+        {
+            // Focus the Project window on the item object
+            EditorGUIUtility.PingObject(itemObject);
+
+            // Select the item object in the Project window
+            Selection.activeObject = itemObject;
+
+            // Ensure the Inspector window is visible and focused
+            EditorApplication.delayCall += () =>
+            {
+                EditorUtility.FocusProjectWindow();
+                EditorGUIUtility.PingObject(itemObject);
+                Selection.activeObject = itemObject;
+            };
+        }
+        else
+        {
+            Debug.LogWarning("Item Object is null. Cannot select.");
+        }
+    }
+
+
 }
 #endif

@@ -20,7 +20,7 @@ public class ItemCollection
 
         public void AddItem (Item item)
         {
-            if (item != collectionType) throw new ItemTypeException ($"Cannot insert an item of type {item.ItemData.Type} into a collection of type {collectionType}");
+            if (item != collectionType) throw new ItemTypeException ($"Cannot insert an item of type {item.ItemData.ItemType} into a collection of type {collectionType}");
 
             if (item.ItemData.IsStackable && Contains(item)) 
             { 
@@ -34,7 +34,7 @@ public class ItemCollection
 
         public void RemoveItem (Item item)
         {
-            if (item != collectionType) throw new ItemTypeException ($"Cannot insert an item of type {item.ItemData.Type} into a collection of type {collectionType}");
+            if (item != collectionType) throw new ItemTypeException ($"Cannot insert an item of type {item.ItemData.ItemType} into a collection of type {collectionType}");
 
             if (!item.ItemData.IsStackable || !Contains(item)) return;
             var index = GetSameItemIndex(item);
