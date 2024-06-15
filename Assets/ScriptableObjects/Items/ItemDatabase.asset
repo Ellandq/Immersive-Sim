@@ -12,9 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7f6f07946b489c4cb2026295b858ba2, type: 3}
   m_Name: ItemDatabase
   m_EditorClassIdentifier: 
-  allItems:
-  - ItemObject: {fileID: 11400000, guid: 81920eadb2a0ba246a12518c7cf03d39, type: 2}
-    ItemModifier: {fileID: 0}
-    Name: Bow_Tmp_01
-    Path: \Weapon\Ranged\Bows
-    Addressable: 0
+  allItems: []

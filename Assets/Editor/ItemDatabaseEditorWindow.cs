@@ -42,7 +42,8 @@ public class ItemDatabaseEditorWindow : EditorWindow
         PopulateTags();
         PopulateSections();
     }
-
+    
+    
     private void OnGUI()
     {
         if (itemDatabase == null)
@@ -54,6 +55,10 @@ public class ItemDatabaseEditorWindow : EditorWindow
             }
             return;
         }
+
+        // Use local variables to hold the tags and sections
+        var tags = new Dictionary<string, string>(settings.Tags);
+        var sections = new Dictionary<ItemSection, Dictionary<string, ItemType>>(settings.Sections);
 
         EditorGUILayout.BeginHorizontal();
         searchTerm = EditorGUILayout.TextField("Search", searchTerm);
@@ -70,11 +75,11 @@ public class ItemDatabaseEditorWindow : EditorWindow
         if (tagsFoldout)
         {
             EditorGUILayout.BeginVertical("box");
-            foreach (var tag in settings.Tags.ToList())
+            foreach (var tag in tags.ToList())
             {
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField(tag.Key, GUILayout.Width(300));
-                settings.Tags[tag.Key] = EditorGUILayout.TextField(tag.Value);
+                tags[tag.Key] = EditorGUILayout.TextField(tag.Value);
                 EditorGUILayout.EndHorizontal();
             }
             EditorGUILayout.EndVertical();
@@ -86,22 +91,22 @@ public class ItemDatabaseEditorWindow : EditorWindow
         if (sectionsFoldout)
         {
             EditorGUILayout.BeginVertical("box");
-            foreach (var section in settings.Sections)
+            foreach (var section in sections)
             {
                 EditorGUILayout.LabelField(section.Key.ToString(), EditorStyles.boldLabel);
 
-                EditorGUI.indentLevel++; // Increase indentation for subsections
+                EditorGUI.indentLevel++;
 
                 foreach (var kvp in section.Value.ToList())
                 {
                     EditorGUILayout.BeginHorizontal();
-                    GUILayout.Space(20); // Adjust the indentation here as needed
+                    GUILayout.Space(20);
                     EditorGUILayout.LabelField(kvp.Key, GUILayout.Width(280));
                     section.Value[kvp.Key] = (ItemType)EditorGUILayout.EnumPopup(kvp.Value);
                     EditorGUILayout.EndHorizontal();
                 }
 
-                EditorGUI.indentLevel--; // Restore indentation level
+                EditorGUI.indentLevel--;
             }
             EditorGUILayout.EndVertical();
         }
@@ -172,27 +177,35 @@ public class ItemDatabaseEditorWindow : EditorWindow
         {
             CreateNewItem();
         }
+
+        // Assign the modified tags and sections back to settings
+        settings.Tags = tags;
+        settings.Sections = sections;
+        
+        // Mark the settings as dirty to ensure changes are saved
+        EditorUtility.SetDirty(settings);
     }
 
-    
+
     private void PopulateTags()
     {
-        settings.Tags ??= new Dictionary<string, string>();
-        PopulateTagsRecursive(scriptableObjectPath);
+        var tags = settings.Tags;
+        PopulateTagsRecursive(tags, scriptableObjectPath);
+        settings.Tags = tags;
     }
-
-    private void PopulateTagsRecursive(string folderPath)
+    
+    private void PopulateTagsRecursive(Dictionary<string, string> tags, string folderPath)
     {
         var subfolders = AssetDatabase.GetSubFolders(folderPath);
         foreach (var subfolder in subfolders)
         {
             var folderName = new DirectoryInfo(subfolder).Name;
             var key = GetFolderPathRelativeToScriptableObjects(subfolder);
-            if (!settings.Tags.ContainsKey(key))
+            if (!tags.ContainsKey(key))
             {
-                settings.Tags[key] = folderName;
+                tags.Add(key, folderName);
             }
-            PopulateTagsRecursive(subfolder);
+            PopulateTagsRecursive(tags, subfolder);
         }
     }
 
@@ -203,17 +216,14 @@ public class ItemDatabaseEditorWindow : EditorWindow
 
     private void PopulateSections()
     {
-        if (settings.Sections == null)
-        {
-            settings.Sections = new Dictionary<ItemSection, Dictionary<string, ItemType>>();
-        }
-
+        var sections = settings.Sections;
         var enumValues = Enum.GetValues(typeof(ItemSection));
+        
         foreach (ItemSection section in enumValues)
         {
-            if (!settings.Sections.ContainsKey(section))
+            if (!sections.ContainsKey(section))
             {
-                settings.Sections[section] = new Dictionary<string, ItemType>();
+                sections[section] = new Dictionary<string, ItemType>();
             }
 
             var folderPath = Path.Combine(scriptableObjectPath, section.ToString());
@@ -221,25 +231,25 @@ public class ItemDatabaseEditorWindow : EditorWindow
             {
                 AssetDatabase.CreateFolder(scriptableObjectPath, section.ToString());
             }
-            PopulateSubsections(folderPath, section);
+            PopulateSubsections(sections, folderPath, section);
         }
+
+        settings.Sections = sections;
     }
 
-    private void PopulateSubsections(string path, ItemSection currentSection)
+    private void PopulateSubsections(Dictionary<ItemSection, Dictionary<string, ItemType>> sections, string path, ItemSection currentSection)
     {
         var subfolders = AssetDatabase.GetSubFolders(path);
         
         foreach (var subfolderPath in subfolders)
         {
             var folderName = new DirectoryInfo(subfolderPath).Name;
-            if (!settings.Sections[currentSection].ContainsKey(folderName))
+            if (!sections[currentSection].ContainsKey(folderName))
             {
-                settings.Sections[currentSection].Add(folderName, 0);  // Add only if key does not exist
+                sections[currentSection].Add(folderName, 0);
             }
         }
     }
-    
-    
     
     private void RefreshItemDatabase()
     {

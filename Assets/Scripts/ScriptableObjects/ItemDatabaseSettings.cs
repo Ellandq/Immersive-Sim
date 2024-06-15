@@ -6,7 +6,9 @@ using System.Linq;
 [CreateAssetMenu(fileName = "ItemDatabaseSettings", menuName = "Item Database Settings")]
 public class ItemDatabaseSettings : ScriptableObject
 {
+    [SerializeField]
     private List<ItemDatabaseSettings_Tags> tags;
+    [SerializeField]
     private List<ItemDatabaseSettings_Section> sections;
 
 

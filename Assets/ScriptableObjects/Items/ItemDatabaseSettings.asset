@@ -12,3 +12,53 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b3b0e1badc5a8f489d2e2b8c2f49c4d, type: 3}
   m_Name: ItemDatabaseSettings
   m_EditorClassIdentifier: 
+  tags:
+  - Key: Armor
+    Value: Armor
+  - Key: Consumable
+    Value: Consumable
+  - Key: Miscellaneous
+    Value: Miscellaneous
+  - Key: Weapon
+    Value: Weapon
+  - Key: Weapon/Melee
+    Value: Melee
+  - Key: Weapon/Melee/Axes
+    Value: Axes
+  - Key: Weapon/Melee/Daggers
+    Value: Daggers
+  - Key: Weapon/Melee/GreatAxes
+    Value: GreatAxes
+  - Key: Weapon/Melee/Greatswords
+    Value: Greatswords
+  - Key: Weapon/Melee/Maces
+    Value: Maces
+  - Key: Weapon/Melee/Swords
+    Value: Swords
+  - Key: Weapon/Melee/WarHammers
+    Value: WarHammers
+  - Key: Weapon/Ranged
+    Value: Ranged
+  - Key: Weapon/Ranged/Bows
+    Value: Bows
+  - Key: Weapon/Ranged/Crossbow
+    Value: Crossbow
+  - Key: Weapon/Ranged/Crossbows
+    Value: Crossbows
+  - Key: Weapon/Staff
+    Value: Staff
+  sections:
+  - Section: 0
+    Subsections:
+    - Path: Melee
+      ItemType: 0
+    - Path: Ranged
+      ItemType: 10
+    - Path: Staff
+      ItemType: 20
+  - Section: 1
+    Subsections: []
+  - Section: 2
+    Subsections: []
+  - Section: 3
+    Subsections: []
