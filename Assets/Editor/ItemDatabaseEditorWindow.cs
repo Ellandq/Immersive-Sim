@@ -4,7 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class ItemDatabaseEditorWindow : EditorWindow
 {
@@ -285,7 +289,7 @@ public class ItemDatabaseEditorWindow : EditorWindow
         }
 
         var assetGuids = AssetDatabase.FindAssets("", new[] { path });
-
+        
         foreach (var guid in assetGuids)
         {
             var assetPath = AssetDatabase.GUIDToAssetPath(guid);
@@ -298,6 +302,8 @@ public class ItemDatabaseEditorWindow : EditorWindow
             {
                 databaseEntries.Add(new ItemDatabaseEntity(fileName, directoryName));
             }
+            
+            ManageAddressables(guid, directoryName);
             
             var importer = AssetImporter.GetAtPath(assetPath);
             if (importer != null)
@@ -312,9 +318,17 @@ public class ItemDatabaseEditorWindow : EditorWindow
             {
                 Debug.LogWarning($"Failed to get AssetImporter for '{assetPath}'");
             }
+            
         }
     }
 
+    private static void ManageAddressables(string guid, string newAddress)
+    {
+        Debug.Log(guid);
+        AddressableAssetSettingsDefaultObject.Settings.CreateOrMoveEntry(
+            guid, AddressableAssetSettingsDefaultObject.Settings.DefaultGroup, false, true);
+        AddressableAssetSettingsDefaultObject.Settings.FindAssetEntry(guid).address = newAddress;
+    }
 
     private static void CheckFolderForScriptableObjects(List<ItemDatabaseEntity> databaseEntries)
     {
@@ -369,7 +383,6 @@ public class ItemDatabaseEditorWindow : EditorWindow
         return itemObject;
     }
 
-
     private void ClearDatabase()
     {
         itemDatabase.allItems.Clear();
@@ -415,13 +428,8 @@ public class ItemDatabaseEditorWindow : EditorWindow
         var itemObject = item.ItemObject;
         if (itemObject != null)
         {
-            // Focus the Project window on the item object
             EditorGUIUtility.PingObject(itemObject);
-
-            // Select the item object in the Project window
             Selection.activeObject = itemObject;
-
-            // Ensure the Inspector window is visible and focused
             EditorApplication.delayCall += () =>
             {
                 EditorUtility.FocusProjectWindow();
@@ -434,7 +442,5 @@ public class ItemDatabaseEditorWindow : EditorWindow
             Debug.LogWarning("Item Object is null. Cannot select.");
         }
     }
-
-
 }
 #endif
