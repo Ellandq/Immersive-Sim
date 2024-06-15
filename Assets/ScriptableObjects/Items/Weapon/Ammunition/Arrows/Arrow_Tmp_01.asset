@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e61c7c8957c01374d8fe5fcec95b964c, type: 3}
   m_Name: Arrow_Tmp_01
   m_EditorClassIdentifier: 
-  ItemName: 
+  ID: 44954e26-efd2-4f64-ae48-4d309f127928
+  ItemName: Arrow
   HiddenName: Arrow_Tmp_01
   Collection: Arrows
   ItemType: 30
   ItemDescription: 
-  GoldValue: 0
-  IsStackable: 0
-  ItemIcon: {fileID: 0}
+  GoldValue: 1
+  IsStackable: 1
+  ItemIcon: {fileID: 21300000, guid: 256f1a657f021ba46b825d057f1c525a, type: 3}

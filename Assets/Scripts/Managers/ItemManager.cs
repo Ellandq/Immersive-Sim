@@ -9,11 +9,10 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 [ExecuteInEditMode]
-[RequireComponent(typeof(ItemDatabase))]
 public class ItemManager : MonoBehaviour, IManager
 {
     private static ItemManager Instance;
-    private ItemDatabase itemDatabase;
+    [SerializeField] private ItemDatabase itemDatabase;
 
     [Header("AssetBundles")] 
     private AssetBundle loadedBundle;
@@ -96,8 +95,8 @@ public class ItemManager : MonoBehaviour, IManager
 
         public static void GetItemPrefab(ItemObject itemData, Action<GameObject> callback)
         {
-            var address = itemData.ToString().ToLower();
-            var handle = Addressables.LoadAssetAsync<GameObject>(address);
+            var item = GetInstance().itemDatabase.GetByID(itemData.ID);
+            var handle = Addressables.LoadAssetAsync<GameObject>(item.ToString());
 
             handle.Completed += (opHandle) =>
             {
@@ -107,7 +106,7 @@ public class ItemManager : MonoBehaviour, IManager
                 }
                 else
                 {
-                    Debug.LogError("Failed to load item prefab: " + address);
+                    Debug.LogError("Failed to load item prefab: " + item.ToString());
                     callback?.Invoke(null);
                 }
             };

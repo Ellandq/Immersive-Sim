@@ -7,6 +7,8 @@ using UnityEditor;
 public class ItemObject : ScriptableObject
 {
     [Header ("Item Basic Information")]
+    [HideInInspector]
+    public string ID;
     public string ItemName;
     public string HiddenName;
     public string Collection;
@@ -19,6 +21,17 @@ public class ItemObject : ScriptableObject
 
     [Header ("Item Visuals")]
     public Sprite ItemIcon;
+    
+    private void OnEnable()
+    {
+        if (string.IsNullOrEmpty(ID))
+        {
+            ID = System.Guid.NewGuid().ToString();
+        }
+    }
 
-    public override string ToString (){ return Collection + "/" + HiddenName; }
+    public override string ToString ()
+    {
+        return Collection + HiddenName;
+    }
 }

@@ -303,7 +303,7 @@ public class ItemDatabaseEditorWindow : EditorWindow
                 databaseEntries.Add(new ItemDatabaseEntity(fileName, directoryName));
             }
             
-            ManageAddressables(guid, directoryName);
+            ManageAddressables(guid, directoryName + "\\" + fileName);
             
             var importer = AssetImporter.GetAtPath(assetPath);
             if (importer != null)
@@ -324,7 +324,6 @@ public class ItemDatabaseEditorWindow : EditorWindow
 
     private static void ManageAddressables(string guid, string newAddress)
     {
-        Debug.Log(guid);
         AddressableAssetSettingsDefaultObject.Settings.CreateOrMoveEntry(
             guid, AddressableAssetSettingsDefaultObject.Settings.DefaultGroup, false, true);
         AddressableAssetSettingsDefaultObject.Settings.FindAssetEntry(guid).address = newAddress;
