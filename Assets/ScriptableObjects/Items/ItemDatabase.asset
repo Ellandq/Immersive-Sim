@@ -16,4 +16,5 @@ MonoBehaviour:
   - ItemObject: {fileID: 11400000, guid: 81920eadb2a0ba246a12518c7cf03d39, type: 2}
     ItemModifier: {fileID: 0}
     Name: Bow_Tmp_01
-    Path: \Weapons\Ranged\Bows
+    Path: \Weapon\Ranged\Bows
+    Addressable: 0
