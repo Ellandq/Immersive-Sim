@@ -14,11 +14,6 @@ public class ItemDatabaseEditorWindow : EditorWindow
     private ItemDatabase itemDatabase;
     private ItemDatabaseSettings settings;
 
-    [SerializeField]
-    private Dictionary<string, string> Tags;
-    [SerializeField]
-    private Dictionary<ItemSection, Dictionary<string, ItemType>> Sections;
-
     private const string scriptableObjectPath = "Assets/ScriptableObjects/Items";
     private const string prefabPath = "Assets/Prefabs/Items";
     
@@ -35,10 +30,10 @@ public class ItemDatabaseEditorWindow : EditorWindow
         GetWindow<ItemDatabaseEditorWindow>("Item Database");
     }
     
-
     private void OnEnable()
     {
         itemDatabase = AssetDatabase.LoadAssetAtPath<ItemDatabase>(Path.Combine(scriptableObjectPath, "ItemDatabase.asset"));
+        settings = AssetDatabase.LoadAssetAtPath<ItemDatabaseSettings>(Path.Combine(scriptableObjectPath, "ItemDatabaseSettings.asset"));
         if (itemDatabase == null)
         {
             Debug.LogError("ItemDatabase.asset not found.");
@@ -75,11 +70,11 @@ public class ItemDatabaseEditorWindow : EditorWindow
         if (tagsFoldout)
         {
             EditorGUILayout.BeginVertical("box");
-            foreach (var tag in Tags.ToList())
+            foreach (var tag in settings.Tags.ToList())
             {
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField(tag.Key, GUILayout.Width(300));
-                Tags[tag.Key] = EditorGUILayout.TextField(tag.Value);
+                settings.Tags[tag.Key] = EditorGUILayout.TextField(tag.Value);
                 EditorGUILayout.EndHorizontal();
             }
             EditorGUILayout.EndVertical();
@@ -91,7 +86,7 @@ public class ItemDatabaseEditorWindow : EditorWindow
         if (sectionsFoldout)
         {
             EditorGUILayout.BeginVertical("box");
-            foreach (var section in Sections)
+            foreach (var section in settings.Sections)
             {
                 EditorGUILayout.LabelField(section.Key.ToString(), EditorStyles.boldLabel);
 
@@ -182,7 +177,7 @@ public class ItemDatabaseEditorWindow : EditorWindow
     
     private void PopulateTags()
     {
-        Tags ??= new Dictionary<string, string>();
+        settings.Tags ??= new Dictionary<string, string>();
         PopulateTagsRecursive(scriptableObjectPath);
     }
 
@@ -193,9 +188,9 @@ public class ItemDatabaseEditorWindow : EditorWindow
         {
             var folderName = new DirectoryInfo(subfolder).Name;
             var key = GetFolderPathRelativeToScriptableObjects(subfolder);
-            if (!Tags.ContainsKey(key))
+            if (!settings.Tags.ContainsKey(key))
             {
-                Tags[key] = folderName;
+                settings.Tags[key] = folderName;
             }
             PopulateTagsRecursive(subfolder);
         }
@@ -208,17 +203,17 @@ public class ItemDatabaseEditorWindow : EditorWindow
 
     private void PopulateSections()
     {
-        if (Sections == null)
+        if (settings.Sections == null)
         {
-            Sections = new Dictionary<ItemSection, Dictionary<string, ItemType>>();
+            settings.Sections = new Dictionary<ItemSection, Dictionary<string, ItemType>>();
         }
 
         var enumValues = Enum.GetValues(typeof(ItemSection));
         foreach (ItemSection section in enumValues)
         {
-            if (!Sections.ContainsKey(section))
+            if (!settings.Sections.ContainsKey(section))
             {
-                Sections[section] = new Dictionary<string, ItemType>();
+                settings.Sections[section] = new Dictionary<string, ItemType>();
             }
 
             var folderPath = Path.Combine(scriptableObjectPath, section.ToString());
@@ -237,9 +232,9 @@ public class ItemDatabaseEditorWindow : EditorWindow
         foreach (var subfolderPath in subfolders)
         {
             var folderName = new DirectoryInfo(subfolderPath).Name;
-            if (!Sections[currentSection].ContainsKey(folderName))
+            if (!settings.Sections[currentSection].ContainsKey(folderName))
             {
-                Sections[currentSection].Add(folderName, 0);  // Add only if key does not exist
+                settings.Sections[currentSection].Add(folderName, 0);  // Add only if key does not exist
             }
         }
     }
