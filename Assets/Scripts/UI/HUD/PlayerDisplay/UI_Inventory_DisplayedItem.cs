@@ -33,7 +33,7 @@ public class UI_Inventory_DisplayedItem : UI_Component
         
         this.item = item;
 
-        itemIcon.sprite = item.ItemData.Icon;
+        itemIcon.sprite = item.ItemData.ItemIcon;
 
         if (this.item.ItemData.IsStackable)
         {

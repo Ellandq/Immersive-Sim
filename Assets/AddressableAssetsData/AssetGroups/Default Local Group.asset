@@ -18,15 +18,20 @@ MonoBehaviour:
   m_GUID: 0ab16fb6a2d447f41a78e807ef415667
   m_SerializeEntries:
   - m_GUID: 036ba0cb9b087f34c80f75a0e7a5aa81
-    m_Address: weapons/bows/bow_tmp_01
+    m_Address: Weapon\Ranged\Bows\Bow_Tmp_01
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Weapon
+    - default
   - m_GUID: 2ccaed420c5c1344d8209a968ae9ddd5
-    m_Address: props/containers/sack
+    m_Address: props\containers\sack
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Container
+    - default
+  - m_GUID: 8f4c9c03c89c15141a81fbf5e4956f28
+    m_Address: Weapon\Ammunition\Arrows\Arrow_Tmp_01
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - default
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: d04ef444555bbba428387412b34b95db, type: 2}
   m_SchemaSet:

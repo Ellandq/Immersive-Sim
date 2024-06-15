@@ -12,11 +12,12 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 public class ItemManager : MonoBehaviour, IManager
 {
     private static ItemManager Instance;
+    [SerializeField] private ItemDatabase itemDatabase;
 
     [Header("AssetBundles")] 
+    private AssetBundle loadedBundle;
     private string currentLoadedBundlePath = "";
-    private AssetBundle loadedBundle = null;
-    private bool bundleLoaded = false;
+    private bool bundleLoaded;
 
     [Header("Special Bundles")] 
     private AssetBundle containerBundle;
@@ -32,8 +33,6 @@ public class ItemManager : MonoBehaviour, IManager
     {
         containerBundle
             = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, "props/containers"));
-        // containerBundle
-        //     = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, "enviroment/container"));
     }
 
     public static ItemManager GetInstance()
@@ -96,10 +95,10 @@ public class ItemManager : MonoBehaviour, IManager
 
         public static void GetItemPrefab(ItemObject itemData, Action<GameObject> callback)
         {
-            var address = itemData.ToString().ToLower();
-            var handle = Addressables.LoadAssetAsync<GameObject>(address);
+            var item = GetInstance().itemDatabase.GetByID(itemData.ID);
+            var handle = Addressables.LoadAssetAsync<GameObject>(item.ToString());
 
-            handle.Completed += (AsyncOperationHandle<GameObject> opHandle) =>
+            handle.Completed += (opHandle) =>
             {
                 if (opHandle.Status == AsyncOperationStatus.Succeeded)
                 {
@@ -107,7 +106,7 @@ public class ItemManager : MonoBehaviour, IManager
                 }
                 else
                 {
-                    Debug.LogError("Failed to load item prefab: " + address);
+                    Debug.LogError("Failed to load item prefab: " + item.ToString());
                     callback?.Invoke(null);
                 }
             };
@@ -118,7 +117,7 @@ public class ItemManager : MonoBehaviour, IManager
             var address = "props/containers/" + containerType.ToString().ToLower();
             var handle = Addressables.LoadAssetAsync<GameObject>(address);
 
-            handle.Completed += (AsyncOperationHandle<GameObject> opHandle) =>
+            handle.Completed += (opHandle) =>
             {
                 if (opHandle.Status == AsyncOperationStatus.Succeeded)
                 {

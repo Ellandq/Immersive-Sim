@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b3b0e1badc5a8f489d2e2b8c2f49c4d, type: 3}
+  m_Name: ItemDatabaseSettings
+  m_EditorClassIdentifier: 
+  tags:
+  - Key: Armor
+    Value: Armor
+  - Key: Consumable
+    Value: Consumable
+  - Key: Miscellaneous
+    Value: Miscellaneous
+  - Key: Weapon
+    Value: Weapon
+  - Key: Weapon/Ammunition
+    Value: Ammunition
+  - Key: Weapon/Ammunition/Arrows
+    Value: Arrows
+  - Key: Weapon/Melee
+    Value: Melee
+  - Key: Weapon/Melee/Axes
+    Value: Axes
+  - Key: Weapon/Melee/Daggers
+    Value: Daggers
+  - Key: Weapon/Melee/GreatAxes
+    Value: GreatAxes
+  - Key: Weapon/Melee/Greatswords
+    Value: Greatswords
+  - Key: Weapon/Melee/Maces
+    Value: Maces
+  - Key: Weapon/Melee/Swords
+    Value: Swords
+  - Key: Weapon/Melee/WarHammers
+    Value: WarHammers
+  - Key: Weapon/Ranged
+    Value: Ranged
+  - Key: Weapon/Ranged/Bows
+    Value: Bows
+  - Key: Weapon/Ranged/Crossbow
+    Value: Crossbow
+  - Key: Weapon/Ranged/Crossbows
+    Value: Crossbows
+  - Key: Weapon/Staff
+    Value: Staff
+  sections:
+  - Section: 0
+    Subsections:
+    - Path: Ammunition
+      ItemType: 30
+    - Path: Melee
+      ItemType: 0
+    - Path: Ranged
+      ItemType: 10
+    - Path: Staff
+      ItemType: 20
+  - Section: 1
+    Subsections: []
+  - Section: 2
+    Subsections: []
+  - Section: 3
+    Subsections: []
