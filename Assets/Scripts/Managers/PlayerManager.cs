@@ -68,4 +68,6 @@ public class PlayerManager : MonoBehaviour, IManager
     public static void EnableInteractions (){ Instance.player.GetInteractionHandle().AllowInteraction = true; }
     
     public static void DisableInteractions (){ Instance.player.GetInteractionHandle().AllowInteraction = false; }
+
+    public static Vector3 GetPositionForItemSpawning() { return Instance.player.GetPositionForItemSpawning(); }
 }

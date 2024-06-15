@@ -10,13 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e61c7c8957c01374d8fe5fcec95b964c, type: 3}
-  m_Name: tmp_bow_01
+  m_Name: Bow_Tmp_01
   m_EditorClassIdentifier: 
-  itemName: Short Bow
-  hiddenName: Bow_tmp_01
-  collection: weapons/bows
-  itemType: 10
+  id: 62151018176430b469afacac37aea356
+  itemName: 
+  hiddenName: 
+  collection: 
+  itemType: 0
   itemDescription: 
-  goldValue: 100
+  goldValue: 0
   isStackable: 0
-  itemIcon: {fileID: 21300000, guid: 27527256d1b7e4c4288c8e85bea7f095, type: 3}
+  itemIcon: {fileID: 0}

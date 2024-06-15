@@ -9,14 +9,16 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 [ExecuteInEditMode]
+[RequireComponent(typeof(ItemDatabase))]
 public class ItemManager : MonoBehaviour, IManager
 {
     private static ItemManager Instance;
+    private ItemDatabase itemDatabase;
 
     [Header("AssetBundles")] 
+    private AssetBundle loadedBundle;
     private string currentLoadedBundlePath = "";
-    private AssetBundle loadedBundle = null;
-    private bool bundleLoaded = false;
+    private bool bundleLoaded;
 
     [Header("Special Bundles")] 
     private AssetBundle containerBundle;
@@ -32,8 +34,6 @@ public class ItemManager : MonoBehaviour, IManager
     {
         containerBundle
             = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, "props/containers"));
-        // containerBundle
-        //     = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, "enviroment/container"));
     }
 
     public static ItemManager GetInstance()
@@ -99,7 +99,7 @@ public class ItemManager : MonoBehaviour, IManager
             var address = itemData.ToString().ToLower();
             var handle = Addressables.LoadAssetAsync<GameObject>(address);
 
-            handle.Completed += (AsyncOperationHandle<GameObject> opHandle) =>
+            handle.Completed += (opHandle) =>
             {
                 if (opHandle.Status == AsyncOperationStatus.Succeeded)
                 {
@@ -118,7 +118,7 @@ public class ItemManager : MonoBehaviour, IManager
             var address = "props/containers/" + containerType.ToString().ToLower();
             var handle = Addressables.LoadAssetAsync<GameObject>(address);
 
-            handle.Completed += (AsyncOperationHandle<GameObject> opHandle) =>
+            handle.Completed += (opHandle) =>
             {
                 if (opHandle.Status == AsyncOperationStatus.Succeeded)
                 {

@@ -33,4 +33,6 @@ public class Player : MonoBehaviour, ICharacter
     public FirstPersonCamera GetThirdPersonCamera() { return thirdPersonCamera; }
 
     public Rigidbody GetPlayerBody() { return playerBody; }
+
+    public Vector3 GetPositionForItemSpawning() { return transform.position + transform.forward; }
 }   
