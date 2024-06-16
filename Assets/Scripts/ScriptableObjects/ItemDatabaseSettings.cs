@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine.Rendering;
 
-[CreateAssetMenu(fileName = "ItemDatabaseSettings", menuName = "Item Database Settings")]
+[CreateAssetMenu(fileName = "ItemDatabaseSettings", menuName = "Database/Item Database Settings")]
 public class ItemDatabaseSettings : ScriptableObject
 {
     [SerializeField]

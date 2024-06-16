@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -12,7 +13,10 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 public class ItemManager : MonoBehaviour, IManager
 {
     private static ItemManager Instance;
+    
+    [Header ("Databases")]
     [SerializeField] private ItemDatabase itemDatabase;
+    [SerializeField] private ContainerDatabase containerDatabase;
 
     [Header("AssetBundles")] 
     private AssetBundle loadedBundle;
@@ -112,9 +116,13 @@ public class ItemManager : MonoBehaviour, IManager
             };
         }
 
-        public static void GetContainerPrefab(ContainerType containerType, Action<GameObject> callback)
+        public static void GetContainerPrefab(ContainerType containerType, Action<GameObject> callback, [CanBeNull] string name = null)
         {
-            var address = "props/containers/" + containerType.ToString().ToLower();
+            var containerData = name == null
+                ? GetInstance().containerDatabase.GetRandomContainer(containerType)
+                : GetInstance().containerDatabase.GetByName(name);
+
+            var address = containerData.ToString();
             var handle = Addressables.LoadAssetAsync<GameObject>(address);
 
             handle.Completed += (opHandle) =>
@@ -167,5 +175,6 @@ public enum ItemType
 public enum ContainerType
 {
     Sack, 
-    Chest
+    Chest,
+    Quiver
 }
