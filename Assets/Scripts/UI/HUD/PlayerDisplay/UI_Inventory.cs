@@ -27,6 +27,11 @@ public class UI_Inventory : UI_Component
     [Header("Settings")] 
     private SortType sortType;
     
+    public void Start()
+    {
+        InputManager.GetInputHandle().AddListenerOnInputAction(HandleFavouriteSelection, "InteractAlt");
+    }
+    
     public override void EnableComponent(bool instant = true)
     {
         healthDisplay.SetToStay(true);
@@ -121,9 +126,9 @@ public class UI_Inventory : UI_Component
         currentSelectedItem = index;
     }
 
-    private void HandleFavouriteSelection()
+    private void HandleFavouriteSelection(ButtonState state)
     {
-        if (!enabled || currentSelectedItem == null) return;
+        if (state == ButtonState.Up || !enabled || currentSelectedItem == null) return;
 
         if (items[(int)currentSelectedItem].ChangeFavouriteStatus())
         {

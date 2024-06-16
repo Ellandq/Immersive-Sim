@@ -103,7 +103,10 @@ public class Item
 
         public int Count { get { return count; } }
 
-        public bool IsFavourite { get { return isFavourite; } }
+        public bool IsFavourite { 
+            get { return isFavourite; }
+            set { isFavourite = value; }
+        }
 
         public bool IsEmpty () { return count == 0; }
 
