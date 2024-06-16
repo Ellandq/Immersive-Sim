@@ -111,4 +111,29 @@ public class Item
         public bool IsEmpty () { return count == 0; }
 
     #endregion
+
+    public bool CanBeFavourite()
+    {
+        switch (itemData.ItemType)
+        {
+            case ItemType.MeleeWeapon:
+            case ItemType.RangedWeapon:
+            case ItemType.Staff:
+            case ItemType.Potions:
+            case ItemType.Scrolls:
+            case ItemType.Runes:
+                return true;
+            case ItemType.Ammunition:
+            case ItemType.LightArmor:
+            case ItemType.MediumArmor:
+            case ItemType.HeavyArmor:
+            case ItemType.Robe:
+            case ItemType.Plant:
+            case ItemType.Ingredient:
+            case ItemType.Book:
+            case ItemType.Key:
+            default:
+                return false;
+        }
+    }
 }

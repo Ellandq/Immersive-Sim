@@ -89,6 +89,7 @@ public class UI_Inventory_DisplayedItem : UI_Component
 
     public bool ChangeFavouriteStatus()
     {
+        if (!item.CanBeFavourite()) return false;
         var wasFavourite = !item.IsFavourite;
         item.IsFavourite = wasFavourite;
         isFavouriteObject.SetActive(wasFavourite);
