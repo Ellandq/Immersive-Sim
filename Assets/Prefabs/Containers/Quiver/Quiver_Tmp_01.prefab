@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4304258763679742599}
   - component: {fileID: 3042343048559362849}
   - component: {fileID: -6812432604543222008}
-  - component: {fileID: 795770518332811289}
+  - component: {fileID: 1408780827549298547}
   m_Layer: 8
   m_Name: Quiver_Tmp_01
   m_TagString: Untagged
@@ -99,8 +99,8 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 3
---- !u!64 &795770518332811289
-MeshCollider:
+--- !u!65 &1408780827549298547
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -109,7 +109,6 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -7452177911627433576, guid: fbdea3c92c4724249a12194b7e106276, type: 3}
+  serializedVersion: 2
+  m_Size: {x: 61.7585, y: 23.6571, z: 9.0135}
+  m_Center: {x: 0.06484985, y: 22.67105, z: 4.5883503}

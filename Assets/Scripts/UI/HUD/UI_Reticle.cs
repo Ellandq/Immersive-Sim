@@ -38,9 +38,13 @@ public class UI_Reticle : UI_Component
                 return;
             }
 
-            interactionInfoDisplay.text =
-                selectedObject.GetInteractionName() + selectedObject.GetInteractionType().ToString();
+            interactionInfoDisplay.text = GetInteractionInfo();
             interactionInfoDisplayCoroutine = StartCoroutine(DisplayInteractionInfo());
+        }
+
+        private string GetInteractionInfo()
+        {
+            return selectedObject.GetInteractionInfo();
         }
 
         private IEnumerator DisplayInteractionInfo()
@@ -64,6 +68,7 @@ public class UI_Reticle : UI_Component
 
             interactionInfoDisplayCoroutine = null;
         }
+        
     
     #endregion
 

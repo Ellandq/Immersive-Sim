@@ -8,18 +8,30 @@ public class ContainerInteraction : EntityInteraction
 
     private void OnValidate()
     {
-        if (interactionName == "Open ") return;
-        interactionName = "Open ";
-        interactionType = InteractionType.Container;
-        itemHolder = GetComponentInParent<ItemHolder>();
+        if (itemHolder == null) itemHolder = GetComponentInParent<ItemHolder>();
+
+        interactionType = itemHolder.containerType == ContainerType.Quiver ? InteractionType.PickUp : InteractionType.OpenContainer;
         gameObject.tag = "Interactable";
     }
     
     public override void Interact(Player player)
     {
-        Debug.Log("Interacting with container");
-        // player.GetInventory().AddItems(itemHolder.GetItems());
-        //
-        // Destroy(itemHolder.gameObject);
+        
+        if (itemHolder.containerType == ContainerType.Quiver)
+        {
+            player.GetInventory().AddItems(itemHolder.GetItems());
+        
+            Destroy(itemHolder.gameObject);
+        }
+        else
+        {
+            Debug.Log("Interacting with container");
+        }
+    }
+    
+    public override string GetInteractionInfo()
+    {
+        if (interactionType == InteractionType.OpenContainer) return "Open " + itemHolder.containerType;
+        return $"Pick Up {itemHolder.GetName()} ({itemHolder.GetArrowCount()})";
     }
 }

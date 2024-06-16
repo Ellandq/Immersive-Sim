@@ -9,10 +9,9 @@ public class ItemInteraction : EntityInteraction
     
     private void OnValidate()
     {
-        if (interactionName == "Pick up ") return;
-        interactionName = "Pick up ";
-        interactionType = InteractionType.Item;
-        itemHolder = GetComponentInParent<ItemHolder>();
+        if (itemHolder == null) itemHolder = GetComponentInParent<ItemHolder>();
+
+        interactionType = InteractionType.PickUp;
         gameObject.tag = "Interactable";
     }
     
@@ -21,5 +20,10 @@ public class ItemInteraction : EntityInteraction
         player.GetInventory().AddItems(itemHolder.GetItems());
         
         Destroy(itemHolder.gameObject);
+    }
+    
+    public override string GetInteractionInfo()
+    {
+        return $"Pick Up {itemHolder.GetName()}";
     }
 }

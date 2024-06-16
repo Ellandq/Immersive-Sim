@@ -6,7 +6,6 @@ public class EntityInteraction : MonoBehaviour
 {
     [Header("Interaction Settings")] 
     [SerializeField] protected InteractionType interactionType;
-    [SerializeField] protected string interactionName;
 
     public virtual void Interact(Player player)
     {
@@ -15,17 +14,22 @@ public class EntityInteraction : MonoBehaviour
 
     public InteractionType GetInteractionType() { return interactionType; }
 
-    public string GetInteractionName() { return interactionName; }
-    
+    public virtual string GetInteractionInfo()
+    {
+        return "Not defined";
+    }
 }
 
 public enum InteractionType
 {
-    Item, Container, 
+    PickUp, OpenContainer,
     
-    Door, Enterance,
+    OpenDoor, EnterLocation,
     
-    Npc,
+    Talk,
     
-    Light
+    Light,
+    
+    Custom
+    
 }

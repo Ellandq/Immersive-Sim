@@ -9,8 +9,7 @@ public class ItemHolder : MonoBehaviour
     [SerializeField] private List<ItemData> itemDatas;
     
     [Header("Container Information")]
-    [SerializeField] private ContainerType containerType;
-    [SerializeField] private bool isContainer;
+    public ContainerType containerType;
 
     private void Start()
     {
@@ -41,26 +40,47 @@ public class ItemHolder : MonoBehaviour
     private void UpdateModel()
     {
         RemoveModel();
+        UpdateContainerAuto();
 
         switch (itemDatas.Count)
         {
             case 0:
                 UpdateName("Item");
                 return;
-            
+
             case 1:
-                ItemManager.GetItemPrefab(itemDatas[0].ItemObject, (loadedPrefab) =>
+                if (itemDatas[0].ItemCount > 1)
                 {
-                    if (loadedPrefab != null)
+                    ItemManager.GetContainerPrefab(containerType, (loadedPrefab) =>
                     {
-                        Instantiate(loadedPrefab, transform).AddComponent<ItemInteraction>();
-                        UpdateName(itemDatas[0].ItemObject.ItemName);
-                    }
-                    else
+                        if (loadedPrefab != null)
+                        {
+                            Instantiate(loadedPrefab, transform).AddComponent<ContainerInteraction>();
+                            UpdateName(containerType.ToString());
+                        }
+                        else
+                        {
+                            Debug.LogError("Failed to load container prefab.");
+                        }
+                    });
+                    break;
+                }
+                else
+                {
+                    ItemManager.GetItemPrefab(itemDatas[0].ItemObject, (loadedPrefab) =>
                     {
-                        Debug.LogError("Failed to load item prefab.");
-                    }
-                });
+                        if (loadedPrefab != null)
+                        {
+                            Instantiate(loadedPrefab, transform).AddComponent<ItemInteraction>();
+                            UpdateName(itemDatas[0].ItemObject.ItemName);
+                        }
+                        else
+                        {
+                            Debug.LogError("Failed to load item prefab.");
+                        }
+                    });
+                }
+                
                 break;
                 
             default:
@@ -97,7 +117,6 @@ public class ItemHolder : MonoBehaviour
             items.Add(new Item(obj.ItemObject, obj.ItemCount));
         }
     }
-    
 
     private void RemoveModel()
     {
@@ -107,9 +126,27 @@ public class ItemHolder : MonoBehaviour
         }
     }
 
+    private void UpdateContainerAuto()
+    {
+        if (itemDatas.Count == 1 && itemDatas[0].ItemObject.ItemType == ItemType.Ammunition)
+        {
+            containerType = ContainerType.Quiver;
+        }
+    }
+
     private void UpdateName(string name)
     {
         gameObject.name = name;
+    }
+
+    public string GetName()
+    {
+        return containerType == ContainerType.Quiver ? itemDatas[0].ItemObject.ItemName : gameObject.name;
+    }
+
+    public int GetArrowCount()
+    {
+        return itemDatas[0].ItemCount;
     }
     
 }

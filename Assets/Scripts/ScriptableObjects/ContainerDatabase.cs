@@ -26,7 +26,6 @@ public class ContainerDatabase : ScriptableObject
 
         var random = new Random();
         var randomIndex = random.Next(filteredContainers.Count);
-
         return filteredContainers[randomIndex];
     }
 }

@@ -116,7 +116,7 @@ public class ItemManager : MonoBehaviour, IManager
             };
         }
 
-        public static void GetContainerPrefab(ContainerType containerType, Action<GameObject> callback, [CanBeNull] string name = null)
+        public static void GetContainerPrefab(ContainerType containerType, Action<GameObject> callback, string name = null)
         {
             var containerData = name == null
                 ? GetInstance().containerDatabase.GetRandomContainer(containerType)
