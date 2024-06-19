@@ -12,8 +12,8 @@ public class FirstPersonCamera : PlayerCamera
         transform.position = cameraRoot.position;
         if (!canMove) return;
         
-        var mouseX = Input.GetAxis("Mouse X") * sensitivity * Time.smoothDeltaTime;
-        var mouseY = Input.GetAxis("Mouse Y") * sensitivity * Time.smoothDeltaTime;
+        var mouseX = Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
+        var mouseY = Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
         
         var forwardPoint = transform.position + transform.forward * 3.0f;
         cameraFollowObject.position = forwardPoint;

@@ -9,10 +9,11 @@ public class ItemInteraction : EntityInteraction
     
     private void OnValidate()
     {
+        if (Application.isPlaying) return;
         if (itemHolder == null) itemHolder = GetComponentInParent<ItemHolder>();
-
+        if (itemHolder == null) return;
         interactionType = InteractionType.PickUp;
-        gameObject.tag = "Interactable";
+        SetTagIfNeeded("Interactable");
     }
     
     public override void Interact(Player player)

@@ -18,6 +18,14 @@ public class EntityInteraction : MonoBehaviour
     {
         return "Not defined";
     }
+    
+    protected void SetTagIfNeeded(string tag)
+    {
+        if (!gameObject.CompareTag(tag))
+        {
+            gameObject.tag = tag;
+        }
+    }
 }
 
 public enum InteractionType

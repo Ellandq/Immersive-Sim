@@ -13,7 +13,7 @@ public class EquippableItem
             && item.GetItemType() != ItemType.RangedWeapon
             && item.GetItemType() != ItemType.Staff)
         {
-            throw new DataException("Invalid item type for type 'Consumable'.");
+            throw new DataException("Invalid item type for type 'Equippable'.");
         }
 
         this.item = item;

@@ -7,7 +7,7 @@ public class CharacterMover : MonoBehaviour
     [Header("Object References")]
     [SerializeField] private Animator animator;
     [SerializeField] private Transform groundCheck;
-    private Rigidbody characterRigidbody;
+    [SerializeField] private Rigidbody characterRigidbody;
 
     [Header("Object Information")]
     private LayerMask groundMask;
@@ -49,9 +49,6 @@ public class CharacterMover : MonoBehaviour
         animationState = new Vector2();
         IsMovementEnabled = true;
         IsJumping = false;
-        
-        // Initializing components
-        characterRigidbody = GetComponent<Rigidbody>();
     }
 
     protected void Move (Vector3 moveVector)
@@ -70,7 +67,7 @@ public class CharacterMover : MonoBehaviour
         
         // Adjusting current animation
         targetAnimationState = ConvertMovementVectorToAnimation(moveVector);
-        animationState = Vector2.Lerp(animationState, targetAnimationState, Time.smoothDeltaTime * 2f);
+        animationState = Vector2.Lerp(animationState, targetAnimationState, Time.smoothDeltaTime * 3f);
         animator.SetFloat(xVelHash, animationState.x);
         animator.SetFloat(zVelHash, animationState.y);
         
